@@ -9,7 +9,7 @@ __pycache__/
 # Environments
 .env
 .venv
-.lock
+Pipfile.lock
 env/
 venv/
 
