@@ -1,7 +1,7 @@
 import jax.scipy.stats as stats
 import jax.numpy as jnp
 import jax
-
+from jax.scipy.stats import norm, gamma
 @jax.jit
 def logp_unnormalized_posterior_regession(x, input_1, input_2, true_output, prior_mu, prior_prec, nnet_model, treedef):
     # Vectorize the log_prior calculation

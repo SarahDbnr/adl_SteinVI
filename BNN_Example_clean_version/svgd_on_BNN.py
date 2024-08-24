@@ -12,8 +12,8 @@ from sklearn.preprocessing import StandardScaler
 from BNN_Model import build_model
 from get_posteriori import logp_unnormalized_posterior_mulitnomial,logp_unnormalized_posterior
 from Load_Data import load_data, true_function
-from plot_3dim_CI import plot_mean_and_variance_predictions, plot_mean_and_variance_predictions_1
-from plot_mse_accuracy import plot_and_save_accuracy
+#from plot_3dim_CI import plot_mean_and_variance_predictions, plot_mean_and_variance_predictions_1
+from plot_mse import plot_and_save_accuracy, plot_mse
 
 def main():
 
@@ -30,7 +30,7 @@ def main():
     kernel_length = 0.05
     batch_size =  "Full" #Full
     mse_wanted = False
-    regression = False
+    regression = True
     # Number of warm-up iterations before starting early stopping
     warm_up_iterations = 150
 
@@ -53,17 +53,17 @@ def main():
     #optimizer = adam(0.01)
 
     # Load the dataset for the experiment
-    # Available options: "MNIST", "FashionMNIST", "CIFAR10"
-    dataset = "MNIST"
+    # Available options: "MNIST", "FashionMNIST", "CIFAR10", None, "wine_quality"
+    dataset = "wine_quality"
 
     # Load the dataset and split into training, validation, and test sets
     z_train, y_train, z_val, y_val, z_test, y_test = load_data(dataset, reduce_size=False)
     
     # Build the Neural Network model based on set input parameters
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=10, hidden_layers=(network_structure))
+    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=2, hidden_layers=(network_structure))
 
     # Initialize particles for the SVGD algorithm
-    prior_mu, _, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
+    prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
     if regression:
         @jax.jit
@@ -90,7 +90,7 @@ def main():
             ) 
     if batch_size != "Full":
         # Create minibatches
-        num_batches = len(z_train) // batch_size
+        num_batches = len(y_train) // batch_size#hier gerade z_train ersettz
         z_train = jnp.array_split(z_train, num_batches)
         y_train = jnp.array_split(y_train, num_batches)
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
@@ -176,7 +176,9 @@ def svgd_training_loop(
         patience=100,
         min_delta=0.01,
         warm_up_iterations=300,
-        batch_size = "Full"
+        batch_size = "Full",
+        regression=False,
+        mse_wanted=False,
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)

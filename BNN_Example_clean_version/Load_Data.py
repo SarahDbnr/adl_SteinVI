@@ -36,7 +36,9 @@ def load_real_world_data(dataset_name):
     return x, y
 
 def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_points = 10000,rng_key=None, true_function=None):
-    if dataset_name is None:
+    key = jax.random.PRNGKey(0)
+    
+    if dataset is None:
         # Split the number of points into training and testing
         num_train = int(0.8 * num_points)
         num_test = num_points - num_train
@@ -77,7 +79,7 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         y_train = y_train.flatten()
         y_test = y_test.flatten()
     elif dataset == "california_housing" or dataset == "diabetes" or dataset == "wine_quality":
-        x, y = load_real_world_data(dataset_name)
+        x, y = load_real_world_data(dataset)
         # Shuffle and split data
         key, subkey = jax.random.split(key)
         perm = jax.random.permutation(subkey, len(x))
