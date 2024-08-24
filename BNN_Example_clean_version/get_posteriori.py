@@ -15,6 +15,26 @@ def logp_unnormalized_posterior_regession(x, input_1, input_2, true_output, prio
     
     return log_prior + log_likelihood
 
+def logp_unnormalized_posterior(params, dz, dy, prior_mu, prior_prec, nnet_model, treedef):
+    # Calculate log prior using Gamma distribution
+    log_prior = jnp.sum(norm.logpdf(params, loc=0, scale=1))#jnp.sum(stats.norm.logpdf(params, prior_mu, prior_prec))#jnp.sum(gamma.logpdf(params, a=prior_mu, scale=1/prior_prec))
+
+    # Get predictions from the neural network
+    prediction_mean, prediction_var_score = jnp.split(nnet_model.apply(treedef(params), dz), 2, axis=-1)
+    # Extract location and scale
+    location = prediction_mean.squeeze()
+    scale = jnp.exp(0.000001 * prediction_var_score.squeeze())#jax.nn.sigmoid(prediction_var_score.squeeze()) + 1
+    # Calculate log likelihood
+    log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
+
+    #Regularize the NNET
+    l2_loss = 0.1 * sum(jnp.sum(jnp.square(p)) for p in jax.tree_util.tree_leaves(params))
+    
+    # Calculate log unnormalized posterior
+    log_unnormalized_posterior = log_prior + log_likelihood + l2_loss
+
+    return log_unnormalized_posterior
+
 jax.jit
 def logp_unnormalized_posterior_mulitnomial(params, dz, dy, prior_mu, nnet_model, treedef):
     # Calculate the log-prior (Gaussian prior on the weights)
