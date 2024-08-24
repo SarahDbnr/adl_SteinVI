@@ -48,3 +48,75 @@ def get_x1_x2_from_grid(x_grid, num_particles):
     x1 = x_grid[:, 0].squeeze()
     x2 = x_grid[:, 1].squeeze()
     return x1_repeated, x2_repeated, x1, x2
+
+
+def plot_results(num_particles, nnet_model, out, tree_def, input_1, input_2, true_output):
+    mean_predictions, std_predictions, predictions, true_y, x_grid = get_predictions_from_test_grid(num_particles, nnet_model, out, tree_def, jnp.column_stack((input_1, input_2)))
+    
+    # Create a grid for surface plotting
+    xi = jnp.linspace(input_1.min(), input_1.max(), 100)
+    yi = jnp.linspace(input_2.min(), input_2.max(), 100)
+    X, Y = jnp.meshgrid(xi, yi)
+
+    # # Create interpolation function
+    # from jax import vmap
+    # def rbf_kernel(x1, x2, length_scale=1.0):
+    #     return jnp.exp(-jnp.sum((x1 - x2)**2) / (2 * length_scale**2))
+
+    # def interpolate(x_new, x_train, y_train):
+    #     dists = vmap(lambda x: rbf_kernel(x, x_train))(x_new)
+    #     weights = dists / dists.sum(axis=1, keepdims=True)
+    #     return jnp.dot(weights, y_train)
+
+    # # Interpolate mean predictions and std predictions
+    # grid_points = jnp.column_stack([X.ravel(), Y.ravel()])
+    # Z_mean = interpolate(grid_points, jnp.column_stack([input_1, input_2]), mean_predictions).reshape(X.shape)
+    # Z_std = interpolate(grid_points, jnp.column_stack([input_1, input_2]), std_predictions).reshape(X.shape)
+
+    fig = plt.figure(figsize=(20, 15))
+    
+    # Plot the observed data and predictions
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Plot real data
+    scatter = ax.scatter(input_1, input_2, true_output, c='red', s=20, label="Observed Data")
+    
+    # Plot mean prediction surface
+    surf_mean = ax.plot_surface(X, Y, Z_mean, cmap='viridis', alpha=0.7)
+    
+    # Plot confidence interval surfaces
+    surf_upper = ax.plot_surface(X, Y, Z_mean + 2*Z_std, cmap='autumn', alpha=0.3)
+    surf_lower = ax.plot_surface(X, Y, Z_mean - 2*Z_std, cmap='winter', alpha=0.3)
+
+    ax.set_xlabel("Input 1")
+    ax.set_ylabel("Input 2")
+    ax.set_zlabel("Output")
+    ax.set_title("Observed Data, Mean Prediction, and Confidence Intervals")
+
+    # Create a custom legend
+    from matplotlib.lines import Line2D
+    custom_lines = [Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=10),
+                    Line2D([0], [0], linestyle='-', color='blue'),
+                    Line2D([0], [0], linestyle='-', color='orange'),
+                    Line2D([0], [0], linestyle='-', color='green')]
+    ax.legend(custom_lines, ['Observed Data', 'Mean Prediction', '+2 Std Dev', '-2 Std Dev'])
+
+    plt.tight_layout()
+    plt.show()
+
+    # Additional scatter plot for individual predictions
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    for i in range(num_particles):
+        ax.scatter(input_1, input_2, predictions[:, i], alpha=0.1, s=1)
+    
+    ax.scatter(input_1, input_2, true_y, c='red', s=10, alpha=0.5, label='True y')
+    ax.scatter(input_1, input_2, mean_predictions, c='black', s=10, alpha=0.5, label='Mean Predictions')
+    
+    ax.set_xlabel('Input 1')
+    ax.set_ylabel('Input 2')
+    ax.set_zlabel('Output')
+    ax.set_title(f'Predictions for {num_particles} particles')
+    ax.legend()
+    plt.show()
