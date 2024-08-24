@@ -35,7 +35,7 @@ def load_real_world_data(dataset_name):
     
     return x, y
 
-def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1):
+def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_points = 10000,rng_key=None, true_function=None):
     if dataset_name is None:
         # Split the number of points into training and testing
         num_train = int(0.8 * num_points)
