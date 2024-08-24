@@ -1,7 +1,6 @@
 import flax.linen as nn
 from typing import Sequence
 from jax.flatten_util import ravel_pytree
-import jax
 
 
 class SimpleCNN(nn.Module):
@@ -80,24 +79,5 @@ def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn
         nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init)
 
     init_param = nnet_model.init(key, x_train)
-
     param_vec, tree_def = ravel_pytree(init_param)
-
     return nnet_model, tree_def, param_vec
-
-
-def generate_cubic_data_2d(rng_key, num_points=1000):
-    """Generate synthetic data with a cubic relationship for 2D input."""
-    key1, key2 = jax.random.split(rng_key)
-    x1 = jax.random.uniform(key1, (num_points, 1), minval=-2, maxval=2)
-    x2 = jax.random.uniform(key2, (num_points, 1), minval=-2, maxval=2)
-    y = x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
-    return x1, x2, y
-
-
-def get_true_y(x1, x2):
-    return x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
-
-
-def apply_model(model, params, x):
-    return model.apply(params, x)
