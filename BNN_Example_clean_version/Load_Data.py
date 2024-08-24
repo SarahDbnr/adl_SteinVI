@@ -62,6 +62,10 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         x_train = x_train.astype('float32') / 255.0
         x_test = x_test.astype('float32') / 255.0
+        # Split training data into train and validation sets
+        val_size = int(len(x_train) * val_split)
+        x_val, y_val = x_train[-val_size:], y_train[-val_size:]
+        x_train, y_train = x_train[:-val_size], y_train[:-val_size]
     elif dataset == "FashionMNIST":
         # Load the Fashion MNIST dataset
         fashion_mnist = tf.keras.datasets.fashion_mnist
@@ -71,6 +75,10 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         x_test = x_test.astype('float32') / 255.0
         x_train = x_train.astype('float32') / 255.0
         x_test = x_test.astype('float32') / 255.0
+        # Split training data into train and validation sets
+        val_size = int(len(x_train) * val_split)
+        x_val, y_val = x_train[-val_size:], y_train[-val_size:]
+        x_train, y_train = x_train[:-val_size], y_train[:-val_size]
     elif dataset == "CIFAR10":
         cifar10 = tf.keras.datasets.cifar10
         (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -78,6 +86,10 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         x_test = x_test.astype('float32') / 255.0
         y_train = y_train.flatten()
         y_test = y_test.flatten()
+        # Split training data into train and validation sets
+        val_size = int(len(x_train) * val_split)
+        x_val, y_val = x_train[-val_size:], y_train[-val_size:]
+        x_train, y_train = x_train[:-val_size], y_train[:-val_size]
     elif dataset == "california_housing" or dataset == "diabetes" or dataset == "wine_quality":
         x, y = load_real_world_data(dataset)
         # Shuffle and split data
@@ -93,6 +105,7 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         x_val, y_val = x_train[-num_val:], y_train[-num_val:]
         x_train, y_train = x_train[:-num_val], y_train[:-num_val]
         x_test, y_test = x[num_train:], y[num_train:]
+        
     else:
         raise ValueError(f"Dataset {dataset} not recognized. Available options: 'MNIST', 'FashionMNIST', 'CIFAR-10'")
     
@@ -106,10 +119,7 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
         x_test = x_test[test_indices]
         y_test = y_test[test_indices]
     
-    # Split training data into train and validation sets
-    val_size = int(len(x_train) * val_split)
-    x_val, y_val = x_train[-val_size:], y_train[-val_size:]
-    x_train, y_train = x_train[:-val_size], y_train[:-val_size]
+    
     
     print(f"Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}")
     print(f"Validation data shape: {x_val.shape}, Validation labels shape: {y_val.shape}")

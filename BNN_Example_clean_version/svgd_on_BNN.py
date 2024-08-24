@@ -28,10 +28,10 @@ def main():
     num_iterations = 30
     num_particles = 2
     kernel_length = 0.05
-    batch_size =  300#"Full" #Full
+    batch_size =  30#"Full" #Full
     mse_wanted = False
-    regression = False
-    output_size=10
+    regression = True
+    output_size = 2
     # Number of warm-up iterations before starting early stopping
     warm_up_iterations = 150
 
@@ -55,7 +55,7 @@ def main():
 
     # Load the dataset for the experiment
     # Available options: "MNIST", "FashionMNIST", "CIFAR10", None, "wine_quality"
-    dataset = "MNIST"
+    dataset = "wine_quality"
 
     # Load the dataset and split into training, validation, and test sets
     z_train, y_train, z_val, y_val, z_test, y_test = load_data(dataset, reduce_size=False)
@@ -211,7 +211,7 @@ def svgd_training_loop(
             _, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
             print(val_accuracy)
             val_accuracies.append(val_accuracy)
-    
+            ####TODO: Für MSE anpassen
             # Apply early stopping logic only after warm-up period
             if iteration >= warm_up_iterations:
                 if val_accuracy > best_val_accuracy + min_delta:
