@@ -1,22 +1,17 @@
-import functools
 import jax
 import jax.numpy as jnp
-import datetime
 from optax import adam, exponential_decay
-import matplotlib.pyplot as plt
 import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from tqdm import tqdm
-from sklearn.preprocessing import StandardScaler
 
 from BNN_Model import build_model
-from get_posteriori import logp_unnormalized_posterior_mulitnomial,logp_unnormalized_posterior
-from Load_Data import load_data, true_function
-#from plot_3dim_CI import plot_mean_and_variance_predictions, plot_mean_and_variance_predictions_1
+from get_posteriori import logp_unnormalized_posterior_mulitnomial, logp_unnormalized_posterior
+from Load_Data import load_data
 from plot_mse import plot_and_save_accuracy, plot_mse
 
-def main():
 
+def main():
     # Set random seed for reproducibility
     key = jax.random.PRNGKey(1)
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
@@ -28,10 +23,9 @@ def main():
     num_iterations = 30
     num_particles = 2
     kernel_length = 0.05
-    batch_size =  30#"Full" #Full
-    mse_wanted = False
-    regression = True
-    output_size = 2
+    batch_size = 300  # "Full"
+    regression = False
+    output_size = 10
     # Number of warm-up iterations before starting early stopping
     warm_up_iterations = 150
 
@@ -47,21 +41,22 @@ def main():
         transition_steps=decay_steps,
         decay_rate=decay_rate,
         staircase=True
-    )#https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html
+    )  # https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html
     optimizer = adam(learning_rate_schedule)
-    
+
     # If you don't want to use a learning rate schedule, you can use a fixed learning rate
-    #optimizer = adam(0.01)
+    # optimizer = adam(0.01)
 
     # Load the dataset for the experiment
     # Available options: "MNIST", "FashionMNIST", "CIFAR10", None, "wine_quality"
-    dataset = "wine_quality"
+    dataset = "MNIST"
 
     # Load the dataset and split into training, validation, and test sets
     z_train, y_train, z_val, y_val, z_test, y_test = load_data(dataset, reduce_size=False)
-    
+
     # Build the Neural Network model based on set input parameters
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size, hidden_layers=(network_structure))
+    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
+                                                  hidden_layers=network_structure)
 
     # Initialize particles for the SVGD algorithm
     prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
@@ -74,8 +69,6 @@ def main():
                 nnet_model=nnet_model,
                 dz=dz,
                 dy=dy,
-                prior_mu=prior_mu,
-                prior_prec=prior_prec,
                 treedef=tree_def,
             )
     else:
@@ -88,7 +81,7 @@ def main():
                 dy=dy,
                 prior_mu=prior_mu,
                 treedef=tree_def,
-            ) 
+            )
     if batch_size != "Full":
         # Create minibatches
         num_batches = len(z_train) // batch_size
@@ -110,7 +103,6 @@ def main():
         y_val=y_val,
         warm_up_iterations=warm_up_iterations,
         batch_size=batch_size,
-        mse_wanted=mse_wanted,
         regression=regression
     )
     if regression:
@@ -120,7 +112,7 @@ def main():
     else:
         _, test_accuracy = evaluate_particles(out, nnet_model, tree_def, z_test, y_test)
         print(f"Final Test Accuracy: {test_accuracy * 100:.2f}%")
-    
+
         plot_and_save_accuracy(
             val_accuracies,
             num_particles=num_particles,
@@ -128,37 +120,40 @@ def main():
             kernel_length=kernel_length,
             adam_learning_rate=initial_learning_rate,
             warm_up_iterations=warm_up_iterations,
-            output_folder="svgd_plots"  
+            output_folder="svgd_plots"
         )
+
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
 def evaluate_particles(out, nnet_model, tree_def, x_test, y_test):
     num_particles = len(out.particles)
     all_predictions = []
-    
+
     for i in range(num_particles):
         particle_params = tree_def(out.particles[i])
         logits = nnet_model.apply(particle_params, x_test)
         probabilities = jax.nn.softmax(logits, axis=-1)
         all_predictions.append(probabilities)
-    
+
     all_predictions = jnp.stack(all_predictions, axis=0)
     averaged_predictions = jnp.mean(all_predictions, axis=0)
     predicted_classes = jnp.argmax(averaged_predictions, axis=-1)
     accuracy = jnp.mean(predicted_classes == y_test)
-    
+
     return averaged_predictions, accuracy
+
 
 #  Initialize particles for the SVGD algorithm
 def initialize_particles(param_vec, rng_key_init, num_particles):
     inital_param_len = len(param_vec)
     prior_mu = jnp.zeros(inital_param_len)
-    prior_prec = jnp.ones(inital_param_len) 
+    prior_prec = jnp.ones(inital_param_len)
     initial_particles_vector = jax.random.normal(
-        rng_key_init, 
+        rng_key_init,
         shape=(num_particles,) + prior_mu.shape
     )
     return prior_mu, prior_prec, initial_particles_vector
+
 
 # SVGD training loop with early stopping
 def svgd_training_loop(
@@ -177,9 +172,8 @@ def svgd_training_loop(
         patience=100,
         min_delta=0.01,
         warm_up_iterations=300,
-        batch_size = "Full",
+        batch_size="Full",
         regression=False,
-        mse_wanted=False,
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
@@ -191,6 +185,7 @@ def svgd_training_loop(
     patience_counter = 0
     best_state = None
     mse = []
+
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
     def training_step(state, dz, dy):
@@ -201,11 +196,12 @@ def svgd_training_loop(
             print("Batching")
             for batch_idx in range(len(y_train)):
                 state = training_step(state, z_train[batch_idx], y_train[batch_idx])
-        else:         
+        else:
             print("Full")
-            state = training_step(state,z_train,y_train)
+            state = training_step(state, z_train, y_train)
         if regression:
-            mse.append(evaluate_particles_regression(state, nnet_model=nnet_model, tree_def=tree_def, x_test=z_val, y_test=y_val))
+            mse.append(evaluate_particles_regression(state, nnet_model=nnet_model, tree_def=tree_def, x_test=z_val,
+                                                     y_test=y_val))
         else:
             # Evaluate the particles on the validation set for plotting, early stopping and output during training
             _, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
@@ -220,7 +216,7 @@ def svgd_training_loop(
                     best_state = state
                 else:
                     patience_counter += 1
-    
+
                 if patience_counter >= patience:
                     print(f"Early stopping triggered at iteration {iteration + 1}")
                     break
@@ -233,16 +229,19 @@ def svgd_training_loop(
         return best_state, mse
     else:
         return best_state, val_accuracies
+
+
 def evaluate_mse_on_test_data(particles, z_test, y_test, nnet_model, tree_def):
     # Average predictions across particles
     predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), z_test)[:, 0])(particles).mean(0)
     mse = jnp.mean((predictions - y_test) ** 2)
     return mse
+
+
 def evaluate_particles_regression(out, nnet_model, tree_def, x_test, y_test):
     predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), x_test)[:, 0])(out.particles).mean(0)
     mse = jnp.mean((predictions - y_test) ** 2)
 
-    
     print(f"Validation MSE: {mse}")
     jax.debug.print("Prediction[1:5]: {}", predictions[1:5])
     jax.debug.print("Test[1:5]: {}", y_test[1:5])
@@ -250,5 +249,7 @@ def evaluate_particles_regression(out, nnet_model, tree_def, x_test, y_test):
     jax.debug.print("Test[1:5]: {}", y_test.min())
 
     return mse
+
+
 if __name__ == "__main__":
     main()
