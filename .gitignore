@@ -15,3 +15,6 @@ venv/
 
 # PyCharm
 .idea/
+
+# graphs
+svgd_plots/
