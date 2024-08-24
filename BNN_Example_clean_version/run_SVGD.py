@@ -9,119 +9,85 @@ from BNN_Model import build_model
 from get_posteriori import logp_unnormalized_posterior_mulitnomial, logp_unnormalized_posterior_regression
 from Load_Data import load_data
 from plot_mse import plot_and_save_accuracy, plot_mse
+from regression_toy_example import get_regression_toy_example
+
+NUM_ITERATIONS = 30
+# Number of warm-up iterations before starting early stopping
+WARM_UP_ITERATIONS = 150
+KERNEL_LENGTH = 0.05
+# Learning rate schedule with exponential_decay for the optimizer if needed
+INITIAL_LEARNING_RATE = 0.05
+DECAY_RATE = 0.95  # Learning rate decay rate
+DECAY_STEPS = 100  # Learning rate decay steps
 
 
-def main():
-    # Set random seed for reproducibility
-    key = jax.random.PRNGKey(1)
-    rng_key_observed, rng_key_init = jax.random.split(key, 2)
-
-    ###################################
-    ### Parameters to run the model ###
-    ###################################
-
-    num_iterations = 30
-    num_particles = 2
-    kernel_length = 0.05
-    batch_size = 300  # "Full"
-    regression = False
-    output_size = 10
-    # Number of warm-up iterations before starting early stopping
-    warm_up_iterations = 150
+def run_svgd_on_regression_toy_example(num_particles=100, batch_size=300,  output_size=2):
 
     # Network structure for the NNet
     network_structure = (200, 75, 40)
 
-    # Learning rate schedule with exponential_decay for the optimizer if needed
-    initial_learning_rate = 0.05
-    decay_rate = 0.95  # Learning rate decay rate
-    decay_steps = 100  # Learning rate decay steps
-    learning_rate_schedule = exponential_decay(
-        init_value=initial_learning_rate,
-        transition_steps=decay_steps,
-        decay_rate=decay_rate,
-        staircase=True
-    )  # https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html
-    optimizer = adam(learning_rate_schedule)
-
-    # If you don't want to use a learning rate schedule, you can use a fixed learning rate
-    # optimizer = adam(0.01)
-
-    # Load the dataset for the experiment
-    # Available options: "MNIST", "FashionMNIST", "CIFAR10", None, "wine_quality"
-    dataset = "MNIST"
+    # Set random seed for reproducibility
+    key = jax.random.PRNGKey(1)
 
     # Load the dataset and split into training, validation, and test sets
-    z_train, y_train, z_val, y_val, z_test, y_test = load_data(dataset, reduce_size=False)
+    regression_toy_example_data = get_regression_toy_example(num_points=1000, key=key)
+    z_train, y_train, z_val, y_val, z_test, y_test = regression_toy_example_data
 
     # Build the Neural Network model based on set input parameters
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
-                                                  hidden_layers=network_structure)
+    nn_model = build_model(key, z_train, output_size=output_size, hidden_layers=network_structure)
+    nnet_model, tree_def, param_vec = nn_model
+
+    @jax.jit
+    def logp_model(params, dz, dy):
+        return logp_unnormalized_posterior_regression(
+            params,
+            nnet_model=nnet_model,
+            dz=dz,
+            dy=dy,
+            treedef=tree_def,
+        )
+
+    out, val_accuracies = run_svgd(regression_toy_example_data, batch_size, nn_model, logp_model, num_particles,
+                                   key, regression=True)
+
+    test_mse = evaluate_mse_on_test_data(out.particles, z_test, y_test, nnet_model, tree_def)
+    print(f"Test MSE: {test_mse}")
+    plot_mse(val_accuracies)
+
+
+def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key, regression):
+    z_train, y_train, z_val, y_val, z_test, y_test = dataset
+    nnet_model, tree_def, param_vec = nn_model
 
     # Initialize particles for the SVGD algorithm
+    rng_key_observed, rng_key_init = jax.random.split(key, 2)
     prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
-    if regression:
-        @jax.jit
-        def logp_model(params, dz, dy):
-            return logp_unnormalized_posterior_regression(
-                params,
-                nnet_model=nnet_model,
-                dz=dz,
-                dy=dy,
-                treedef=tree_def,
-            )
-    else:
-        @jax.jit
-        def logp_model(params, dz, dy):
-            return logp_unnormalized_posterior_mulitnomial(
-                params,
-                nnet_model=nnet_model,
-                dz=dz,
-                dy=dy,
-                prior_mu=prior_mu,
-                treedef=tree_def,
-            )
     if batch_size != "Full":
         # Create minibatches
         num_batches = len(z_train) // batch_size
         z_train = jnp.array_split(z_train, num_batches)
         y_train = jnp.array_split(y_train, num_batches)
+
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, val_accuracies = svgd_training_loop(
         log_p=logp_model,
         initial_position=initial_particles_vector,
-        initial_kernel_parameters={"length_scale": kernel_length},
+        initial_kernel_parameters={"length_scale": KERNEL_LENGTH},
         kernel=rbf_kernel,
-        optimizer=optimizer,
-        num_iterations=num_iterations,
+        optimizer=get_adam_optimizer(),
+        num_iterations=NUM_ITERATIONS,
         nnet_model=nnet_model,
         tree_def=tree_def,
         z_train=z_train,
         y_train=y_train,
         z_val=z_val,
         y_val=y_val,
-        warm_up_iterations=warm_up_iterations,
+        warm_up_iterations=WARM_UP_ITERATIONS,
         batch_size=batch_size,
         regression=regression
     )
-    if regression:
-        test_mse = evaluate_mse_on_test_data(out.particles, z_test, y_test, nnet_model, tree_def)
-        print(f"Test MSE: {test_mse}")
-        plot_mse(val_accuracies)
-    else:
-        _, test_accuracy = evaluate_particles(out, nnet_model, tree_def, z_test, y_test)
-        print(f"Final Test Accuracy: {test_accuracy * 100:.2f}%")
-
-        plot_and_save_accuracy(
-            val_accuracies,
-            num_particles=num_particles,
-            network_structure=network_structure,
-            kernel_length=kernel_length,
-            adam_learning_rate=initial_learning_rate,
-            warm_up_iterations=warm_up_iterations,
-            output_folder="svgd_plots"
-        )
+    return out, val_accuracies
 
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
@@ -251,5 +217,19 @@ def evaluate_particles_regression(out, nnet_model, tree_def, x_test, y_test):
     return mse
 
 
+def get_adam_optimizer():
+    learning_rate_schedule = exponential_decay(
+        init_value=INITIAL_LEARNING_RATE,
+        transition_steps=DECAY_STEPS,
+        decay_rate=DECAY_RATE,
+        staircase=True
+    )  # https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html
+
+    # If you don't want to use a learning rate schedule, you can use a fixed learning rate
+    # optimizer = adam(0.01)
+
+    return adam(learning_rate_schedule)
+
+
 if __name__ == "__main__":
-    main()
+    run_svgd_on_regression_toy_example()
