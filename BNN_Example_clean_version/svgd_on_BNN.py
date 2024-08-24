@@ -7,10 +7,12 @@ import matplotlib.pyplot as plt
 import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from tqdm import tqdm
+from sklearn.preprocessing import StandardScaler
 
 from BNN_Model import build_model
-from get_posteriori import logp_unnormalized_posterior_mulitnomial
-from Load_Data import load_data
+from get_posteriori import logp_unnormalized_posterior_mulitnomial,logp_unnormalized_posterior
+from Load_Data import load_data, true_function
+from plot_3dim_CI import plot_mean_and_variance_predictions, plot_mean_and_variance_predictions_1
 from plot_mse_accuracy import plot_and_save_accuracy
 
 def main():
@@ -27,7 +29,8 @@ def main():
     num_particles = 2
     kernel_length = 0.05
     batch_size =  "Full" #Full
-    
+    mse_wanted = False
+    regression = False
     # Number of warm-up iterations before starting early stopping
     warm_up_iterations = 150
 
@@ -62,16 +65,29 @@ def main():
     # Initialize particles for the SVGD algorithm
     prior_mu, _, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
-    @jax.jit
-    def logp_model(params, dz, dy):
-        return logp_unnormalized_posterior_mulitnomial(
-            params,
-            nnet_model=nnet_model,
-            dz=dz,
-            dy=dy,
-            prior_mu=prior_mu,
-            treedef=tree_def,
-        )
+    if regression:
+        @jax.jit
+        def logp_model(params, dz, dy):
+            return logp_unnormalized_posterior(
+                params,
+                nnet_model=nnet_model,
+                dz=dz,
+                dy=dy,
+                prior_mu=prior_mu,
+                prior_prec=prior_prec,
+                treedef=tree_def,
+            )
+    else:
+        @jax.jit
+        def logp_model(params, dz, dy):
+            return logp_unnormalized_posterior_mulitnomial(
+                params,
+                nnet_model=nnet_model,
+                dz=dz,
+                dy=dy,
+                prior_mu=prior_mu,
+                treedef=tree_def,
+            ) 
     if batch_size != "Full":
         # Create minibatches
         num_batches = len(z_train) // batch_size
@@ -92,21 +108,27 @@ def main():
         z_val=z_val,
         y_val=y_val,
         warm_up_iterations=warm_up_iterations,
-        batch_size=batch_size
+        batch_size=batch_size,
+        mse_wanted=mse_wanted,
+        regression=regression
     )
-
-    _, test_accuracy = evaluate_particles(out, nnet_model, tree_def, z_test, y_test)
-    print(f"Final Test Accuracy: {test_accuracy * 100:.2f}%")
-
-    plot_and_save_accuracy(
-        val_accuracies,
-        num_particles=num_particles,
-        network_structure=network_structure,
-        kernel_length=kernel_length,
-        adam_learning_rate=initial_learning_rate,
-        warm_up_iterations=warm_up_iterations,
-        output_folder="svgd_plots"  
-    )
+    if regression:
+        test_mse = evaluate_mse_on_test_data(out.particles, z_test, y_test, nnet_model, tree_def)
+        print(f"Test MSE: {test_mse}")
+        plot_mse(val_accuracies)
+    else:
+        _, test_accuracy = evaluate_particles(out, nnet_model, tree_def, z_test, y_test)
+        print(f"Final Test Accuracy: {test_accuracy * 100:.2f}%")
+    
+        plot_and_save_accuracy(
+            val_accuracies,
+            num_particles=num_particles,
+            network_structure=network_structure,
+            kernel_length=kernel_length,
+            adam_learning_rate=initial_learning_rate,
+            warm_up_iterations=warm_up_iterations,
+            output_folder="svgd_plots"  
+        )
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
 def evaluate_particles(out, nnet_model, tree_def, x_test, y_test):
@@ -165,7 +187,7 @@ def svgd_training_loop(
     best_val_accuracy = float('-inf')
     patience_counter = 0
     best_state = None
-
+    mse = []
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
     def training_step(state, dz, dy):
@@ -179,29 +201,51 @@ def svgd_training_loop(
         else:         
             print("Full")
             state = training_step(state,z_train,y_train)
-        # Evaluate the particles on the validation set for plotting, early stopping and output during training
-        _, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
-        print(val_accuracy)
-        val_accuracies.append(val_accuracy)
-
-        # Apply early stopping logic only after warm-up period
-        if iteration >= warm_up_iterations:
-            if val_accuracy > best_val_accuracy + min_delta:
-                best_val_accuracy = val_accuracy
-                patience_counter = 0
-                best_state = state
-            else:
-                patience_counter += 1
-
-            if patience_counter >= patience:
-                print(f"Early stopping triggered at iteration {iteration + 1}")
-                break
+        if regression:
+            mse.append(evaluate_particles_regression(state, nnet_model=nnet_model, tree_def=tree_def, x_test=z_val, y_test=y_val))
+        else:
+            # Evaluate the particles on the validation set for plotting, early stopping and output during training
+            _, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
+            print(val_accuracy)
+            val_accuracies.append(val_accuracy)
+    
+            # Apply early stopping logic only after warm-up period
+            if iteration >= warm_up_iterations:
+                if val_accuracy > best_val_accuracy + min_delta:
+                    best_val_accuracy = val_accuracy
+                    patience_counter = 0
+                    best_state = state
+                else:
+                    patience_counter += 1
+    
+                if patience_counter >= patience:
+                    print(f"Early stopping triggered at iteration {iteration + 1}")
+                    break
 
     # If we didn't trigger early stopping, make sure we return the best state
     if best_state is None:
         best_state = state
 
-    return best_state, val_accuracies
+    if regression:
+        return best_state, mse
+    else:
+        return best_state, val_accuracies
+def evaluate_mse_on_test_data(particles, z_test, y_test, nnet_model, tree_def):
+    # Average predictions across particles
+    predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), z_test)[:, 0])(particles).mean(0)
+    mse = jnp.mean((predictions - y_test) ** 2)
+    return mse
+def evaluate_particles_regression(out, nnet_model, tree_def, x_test, y_test):
+    predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), x_test)[:, 0])(out.particles).mean(0)
+    mse = jnp.mean((predictions - y_test) ** 2)
 
+    
+    print(f"Validation MSE: {mse}")
+    jax.debug.print("Prediction[1:5]: {}", predictions[1:5])
+    jax.debug.print("Test[1:5]: {}", y_test[1:5])
+    jax.debug.print("Test[1:5]: {}", y_test.max())
+    jax.debug.print("Test[1:5]: {}", y_test.min())
+
+    return mse
 if __name__ == "__main__":
     main()
