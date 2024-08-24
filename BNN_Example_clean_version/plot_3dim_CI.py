@@ -120,3 +120,28 @@ def plot_results(num_particles, nnet_model, out, tree_def, input_1, input_2, tru
     ax.set_title(f'Predictions for {num_particles} particles')
     ax.legend()
     plt.show()
+
+
+
+def get_accuracy(nnet_model, tree_def, particles, z_test, y_test):
+    # Calculate the average predictions and uncertainties across particles
+    predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), z_test))(particles).mean(0)
+    
+    # Separate the mean predictions and the predicted uncertainty (standard deviation)
+    prediction_means, prediction_std_devs = jnp.split(predictions, 2, axis=-1)
+    
+    # Calculate the 95% confidence interval
+    CI_lower = prediction_means - 1.96 * jnp.sqrt(prediction_std_devs)
+    CI_upper = prediction_means + 1.96 * jnp.sqrt(prediction_std_devs)
+    
+    # Check if the real values are within the confidence intervals
+    pred_in_CIs = (y_test >= CI_lower.squeeze()) & (y_test <= CI_upper.squeeze())
+    
+    # Calculate accuracy as the percentage of points within the confidence intervals
+    accuracy = jnp.mean(pred_in_CIs) * 100
+    
+    # Debug prints for the first 5 predictions and test values
+    jax.debug.print("Prediction[1:5]: {}, real value {},CI_Lower[1:5]: {}, CI_Upper{}", prediction_means[1:5, 0], y_test[1:5], CI_lower[1:5], CI_upper[1:5] )
+
+    print(accuracy)
+    return accuracy
