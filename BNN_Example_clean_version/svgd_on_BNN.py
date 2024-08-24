@@ -28,9 +28,10 @@ def main():
     num_iterations = 30
     num_particles = 2
     kernel_length = 0.05
-    batch_size =  "Full" #Full
+    batch_size =  300#"Full" #Full
     mse_wanted = False
-    regression = True
+    regression = False
+    output_size=10
     # Number of warm-up iterations before starting early stopping
     warm_up_iterations = 150
 
@@ -54,13 +55,13 @@ def main():
 
     # Load the dataset for the experiment
     # Available options: "MNIST", "FashionMNIST", "CIFAR10", None, "wine_quality"
-    dataset = "wine_quality"
+    dataset = "MNIST"
 
     # Load the dataset and split into training, validation, and test sets
     z_train, y_train, z_val, y_val, z_test, y_test = load_data(dataset, reduce_size=False)
     
     # Build the Neural Network model based on set input parameters
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=2, hidden_layers=(network_structure))
+    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size, hidden_layers=(network_structure))
 
     # Initialize particles for the SVGD algorithm
     prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
@@ -90,7 +91,7 @@ def main():
             ) 
     if batch_size != "Full":
         # Create minibatches
-        num_batches = len(y_train) // batch_size#hier gerade z_train ersettz
+        num_batches = len(z_train) // batch_size
         z_train = jnp.array_split(z_train, num_batches)
         y_train = jnp.array_split(y_train, num_batches)
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking

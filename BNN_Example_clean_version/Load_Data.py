@@ -35,7 +35,7 @@ def load_real_world_data(dataset_name):
     
     return x, y
 
-def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_points = 10000,rng_key=None, true_function=None):
+def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_points = 10000,rng_key=None, true_function=None, input_dimension=2):
     key = jax.random.PRNGKey(0)
     
     if dataset is None:
