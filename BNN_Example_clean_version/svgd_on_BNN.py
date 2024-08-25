@@ -8,7 +8,7 @@ from tqdm import tqdm
 from BNN_Model import build_model
 from get_posteriori import logp_unnormalized_posterior_mulitnomial, logp_unnormalized_posterior_regression
 from Load_Data import load_data
-from plot_mse import plot_and_save_accuracy, plot_mse
+from BNN_Example_clean_version.plots.plot_mse import plot_and_save_accuracy, plot_mse
 
 
 def main():
