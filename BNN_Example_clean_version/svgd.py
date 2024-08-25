@@ -5,11 +5,13 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from validation_and_evaluation import evaluate_particles_regression, evaluate_particles
+from validation_and_evaluation import evaluate_particles
 
 NUM_ITERATIONS = 30
-# Number of warm-up iterations before starting early stopping
+# Early stopping parameters
 WARM_UP_ITERATIONS = 150
+PATIENCE = 100
+MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 # Learning rate schedule with exponential_decay for the optimizer if needed
 INITIAL_LEARNING_RATE = 0.05
@@ -17,7 +19,7 @@ DECAY_RATE = 0.95  # Learning rate decay rate
 DECAY_STEPS = 100  # Learning rate decay steps
 
 
-def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key, regression):
+def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     nnet_model, tree_def, param_vec = nn_model
 
@@ -32,7 +34,7 @@ def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key, regr
         y_train = jnp.array_split(y_train, num_batches)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
-    out, val_accuracies = svgd_training_loop(
+    out, mse, val_accuracies = svgd_training_loop(
         log_p=logp_model,
         initial_position=initial_particles_vector,
         initial_kernel_parameters={"length_scale": KERNEL_LENGTH},
@@ -45,11 +47,9 @@ def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key, regr
         y_train=y_train,
         z_val=z_val,
         y_val=y_val,
-        warm_up_iterations=WARM_UP_ITERATIONS,
         batch_size=batch_size,
-        regression=regression
     )
-    return out, val_accuracies
+    return out, mse, val_accuracies
 
 
 #  Initialize particles for the SVGD algorithm
@@ -78,22 +78,18 @@ def svgd_training_loop(
         y_train,
         z_val,
         y_val,
-        patience=100,
-        min_delta=0.01,
-        warm_up_iterations=300,
         batch_size="Full",
-        regression=False,
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
     state = svgd.init(initial_position, initial_kernel_parameters)
     step = jax.jit(svgd.step)
 
-    val_accuracies = []
     best_val_accuracy = float('-inf')
     patience_counter = 0
     best_state = None
     mse = []
+    val_accuracies = []
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
@@ -108,36 +104,23 @@ def svgd_training_loop(
         else:
             print("Full")
             state = training_step(state, z_train, y_train)
-        if regression:
-            mse.append(evaluate_particles_regression(state, nnet_model=nnet_model, tree_def=tree_def, x_test=z_val,
-                                                     y_test=y_val))
-        else:
-            # Evaluate the particles on the validation set for plotting, early stopping and output during training
-            _, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
-            print(val_accuracy)
-            val_accuracies.append(val_accuracy)
-            ####TODO: Für MSE anpassen
-            # Apply early stopping logic only after warm-up period
-            if iteration >= warm_up_iterations:
-                if val_accuracy > best_val_accuracy + min_delta:
-                    best_val_accuracy = val_accuracy
-                    patience_counter = 0
-                    best_state = state
-                else:
-                    patience_counter += 1
 
-                if patience_counter >= patience:
-                    print(f"Early stopping triggered at iteration {iteration + 1}")
-                    break
+        current_mse, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
+        val_accuracies.append(val_accuracy)
+        mse.append(current_mse)
+
+        best_state, best_val_accuracy, patience_counter = check_for_early_stopping(val_accuracy, best_val_accuracy,
+                                                                                   iteration, state, best_state,
+                                                                                   patience_counter)
+        if patience_counter >= PATIENCE:
+            print(f"Early stopping triggered at iteration {iteration + 1}")
+            break
 
     # If we didn't trigger early stopping, make sure we return the best state
     if best_state is None:
         best_state = state
 
-    if regression:
-        return best_state, mse
-    else:
-        return best_state, val_accuracies
+    return best_state, mse, val_accuracies
 
 
 def get_adam_optimizer():
@@ -152,3 +135,16 @@ def get_adam_optimizer():
     # optimizer = adam(0.01)
 
     return adam(learning_rate_schedule)
+
+
+def check_for_early_stopping(val_accuracy, best_val_accuracy, iteration, state, best_state, patience_counter):
+    # Apply early stopping logic only after warm-up period
+    if iteration >= WARM_UP_ITERATIONS:
+        if val_accuracy > best_val_accuracy + MIN_DELTA:
+            best_val_accuracy = val_accuracy
+            patience_counter = 0
+            best_state = state
+        else:
+            patience_counter += 1
+            return None, float('-inf'), patience_counter
+    return best_state, best_val_accuracy, patience_counter
