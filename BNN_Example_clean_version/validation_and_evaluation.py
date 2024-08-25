@@ -1,41 +1,33 @@
 import jax
 import jax.numpy as jnp
 
+from BNN_Example_clean_version.plots.plot_mse import plot_mse
+
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
-def evaluate_particles(out, nnet_model, tree_def, x_test, y_test):
-    num_particles = len(out.particles)
-    all_predictions = []
-
-    for i in range(num_particles):
-        particle_params = tree_def(out.particles[i])
-        logits = nnet_model.apply(particle_params, x_test)
-        probabilities = jax.nn.softmax(logits, axis=-1)
-        all_predictions.append(probabilities)
-
-    all_predictions = jnp.stack(all_predictions, axis=0)
-    averaged_predictions = jnp.mean(all_predictions, axis=0)
-    predicted_classes = jnp.argmax(averaged_predictions, axis=-1)
-    accuracy = jnp.mean(predicted_classes == y_test)
-
-    return averaged_predictions, accuracy
+def evaluate_particles(out, nnet_model, tree_def, x_input, true_output):
+    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), x_input))(out.particles)
+    mse = get_mse(predictions.squeeze(), true_output)
+    averaged_precision = precisions.squeeze().mean(0)
+    print(f"Validation accuracy: {averaged_precision}, mean squared error: {mse}")
+    return mse, averaged_precision
 
 
-def evaluate_mse_on_test_data(particles, z_test, y_test, nnet_model, tree_def):
+def evaluate_mse_on_test_data(particles, x_input, true_output, nnet_model, tree_def):
     # Average predictions across particles
-    predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), z_test)[:, 0])(particles).mean(0)
-    mse = jnp.mean((predictions - y_test) ** 2)
-    return mse
+    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), x_input))(particles)
+    mse = get_mse(predictions.squeeze(), true_output)
 
-
-def evaluate_particles_regression(out, nnet_model, tree_def, x_test, y_test):
-    predictions = jax.vmap(lambda p: nnet_model.apply(tree_def(p), x_test)[:, 0])(out.particles).mean(0)
-    mse = jnp.mean((predictions - y_test) ** 2)
-
-    print(f"Validation MSE: {mse}")
     jax.debug.print("Prediction[1:5]: {}", predictions[1:5])
-    jax.debug.print("Test[1:5]: {}", y_test[1:5])
-    jax.debug.print("Test[1:5]: {}", y_test.max())
-    jax.debug.print("Test[1:5]: {}", y_test.min())
+    jax.debug.print("Test[1:5]: {}", true_output[1:5])
+    jax.debug.print("Test max: {}", true_output.max())
+    jax.debug.print("Test min: {}", true_output.min())
 
+    print(f"Test MSE: {mse}")
+    plot_mse(precisions)
+    plot_mse(mse)
+
+
+def get_mse(predictions, true_output):
+    mse = jnp.mean((predictions.mean(0) - true_output) ** 2)
     return mse

@@ -1,6 +1,8 @@
 import flax.linen as nn
 from typing import Sequence
 from jax.flatten_util import ravel_pytree
+import jax
+import jax.numpy as jnp
 
 
 class SimpleCNN(nn.Module):
@@ -48,6 +50,7 @@ class FlexibleSimpleNN(nn.Module):
     activation: callable = nn.relu
     kernel_init: callable = nn.initializers.glorot_uniform()  # nn.initializers.lecun_normal()
     bias_init: callable = nn.initializers.zeros
+    use_for_regression: bool = False
 
     @nn.compact
     def __call__(self, *inputs):
@@ -69,14 +72,24 @@ class FlexibleSimpleNN(nn.Module):
                      bias_init=self.bias_init)(x)
         return x.squeeze(-1) if self.output_size == 1 else x
 
+    def predict(self, weights, x_input):
+        if self.use_for_regression:
+            output = self.apply(weights, x_input)
+            prediction, precision = jnp.split(output, 2, axis=-1)
+        else:
+            predictions = self.apply(weights, x_input)
+            precision = jax.nn.softmax(predictions, axis=-1)
+        return prediction, precision
+
 
 def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
-                bias_init=nn.initializers.zeros, use_CNN=False):
+                bias_init=nn.initializers.zeros, use_CNN=False, use_for_regression=False):
     if use_CNN:
         nnet_model = SimpleCNN()
     else:
-        nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init)
+        nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
+                                      use_for_regression)
 
     init_param = nnet_model.init(key, x_train)
     param_vec, tree_def = ravel_pytree(init_param)
