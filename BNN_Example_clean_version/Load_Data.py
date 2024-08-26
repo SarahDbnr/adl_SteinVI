@@ -42,8 +42,6 @@ def load_data(dataset, reduce_size=False):
         (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
         x_train = x_train.astype('float32') / 255.0
         x_test = x_test.astype('float32') / 255.0
-        x_train = x_train.astype('float32') / 255.0
-        x_test = x_test.astype('float32') / 255.0
         # Split training data into train and validation sets
         val_size = int(len(x_train) * VAL_SPLIT)
         x_val, y_val = x_train[-val_size:], y_train[-val_size:]

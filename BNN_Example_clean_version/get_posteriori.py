@@ -4,6 +4,31 @@ import jax
 from jax.scipy.stats import norm
 
 
+def get_posteriori(nnet_model, tree_def, prior_mu, regression):
+    if regression:
+        @jax.jit
+        def logp_model(params, dz, dy):
+            return logp_unnormalized_posterior_regression(
+                params,
+                nnet_model=nnet_model,
+                dz=dz,
+                dy=dy,
+                treedef=tree_def,
+            )
+    else:
+        @jax.jit
+        def logp_model(params, dz, dy):
+            return logp_unnormalized_posterior_mulitnomial(
+                params,
+                nnet_model=nnet_model,
+                dz=dz,
+                dy=dy,
+                prior_mu=prior_mu,
+                treedef=tree_def,
+            )
+    return logp_model
+
+
 def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
     # Calculate log prior using Gamma distribution
     log_prior = jnp.sum(norm.logpdf(params, loc=0, scale=1))
@@ -21,7 +46,7 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
     return log_prior + log_likelihood + l2_loss
 
 
-#jax.jit # TODO why cant we use jax.jit
+# jax.jit # TODO why cant we use jax.jit
 def logp_unnormalized_posterior_mulitnomial(params, dz, dy, prior_mu, nnet_model, treedef):
     # Calculate the log-prior (Gaussian prior on the weights)
     log_prior = jnp.sum(stats.norm.logpdf(params, prior_mu, 1))
@@ -39,19 +64,3 @@ def logp_unnormalized_posterior_mulitnomial(params, dz, dy, prior_mu, nnet_model
     # Calculate the log unnormalized posterior
     log_unnormalized_posterior = log_prior + log_likelihood
     return log_unnormalized_posterior
-
-
-# Helper function to create a jitted version of the log posterior
-def make_jitted_logp(nnet_model, tree_def, z_train, y_train, prior_mu):
-    @jax.jit
-    def jitted_logp(params):
-        return logp_unnormalized_posterior_mulitnomial(
-            params,
-            dz=z_train,
-            dy=y_train,
-            prior_mu=prior_mu,
-            nnet_model=nnet_model,
-            treedef=tree_def
-        )
-
-    return jitted_logp
