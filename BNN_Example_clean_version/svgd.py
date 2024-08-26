@@ -5,7 +5,7 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from validation_and_evaluation import evaluate_particles
+from validation_and_evaluation import get_mse_and_accuracy_over_predictions
 from BNN_Model import build_model
 from get_posteriori import get_posteriori, logp_unnormalized_posterior_regression, logp_unnormalized_posterior_mulitnomial
 
@@ -117,7 +117,7 @@ def svgd_training_loop(
             print("Full")
             state = training_step(state, z_train, y_train)
 
-        current_mse, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val, regression)
+        current_mse, val_accuracy = get_mse_and_accuracy_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
         val_accuracies.append(val_accuracy)
         mse.append(current_mse)
 
