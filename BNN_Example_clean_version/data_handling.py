@@ -2,10 +2,13 @@ VAL_SPLIT = 0.1
 FRACTION = 0.1
 
 
-def apply_data_settings_keras(new_dataset):
+def apply_data_settings_keras(new_dataset, with_flattening):
     (x_train, y_train), (x_test, y_test) = new_dataset
     x_train = x_train.astype('float32') / 255.0
     x_test = x_test.astype('float32') / 255.0
+    if with_flattening:
+        y_train = y_train.flatten()
+        y_test = y_test.flatten()
     # Split training data into train and validation sets
     val_size = int(len(x_train) * VAL_SPLIT)
     x_val, y_val = x_train[-val_size:], y_train[-val_size:]
