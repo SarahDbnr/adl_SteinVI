@@ -49,10 +49,10 @@ def load_data(dataset, reduce_size=False, val_split=0.1, fraction=0.1, num_point
 
         # Generate random input data within the specified range
         key, subkey = jax.random.split(key)
-        x_train = jax.random.uniform(subkey, shape=(num_train, input_dimension), minval=range[0], maxval=range[1])
+        x_train = jax.random.uniform(subkey, shape=(num_train, input_dimension), minval=0, maxval=1)
 
         key, subkey = jax.random.split(key)
-        x_test = jax.random.uniform(subkey, shape=(num_test, input_dimension), minval=range[0], maxval=range[1])
+        x_test = jax.random.uniform(subkey, shape=(num_test, input_dimension), minval=0, maxval=1)
 
         # Generate output data using the true function
         y_train = true_function(x_train)
