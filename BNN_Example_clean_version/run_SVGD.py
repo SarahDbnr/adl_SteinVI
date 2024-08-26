@@ -43,9 +43,25 @@ def run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output
 
 def run_MNIST():
     mnist = tf.keras.datasets.mnist
-    dataset = apply_data_settings_keras(mnist.load_data())
+    dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
 
-    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=100,
+    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=2,
+                                batch_size=300)
+
+
+def run_FashionMNIST():
+    fashion_mnist = tf.keras.datasets.fashion_mnist
+    dataset = apply_data_settings_keras(fashion_mnist.load_data(), with_flattening=False)
+
+    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=2,
+                                batch_size=300)
+
+
+def run_CIFAR10():
+    cifar10 = tf.keras.datasets.cifar10
+    dataset = apply_data_settings_keras(cifar10.load_data(), with_flattening=True)
+
+    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=2,
                                 batch_size=3000)
 
 
