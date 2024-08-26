@@ -1,5 +1,5 @@
 import jax
-from Load_Data import print_data_information, VAL_SPLIT
+from data_handling import print_data_information, VAL_SPLIT
 import math
 
 
@@ -10,7 +10,8 @@ def true_function(x):
     return mean_outputs
 
 
-def get_regression_toy_example(num_points, key, input_dimension=2):
+def get_regression_toy_example(num_points, input_dimension=2):
+    key = jax.random.PRNGKey(1)
     # Split the number of points into training and testing
     num_train = math.floor(0.8 * num_points)
     num_test = num_points - num_train
@@ -33,3 +34,5 @@ def get_regression_toy_example(num_points, key, input_dimension=2):
     print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
 
     return x_train, y_train, x_val, y_val, x_test, y_test
+
+

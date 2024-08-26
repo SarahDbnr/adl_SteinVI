@@ -46,7 +46,6 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
     return log_prior + log_likelihood + l2_loss
 
 
-# jax.jit # TODO why cant we use jax.jit
 def logp_unnormalized_posterior_mulitnomial(params, dz, dy, prior_mu, nnet_model, treedef):
     # Calculate the log-prior (Gaussian prior on the weights)
     log_prior = jnp.sum(stats.norm.logpdf(params, prior_mu, 1))

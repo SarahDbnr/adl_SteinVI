@@ -7,7 +7,7 @@ import jax.numpy as jnp
 
 from validation_and_evaluation import get_mse_and_accuracy_over_predictions
 from BNN_Model import build_model
-from get_posteriori import get_posteriori, logp_unnormalized_posterior_regression, logp_unnormalized_posterior_mulitnomial
+from get_posteriori import get_posteriori
 
 NUM_ITERATIONS = 30
 # Early stopping parameters
@@ -23,7 +23,7 @@ DECAY_STEPS = 100  # Learning rate decay steps
 
 def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
-
+    # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
                                                   hidden_layers=network_structure,
                                                   use_for_regression=regression)
