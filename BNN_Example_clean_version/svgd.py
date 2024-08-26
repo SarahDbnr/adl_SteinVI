@@ -6,6 +6,8 @@ import jax
 import jax.numpy as jnp
 
 from validation_and_evaluation import evaluate_particles
+from BNN_Model import build_model
+from get_posteriori import get_posteriori, logp_unnormalized_posterior_regression, logp_unnormalized_posterior_mulitnomial
 
 NUM_ITERATIONS = 30
 # Early stopping parameters
@@ -19,13 +21,18 @@ DECAY_RATE = 0.95  # Learning rate decay rate
 DECAY_STEPS = 100  # Learning rate decay steps
 
 
-def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
-    nnet_model, tree_def, param_vec = nn_model
+
+    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
+                                                  hidden_layers=network_structure,
+                                                  use_for_regression=regression)
 
     # Initialize particles for the SVGD algorithm
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
     prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
+
+    logp_model = get_posteriori(nnet_model, tree_def, prior_mu, regression)
 
     if batch_size != "Full":
         # Create minibatches
@@ -48,8 +55,12 @@ def run_svgd(dataset, batch_size, nn_model, logp_model, num_particles, key):
         z_val=z_val,
         y_val=y_val,
         batch_size=batch_size,
+        regression=regression,
     )
-    return out, mse, val_accuracies
+
+    # TODO: plot mse, val_accuracies
+
+    return out, z_test, y_test, nnet_model, tree_def
 
 
 #  Initialize particles for the SVGD algorithm
@@ -79,6 +90,7 @@ def svgd_training_loop(
         z_val,
         y_val,
         batch_size="Full",
+        regression=False,
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
@@ -105,7 +117,7 @@ def svgd_training_loop(
             print("Full")
             state = training_step(state, z_train, y_train)
 
-        current_mse, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val)
+        current_mse, val_accuracy = evaluate_particles(state, nnet_model, tree_def, z_val, y_val, regression)
         val_accuracies.append(val_accuracy)
         mse.append(current_mse)
 

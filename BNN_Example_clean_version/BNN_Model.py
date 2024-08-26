@@ -79,6 +79,7 @@ class FlexibleSimpleNN(nn.Module):
         else:
             predictions = self.apply(weights, x_input)
             precision = jax.nn.softmax(predictions, axis=-1)
+            prediction = jnp.argmax(predictions, axis=-1)
         return prediction, precision
 
 
