@@ -1,6 +1,8 @@
 from optax import adam, exponential_decay
-import blackjax
-from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
+#import blackjax
+#from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
+from local_SVGD import rbf_kernel, update_median_heuristic
+import local_SVGD
 from tqdm import tqdm
 import jax
 import jax.numpy as jnp
@@ -93,7 +95,7 @@ def svgd_training_loop(
         regression=False,
 ):
     grad_log_posterior = jax.grad(log_p)
-    svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
+    svgd = local_SVGD.as_top_level_api(grad_log_posterior, optimizer, kernel, update_median_heuristic)
     state = svgd.init(initial_position, initial_kernel_parameters)
     step = jax.jit(svgd.step)
 
