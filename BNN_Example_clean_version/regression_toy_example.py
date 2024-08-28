@@ -3,11 +3,13 @@ from data_handling import print_data_information, VAL_SPLIT
 import math
 
 
-def true_function(x):
+def generate_data(x):
+    key = jax.random.PRNGKey(1)
     x1 = x[:, 0]
     x2 = x[:, 1]
-    mean_outputs = x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
-    return mean_outputs
+    function_outputs = x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
+    noise = jax.random.normal(key, shape=function_outputs.shape)*x1
+    return function_outputs + noise
 
 
 def get_regression_toy_example(num_points, input_dimension=2):
@@ -24,8 +26,8 @@ def get_regression_toy_example(num_points, input_dimension=2):
     x_test = jax.random.uniform(subkey, shape=(num_test, input_dimension), minval=0, maxval=1)
 
     # Generate output data using the true function
-    y_train = true_function(x_train)
-    y_test = true_function(x_test)
+    y_train = generate_data(x_train)
+    y_test = generate_data(x_test)
 
     val_size = math.ceil(len(x_train) * VAL_SPLIT)
     x_val, y_val = x_train[-val_size:], y_train[-val_size:]
