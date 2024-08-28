@@ -23,7 +23,7 @@ DECAY_RATE = 0.95  # Learning rate decay rate
 DECAY_STEPS = 100  # Learning rate decay steps
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, pen_lambda=0):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -32,9 +32,9 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     # Initialize particles for the SVGD algorithm
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
-    prior_mu, prior_prec, initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
+    initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
-    logp_model = get_posteriori(nnet_model, tree_def, prior_mu, regression)
+    logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
 
     if batch_size != "Full":
         # Create minibatches
@@ -67,14 +67,11 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
 #  Initialize particles for the SVGD algorithm
 def initialize_particles(param_vec, rng_key_init, num_particles):
-    inital_param_len = len(param_vec)
-    prior_mu = jnp.zeros(inital_param_len)
-    prior_prec = jnp.ones(inital_param_len)
     initial_particles_vector = jax.random.normal(
         rng_key_init,
-        shape=(num_particles,) + prior_mu.shape
+        shape=(num_particles,) + param_vec.shape
     )
-    return prior_mu, prior_prec, initial_particles_vector
+    return initial_particles_vector
 
 
 # SVGD training loop with early stopping
@@ -112,13 +109,14 @@ def svgd_training_loop(
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != "Full":
-            print("Batching")
+            print("\n Batching")
             for batch_idx in range(len(y_train)):
                 state = training_step(state, z_train[batch_idx], y_train[batch_idx])
         else:
-            print("Full")
+            print("\n Full")
             state = training_step(state, z_train, y_train)
 
+        # TODO: Check time effort for mse and accuracy calc and use as option only
         current_mse, val_accuracy = get_mse_and_accuracy_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
         val_accuracies.append(val_accuracy)
         mse.append(current_mse)
@@ -137,7 +135,8 @@ def svgd_training_loop(
     return best_state, mse, val_accuracies
 
 
-def get_adam_optimizer():
+def get_adam_optimizer(): # TODO: exponential decay nur als option default const or less drastic decay then exponential
+    # stepwise decay check how high decay rate should be
     learning_rate_schedule = exponential_decay(
         init_value=INITIAL_LEARNING_RATE,
         transition_steps=DECAY_STEPS,

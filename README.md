@@ -1,9 +1,14 @@
+# Collaborative Work
+This repository is a collaborative work by **Sarah Deubner**, **Kilian Runnwerth**, and **Luke-Liam Bergmeier**.
+
 # Introduction
-This repository uses a Stein VI approach to apply Bayesian Inference via Variational Gradient Descent to 
-optimize Bayesian Neural Networks.
-Based on the ideas of this paper: https://urldefense.com/v3/__https://arxiv.org/abs/1608.04471__;!!JTSHVUr6R1OOzg!INusezDlEUF5xiznfrs_AlkUNTt5jFRpBSsQILS5AT0ewEB5KRz0D8O-6uQqOJzUj61HMRWk471962hhKzJk2EY$ <br><br>
-This repository includes the following topics:
-1. Examples for bayesian neural networks using the Blackjax library where svgd are already implemented
+This repository employs a Stein Variational Inference (Stein VI) approach to apply Bayesian Inference via Variational Gradient Descent (VGD) for optimizing Bayesian Neural Networks (BNNs). The work is based on the ideas presented in the following paper: 
+[Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm](https://arxiv.org/abs/1608.04471).
+
+### Included Topics
+This repository includes the following:
+1. Examples of Bayesian Neural Networks using the Blackjax library, where SVGD is already implemented.
+2. Implementation of advanced SVGD algorithms such as sSVGD, SVN, sSVN. Integrated in the blackjax package. # TODO
 
 # Installation
 1. Download and install python 3.11

@@ -79,7 +79,7 @@ class FlexibleSimpleNN(nn.Module):
         else:
             predictions = self.apply(weights, x_input)
             precision = jax.nn.softmax(predictions, axis=-1)
-            prediction = jnp.argmax(predictions, axis=-1)
+            prediction = jnp.argmax(precision, axis=-1)
         return prediction, precision
 
 
@@ -87,7 +87,7 @@ def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn
                 kernel_init=nn.initializers.lecun_normal(),
                 bias_init=nn.initializers.zeros, use_CNN=False, use_for_regression=False):
     if use_CNN:
-        nnet_model = SimpleCNN()
+        nnet_model = SimpleCNN() # TODO: doesnt run through validation and evaluation, has no predict
     else:
         nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
                                       use_for_regression)
