@@ -92,4 +92,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    run_MNIST()

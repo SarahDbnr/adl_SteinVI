@@ -10,14 +10,14 @@ def get_mse_and_accuracy_over_predictions(out, nnet_model, tree_def, x_input, tr
     if model_regression:
         mse = calculate_mse(predictions.squeeze(), true_output)
         averaged_precision = precisions.squeeze().mean()
-        print(f"Averaged precision: {averaged_precision}, mean squared error: {mse}")
+        print(f"\nAveraged precision: {averaged_precision}, mean squared error: {mse}")
         return mse, averaged_precision
     else:
         # TODO: Set order precisions, mean, argmax or precisions, argmax, mean
         averaged_precision = precisions.squeeze().mean(0)
         predicted_classes = jnp.argmax(averaged_precision, axis=-1)
         accuracy = jnp.mean(predicted_classes == true_output)
-        print(f"Validation accuracy: {accuracy}")
+        print(f"\nValidation accuracy: {accuracy}")
         return None, accuracy
 
 
