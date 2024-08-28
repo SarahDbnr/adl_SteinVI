@@ -7,6 +7,10 @@ optax = "*"
 matplotlib = "*"
 blackjax = "*"
 numpy = "*"
+tqdm = "*"
+typing = "*"
+scikit-learn = "*"
+tensorflow = "*"
 
 [dev-packages]
 

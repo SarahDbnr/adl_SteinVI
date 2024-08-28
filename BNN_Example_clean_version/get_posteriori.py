@@ -4,7 +4,7 @@ import jax
 from jax.scipy.stats import norm
 
 
-def get_posteriori(nnet_model, tree_def, prior_mu, regression):
+def get_posteriori(nnet_model, tree_def, regression, pen_lambda=0):
     if regression:
         @jax.jit
         def logp_model(params, dz, dy):
@@ -14,6 +14,7 @@ def get_posteriori(nnet_model, tree_def, prior_mu, regression):
                 dz=dz,
                 dy=dy,
                 treedef=tree_def,
+                pen_lambda=pen_lambda,
             )
     else:
         @jax.jit
@@ -23,32 +24,34 @@ def get_posteriori(nnet_model, tree_def, prior_mu, regression):
                 nnet_model=nnet_model,
                 dz=dz,
                 dy=dy,
-                prior_mu=prior_mu,
                 treedef=tree_def,
             )
     return logp_model
 
 
-def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
-    # Calculate log prior using Gamma distribution
+def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef, pen_lambda):
+    # Calculate the log-prior (Gaussian prior on the weights)
     log_prior = jnp.sum(norm.logpdf(params, loc=0, scale=1))
 
     # Get predictions from the neural network
     prediction_mean, prediction_var_score = jnp.split(nnet_model.apply(treedef(params), dz), 2, axis=-1)
     location = prediction_mean.squeeze()
-    scale = jnp.exp(0.000001 * prediction_var_score.squeeze())  # jax.nn.sigmoid(prediction_var_score.squeeze()) + 1
+    scale = jnp.exp(0.000001 * prediction_var_score.squeeze())
+    # TODO: Change Link function
 
     log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
 
     # Regularize the NNET
-    l2_loss = 0.1 * sum(jnp.sum(jnp.square(p)) for p in jax.tree_util.tree_leaves(params))
+    if pen_lambda != 0:
+        l2_loss = pen_lambda * sum(jnp.sum(jnp.square(p)) for p in jax.tree_util.tree_leaves(params))
+        return log_prior + log_likelihood + l2_loss
 
-    return log_prior + log_likelihood + l2_loss
+    return log_prior + log_likelihood
 
 
-def logp_unnormalized_posterior_mulitnomial(params, dz, dy, prior_mu, nnet_model, treedef):
+def logp_unnormalized_posterior_mulitnomial(params, dz, dy, nnet_model, treedef):
     # Calculate the log-prior (Gaussian prior on the weights)
-    log_prior = jnp.sum(stats.norm.logpdf(params, prior_mu, 1))
+    log_prior = jnp.sum(stats.norm.logpdf(params, loc=0, scale=1))
 
     # Ensure dy is flattened
     dy = dy.ravel()

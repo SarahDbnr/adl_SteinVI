@@ -2,10 +2,9 @@ import jax
 import jax.numpy as jnp
 
 VAL_SPLIT = 0.1
-FRACTION = 0.1
 
 
-def apply_data_settings_keras(new_dataset, with_flattening):
+def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1):
     (x_train, y_train), (x_test, y_test) = new_dataset
     x_train = x_train.astype('float32') / 255.0
     x_test = x_test.astype('float32') / 255.0
@@ -19,10 +18,13 @@ def apply_data_settings_keras(new_dataset, with_flattening):
 
     print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
 
+    if fraction < 1:
+        x_train, y_train, x_test, y_test = reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test)
+
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
-def apply_data_settings_sklearn(new_dataset):
+def apply_data_settings_sklearn(new_dataset, fraction=1):
     key = jax.random.PRNGKey(1)
     x = new_dataset.data
     y = new_dataset.target
@@ -41,10 +43,10 @@ def apply_data_settings_sklearn(new_dataset):
 
     print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
 
-    return x_train, y_train, x_val, y_val, x_test, y_test
+    if fraction < 1:
+        x_train, y_train, x_test, y_test = reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test)
 
-# TODO: if reduce_size: x_train, y_train, x_test, y_test = reduce_size_of_dataframe(FRACTION, x_train, x_test,
-#  y_train, y_test)
+    return x_train, y_train, x_val, y_val, x_test, y_test
 
 
 def reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test):

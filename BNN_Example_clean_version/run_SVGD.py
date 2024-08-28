@@ -8,13 +8,12 @@ from data_handling import apply_data_settings_sklearn, apply_data_settings_keras
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine
 
 
-def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size=2, num_particles=100, batch_size=20):
-    # Set random seed for reproducibility
+def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size=2, num_particles=100, batch_size=20, pen_lambda=0):
     key = jax.random.PRNGKey(1)
 
     out, z_test, y_test, nnet_model, tree_def = train_with_svgd(dataset, output_size,
                                                                 network_structure, batch_size, num_particles,
-                                                                key, regression=True)
+                                                                key, regression=True, pen_lambda=pen_lambda)
 
     print("For Test Data:")
     mse, accuracy = get_mse_and_accuracy_over_predictions(out, nnet_model, tree_def, z_test, y_test,
@@ -25,7 +24,6 @@ def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size
 
 def run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=2,
                                 batch_size=100):
-    # Set random seed for reproducibility
     key = jax.random.PRNGKey(1)
 
     out, z_test, y_test, nnet_model, tree_def = train_with_svgd(dataset, output_size,
@@ -73,7 +71,7 @@ def run_california_housing(): #TODO: Analyse, dosnt work properly for all stages
     california_housing = fetch_california_housing()
     dataset = apply_data_settings_sklearn(california_housing)
 
-    run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size=2, num_particles=100,
+    run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size=2, num_particles=2,
                            batch_size=2000)
 
 
@@ -94,4 +92,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_MNIST()
+    run_regression_toy_example()
