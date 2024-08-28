@@ -34,11 +34,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
 
-    if batch_size != "Full":
-        # Create minibatches
-        num_batches = len(z_train) // batch_size
-        z_train = jnp.array_split(z_train, num_batches)
-        y_train = jnp.array_split(y_train, num_batches)
+    z_train, y_train = crate_minibatches(batch_size, z_train, y_train)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, mse, val_accuracies = svgd_training_loop(
@@ -63,15 +59,6 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
     return out, z_test, y_test, nnet_model, tree_def
 
 
-#  Initialize particles for the SVGD algorithm
-def initialize_particles(param_vec, rng_key_init, num_particles):
-    initial_particles_vector = jax.random.normal(
-        rng_key_init,
-        shape=(num_particles,) + param_vec.shape
-    )
-    return initial_particles_vector
-
-
 # SVGD training loop with early stopping
 def svgd_training_loop(
         log_p,
@@ -86,7 +73,7 @@ def svgd_training_loop(
         y_train,
         z_val,
         y_val,
-        batch_size="Full",
+        batch_size,
         regression=False,
 ):
     grad_log_posterior = jax.grad(log_p)
@@ -106,16 +93,15 @@ def svgd_training_loop(
         return step(state, dz=dz, dy=dy)
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
-        if batch_size != "Full":
-            print("\n Batching")
-            for batch_idx in range(len(y_train)):
-                state = training_step(state, z_train[batch_idx], y_train[batch_idx])
+        if batch_size != 0:
+            for training_batch_input, training_batch_output in zip(z_train, y_train):
+                state = training_step(state, training_batch_input, training_batch_output)
         else:
-            print("\n Full")
             state = training_step(state, z_train, y_train)
 
         # TODO: Check time effort for mse and accuracy calc and use as option only
-        current_mse, val_accuracy = get_mse_and_accuracy_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
+        current_mse, val_accuracy = get_mse_and_accuracy_over_predictions(state, nnet_model, tree_def, z_val, y_val,
+                                                                          regression)
         val_accuracies.append(val_accuracy)
         mse.append(current_mse)
 
@@ -133,7 +119,31 @@ def svgd_training_loop(
     return best_state, mse, val_accuracies
 
 
-def get_adam_optimizer(): # TODO: exponential decay nur als option default const or less drastic decay then exponential
+def initialize_particles(param_vec, rng_key_init, num_particles):
+    initial_particles_vector = jax.random.normal(
+        rng_key_init,
+        shape=(num_particles,) + param_vec.shape
+    )
+    return initial_particles_vector
+
+
+def crate_minibatches(batch_size, input_data, output_data):
+    if batch_size != 0:
+        if batch_size is None:
+            num_batches = 10
+        elif len(input_data) < batch_size:
+            num_batches = 10
+            print("\n WARNING: Batch size to large default batch size will be used!")
+        else:
+            num_batches = len(input_data) // batch_size
+        input_data = jnp.array_split(input_data, num_batches)
+        output_data = jnp.array_split(output_data, num_batches)
+        print("\n Batching with batch size " + str(len(input_data)))
+        return input_data, output_data
+    return input_data, output_data
+
+
+def get_adam_optimizer():  # TODO: exponential decay nur als option default const or less drastic decay then exponential
     # stepwise decay check how high decay rate should be
     learning_rate_schedule = exponential_decay(
         init_value=INITIAL_LEARNING_RATE,
