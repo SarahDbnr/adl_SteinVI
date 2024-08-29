@@ -20,6 +20,8 @@ INITIAL_LEARNING_RATE = 0.05
 DECAY_RATE = 0.95  # Learning rate decay rate
 DECAY_STEPS = 100  # Learning rate decay steps
 
+DEFAULT_NUM_BATCHES = 10
+
 
 def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, pen_lambda=0):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -130,15 +132,15 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
 def crate_minibatches(batch_size, input_data, output_data):
     if batch_size != 0:
         if batch_size is None:
-            num_batches = 10
+            num_batches = DEFAULT_NUM_BATCHES
         elif len(input_data) < batch_size:
-            num_batches = 10
+            num_batches = DEFAULT_NUM_BATCHES
             print("\n WARNING: Batch size to large default batch size will be used!")
         else:
             num_batches = len(input_data) // batch_size
         input_data = jnp.array_split(input_data, num_batches)
         output_data = jnp.array_split(output_data, num_batches)
-        print("\n Batching with batch size " + str(len(input_data)))
+        print("\n Batching with batch size " + str(len(input_data[0])))
         return input_data, output_data
     return input_data, output_data
 
