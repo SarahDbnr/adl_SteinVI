@@ -5,7 +5,7 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from validation_and_evaluation import get_mse_and_accuracy_over_predictions
+from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from BNN_Model import build_model
 from get_posteriori import get_posteriori
 
@@ -37,7 +37,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
     logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
-    out, mse, val_accuracies = svgd_training_loop(
+    out, evaluation_metrics_1, evaluation_metrics_2 = svgd_training_loop(
         log_p=logp_model,
         initial_position=initial_particles_vector,
         initial_kernel_parameters={"length_scale": KERNEL_LENGTH},
@@ -56,7 +56,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     # TODO: plot mse, val_accuracies
 
-    return out, z_test, y_test, nnet_model, tree_def
+    return out, z_test, y_test, nnet_model, tree_def, evaluation_metrics_1,evaluation_metrics_2
 
 
 # SVGD training loop with early stopping
@@ -81,11 +81,11 @@ def svgd_training_loop(
     state = svgd.init(initial_position, initial_kernel_parameters)
     step = jax.jit(svgd.step)
 
-    best_val_accuracy = float('-inf')
+    best_evaluation_metrics_1 = float('-inf')
     patience_counter = 0
     best_state = None
-    mse = []
-    val_accuracies = []
+    evaluation_metrics_1 = [] #mse and accuracy
+    evaluation_metrics_2 = [] #val_accuracies
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
@@ -102,14 +102,15 @@ def svgd_training_loop(
             state = training_step(state, z_train, y_train)
 
         # TODO: Check time effort for mse and accuracy calc and use as option only
-        current_mse, val_accuracy = get_mse_and_accuracy_over_predictions(state, nnet_model, tree_def, z_val, y_val,
-                                                                          regression)
-        val_accuracies.append(val_accuracy)
-        mse.append(current_mse)
-
-        best_state, best_val_accuracy, patience_counter = check_for_early_stopping(val_accuracy, best_val_accuracy,
-                                                                                   iteration, state, best_state,
-                                                                                   patience_counter)
+        current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
+        evaluation_metrics_2.append(current_evaluation_metrics_2)
+        evaluation_metrics_1.append(current_evaluation_metrics_1)
+        if regression:
+            print(f"\nMSE_val: {current_evaluation_metrics_1}")
+            print(f"\nPrecision_val: {current_evaluation_metrics_2}")
+        else: 
+            print(f"\nAccuracy: {current_evaluation_metrics_1}")
+        best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1, best_evaluation_metrics_1,
         if patience_counter >= PATIENCE:
             print(f"Early stopping triggered at iteration {iteration + 1}")
             break
@@ -118,7 +119,7 @@ def svgd_training_loop(
     if best_state is None:
         best_state = state
 
-    return best_state, mse, val_accuracies
+    return best_state, evaluation_metrics_1, evaluation_metrics_2
 
 
 def initialize_particles(param_vec, rng_key_init, num_particles):
@@ -165,14 +166,15 @@ def get_adam_optimizer():  # TODO: exponential decay nur als option default cons
 
     return adam(learning_rate_schedule)
 
-def check_for_early_stopping(val_accuracy, best_val_accuracy, iteration, state, best_state, patience_counter):
+
+def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter):
     # Apply early stopping logic only after warm-up period
     if iteration >= WARM_UP_ITERATIONS:
-        if val_accuracy > best_val_accuracy + MIN_DELTA:
-            best_val_accuracy = val_accuracy
+        if val_accuracy > best_evaluation_metrics_1 + MIN_DELTA:
+            best_evaluation_metrics_1 = val_accuracy
             patience_counter = 0
             best_state = state
         else:
             patience_counter += 1
             return None, float('-inf'), patience_counter
-    return best_state, best_val_accuracy, patience_counter
+    return best_state, best_evaluation_metrics_1, patience_counter
