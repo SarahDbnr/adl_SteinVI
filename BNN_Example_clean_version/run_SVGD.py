@@ -34,7 +34,7 @@ def run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output
     print("For Test Data:")
     accuracy_test,_  = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
                                                         model_regression=False)
-    print(f"\Test accuracy: {accuracy_test}")
+    print(f"\nTest accuracy: {accuracy_test}")
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val,num_particles=num_particles,network_structure=network_structure, eval_metric="Accuracy" )
 
 
@@ -94,5 +94,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    #run_MNIST()
-    run_wine_quality()
+    run_MNIST()
