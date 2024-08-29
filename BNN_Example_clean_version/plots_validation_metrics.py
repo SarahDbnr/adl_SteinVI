@@ -1,15 +1,11 @@
-import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-
-import os
-import datetime
 import os
 import datetime
 import matplotlib.pyplot as plt
 
 def plot_and_save_evaluation_metric(evaluation_metric_val,eval_metric, num_particles=None, network_structure=None, kernel_length=None, adam_learning_rate=None,
-                           warm_up_iterations=None, output_folder="plots"):
+                           warm_up_iterations=None, output_folder="svgd_plots"):
     # Create the output folder in the current directory if it doesn't exist
     current_dir = os.getcwd()
     output_path = os.path.join(current_dir, output_folder)
