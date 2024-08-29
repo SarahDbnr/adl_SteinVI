@@ -36,8 +36,6 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
 
-    z_train, y_train = crate_minibatches(batch_size, z_train, y_train)
-
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, mse, val_accuracies = svgd_training_loop(
         log_p=logp_model,
@@ -96,7 +94,9 @@ def svgd_training_loop(
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != 0:
-            for training_batch_input, training_batch_output in zip(z_train, y_train):
+            key = jax.random.PRNGKey(iteration)
+            z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
+            for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
                 state = training_step(state, training_batch_input, training_batch_output)
         else:
             state = training_step(state, z_train, y_train)
@@ -128,8 +128,7 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
     )
     return initial_particles_vector
 
-
-def crate_minibatches(batch_size, input_data, output_data):
+def create_minibatches(batch_size, input_data, output_data, key):
     if batch_size != 0:
         if batch_size is None:
             num_batches = DEFAULT_NUM_BATCHES
@@ -138,12 +137,19 @@ def crate_minibatches(batch_size, input_data, output_data):
             print("\n WARNING: Batch size to large default batch size will be used!")
         else:
             num_batches = len(input_data) // batch_size
+        input_data, output_data = shuffle_paired_data(key, input_data, output_data)
         input_data = jnp.array_split(input_data, num_batches)
         output_data = jnp.array_split(output_data, num_batches)
-        print("\n Batching with batch size " + str(len(input_data[0])))
         return input_data, output_data
     return input_data, output_data
 
+@jax.jit
+def shuffle_paired_data(key, input_data, output_data):
+    num_samples = input_data.shape[0]
+    permutation = jax.random.permutation(key, num_samples)
+    shuffled_input = jnp.take(input_data, permutation, axis=0)
+    shuffled_output = jnp.take(output_data, permutation, axis=0)
+    return shuffled_input, shuffled_output
 
 def get_adam_optimizer():  # TODO: exponential decay nur als option default const or less drastic decay then exponential
     # stepwise decay check how high decay rate should be
@@ -158,7 +164,6 @@ def get_adam_optimizer():  # TODO: exponential decay nur als option default cons
     # optimizer = adam(0.01)
 
     return adam(learning_rate_schedule)
-
 
 def check_for_early_stopping(val_accuracy, best_val_accuracy, iteration, state, best_state, patience_counter):
     # Apply early stopping logic only after warm-up period
