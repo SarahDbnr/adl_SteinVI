@@ -110,7 +110,8 @@ def svgd_training_loop(
             print(f"\nPrecision_val: {current_evaluation_metrics_2}")
         else: 
             print(f"\nAccuracy: {current_evaluation_metrics_1}")
-        best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1, best_evaluation_metrics_1,
+        best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1, best_evaluation_metrics_1,iteration, state, best_state,
+                                                                                   patience_counter)
         if patience_counter >= PATIENCE:
             print(f"Early stopping triggered at iteration {iteration + 1}")
             break
