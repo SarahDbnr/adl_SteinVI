@@ -7,6 +7,7 @@ from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from data_handling import apply_data_settings_sklearn, apply_data_settings_keras
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine
 from plots_validation_metrics import plot_and_save_evaluation_metric
+
 def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size=2, num_particles=100, batch_size=20, pen_lambda=0):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
@@ -16,7 +17,7 @@ def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size
                                                                 key, regression=True, pen_lambda=pen_lambda)
     
     print("For Test Data:")
-    mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
+    mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test, model_regression=True)
     print(f"\nAveraged precision: {averaged_precision_test}, mean squared error: {mse_test}")
     #plot_mse(averaged_precision)
     plot_and_save_evaluation_metric(evaluation_metric_val=mse_val,num_particles=num_particles,network_structure=network_structure, eval_metric="MSE")
@@ -25,7 +26,7 @@ def run_svgd_on_regression(dataset, network_structure=(200, 75, 40), output_size
 
 
 def run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=None):
+                                batch_size=300):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
@@ -33,7 +34,7 @@ def run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output
                                                                 network_structure, batch_size, num_particles,
                                                                 key, regression=False)
 
-    accuracy_test,_  = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
+    accuracy_test,_  = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,model_regression=False)
     print(f"\nTest accuracy: {accuracy_test}")
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val,num_particles=num_particles,network_structure=network_structure, eval_metric="Accuracy" )
 
@@ -90,4 +91,5 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    #run_regression_toy_example()
+    run_MNIST()
