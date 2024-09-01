@@ -25,3 +25,8 @@ choose dataset by running the according function at the bottom of the file, for 
 
 ## Test 
 To run all tests run `pytest tests` !! # TODO: test is file with tests we still need that
+# Parameters for Datasets
+## MNIST
+| **NETWORK_STRUCTURE**            | **NUM_Particals**                                | **Optimizer**  | **Learning Rate**                       | **Batch size**| **Decay Rate**|**Test MSE**|
+| (200, 75, 40) | 12 | exponential-adam |  0.05 | 300 | 0.95 |  0.9758999943733215 |
+
