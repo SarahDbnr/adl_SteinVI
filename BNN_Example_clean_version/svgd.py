@@ -1,4 +1,3 @@
-from optax import adam, exponential_decay
 import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from tqdm import tqdm
@@ -20,7 +19,7 @@ MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer, pen_lambda=0):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -31,7 +30,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
     initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
-    logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
+    logp_model = get_posteriori(nnet_model, tree_def, regression)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, evaluation_metrics_1, evaluation_metrics_2 = svgd_training_loop(
@@ -53,7 +52,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     # TODO: plot mse, val_accuracies
 
-    return out, z_test, y_test, nnet_model, tree_def, evaluation_metrics_1,evaluation_metrics_2
+    return out, z_test, y_test, nnet_model, tree_def, evaluation_metrics_1, evaluation_metrics_2
 
 
 # SVGD training loop with early stopping
@@ -81,8 +80,8 @@ def svgd_training_loop(
     best_evaluation_metrics_1 = float('-inf')
     patience_counter = 0
     best_state = None
-    evaluation_metrics_1 = [] #mse and accuracy
-    evaluation_metrics_2 = [] #val_accuracies
+    evaluation_metrics_1 = []  # mse and accuracy
+    evaluation_metrics_2 = []  # val_accuracies
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
@@ -99,16 +98,23 @@ def svgd_training_loop(
             state = training_step(state, z_train, y_train)
 
         # TODO: Check time effort for mse and accuracy calc and use as option only
-        current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
+        current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
+                                                                                                             nnet_model,
+                                                                                                             tree_def,
+                                                                                                             z_val,
+                                                                                                             y_val,
+                                                                                                             regression)
         evaluation_metrics_2.append(current_evaluation_metrics_2)
         evaluation_metrics_1.append(current_evaluation_metrics_1)
         if regression:
             print(f"\nMSE_val: {current_evaluation_metrics_1}")
             print(f"\nPrecision_val: {current_evaluation_metrics_2}")
-        else: 
+        else:
             print(f"\nAccuracy: {current_evaluation_metrics_1}")
-        best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1, best_evaluation_metrics_1,iteration, state, best_state,
-                                                                                   patience_counter)
+        best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1,
+                                                                                           best_evaluation_metrics_1,
+                                                                                           iteration, state, best_state,
+                                                                                           patience_counter)
         if patience_counter >= PATIENCE:
             print(f"Early stopping triggered at iteration {iteration + 1}")
             break
@@ -127,6 +133,7 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
     )
     return initial_particles_vector
 
+
 def create_minibatches(batch_size, input_data, output_data, key):
     if batch_size != 0:
         if batch_size is None:
@@ -142,6 +149,7 @@ def create_minibatches(batch_size, input_data, output_data, key):
         return input_data, output_data
     return input_data, output_data
 
+
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):
     num_samples = input_data.shape[0]
@@ -149,6 +157,7 @@ def shuffle_paired_data(key, input_data, output_data):
     shuffled_input = jnp.take(input_data, permutation, axis=0)
     shuffled_output = jnp.take(output_data, permutation, axis=0)
     return shuffled_input, shuffled_output
+
 
 def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter):
     # Apply early stopping logic only after warm-up period
