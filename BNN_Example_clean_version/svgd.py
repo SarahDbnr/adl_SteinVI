@@ -10,20 +10,17 @@ from BNN_Model import build_model
 from get_posteriori import get_posteriori
 
 NUM_ITERATIONS = 30
+
+DEFAULT_NUM_BATCHES = 10
+
 # Early stopping parameters
 WARM_UP_ITERATIONS = 150
 PATIENCE = 100
 MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
-# Learning rate schedule with exponential_decay for the optimizer if needed
-INITIAL_LEARNING_RATE = 0.05
-DECAY_RATE = 0.95  # Learning rate decay rate
-DECAY_STEPS = 100  # Learning rate decay steps
-
-DEFAULT_NUM_BATCHES = 10
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, pen_lambda=0):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer, pen_lambda=0):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -42,7 +39,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
         initial_position=initial_particles_vector,
         initial_kernel_parameters={"length_scale": KERNEL_LENGTH},
         kernel=rbf_kernel,
-        optimizer=get_adam_optimizer(),
+        optimizer=optimizer,
         num_iterations=NUM_ITERATIONS,
         nnet_model=nnet_model,
         tree_def=tree_def,
@@ -152,21 +149,6 @@ def shuffle_paired_data(key, input_data, output_data):
     shuffled_input = jnp.take(input_data, permutation, axis=0)
     shuffled_output = jnp.take(output_data, permutation, axis=0)
     return shuffled_input, shuffled_output
-
-def get_adam_optimizer():  # TODO: exponential decay nur als option default const or less drastic decay then exponential
-    # stepwise decay check how high decay rate should be
-    learning_rate_schedule = exponential_decay(
-        init_value=INITIAL_LEARNING_RATE,
-        transition_steps=DECAY_STEPS,
-        decay_rate=DECAY_RATE,
-        staircase=True
-    )  # https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html
-
-    # If you don't want to use a learning rate schedule, you can use a fixed learning rate
-    # optimizer = adam(0.01)
-
-    return adam(learning_rate_schedule)
-
 
 def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter):
     # Apply early stopping logic only after warm-up period
