@@ -5,7 +5,7 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from validation_and_evaluation import get_evaluation_metrics_over_predictions
+from validation_and_evaluation import get_mse_and_accuracy_over_predictions
 from BNN_Model import build_model
 from get_posteriori import get_posteriori
 
@@ -105,7 +105,7 @@ def svgd_training_loop(
         if regression:
             print(f"\nMSE_val: {current_evaluation_metrics_1}")
             print(f"\nPrecision_val: {current_evaluation_metrics_2}")
-        else: 
+        else:
             print(f"\nAccuracy: {current_evaluation_metrics_1}")
         best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1, best_evaluation_metrics_1,iteration, state, best_state,
                                                                                    patience_counter)

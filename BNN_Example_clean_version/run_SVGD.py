@@ -16,7 +16,7 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
     out, z_test, y_test, nnet_model, tree_def, mse_val, averaged_precision_val = train_with_svgd(dataset, output_size,
                                                                 network_structure, batch_size, num_particles,
                                                                 key, regression=True, optimizer=optimizer, pen_lambda=pen_lambda)
-    
+
     print("For Test Data:")
     mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test, model_regression=True)
     print(f"\nAveraged precision: {averaged_precision_test}, mean squared error: {mse_test}")
@@ -30,10 +30,10 @@ def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 
                                 batch_size=300):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
-    
-    out, z_test, y_test, nnet_model, tree_def, accuracy_val,_ = train_with_svgd(dataset, output_size,
+
+    out, z_test, y_test, nnet_model, tree_def = train_with_svgd(dataset, output_size,
                                                                 network_structure, batch_size, num_particles,
-                                                                key, optimizer=optimizer, regression=False)
+                                                                key, regression=False)
 
     accuracy_test,_  = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,model_regression=False)
     print(f"\nTest accuracy: {accuracy_test}")
@@ -52,14 +52,14 @@ def run_MNIST():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2)
 
 
 def run_FashionMNIST():
     fashion_mnist = tf.keras.datasets.fashion_mnist
     dataset = apply_data_settings_keras(fashion_mnist.load_data(), with_flattening=False)
-    
+
     optimizer =  adam(
                     exponential_decay(
                         init_value=0.05,
@@ -68,7 +68,7 @@ def run_FashionMNIST():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
                                 batch_size=300)
 
@@ -85,14 +85,14 @@ def run_CIFAR10():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
                                 batch_size=3000)
 
 
 def run_regression_toy_example():
     regression_toy_example = get_regression_toy_example(num_points=100)
-    
+
     optimizer =  adam(
                     exponential_decay(
                         init_value=0.05,
@@ -101,14 +101,14 @@ def run_regression_toy_example():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_regression(regression_toy_example, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
 
 
 def run_california_housing():  # TODO: Analyse, dosnt work properly for all stages depending on batch size
     california_housing = fetch_california_housing()
     dataset = apply_data_settings_sklearn(california_housing)
-    
+
     optimizer =  adam(
                     exponential_decay(
                         init_value=0.05,
@@ -117,7 +117,7 @@ def run_california_housing():  # TODO: Analyse, dosnt work properly for all stag
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=2,
                            batch_size=2000)
 
@@ -125,7 +125,7 @@ def run_california_housing():  # TODO: Analyse, dosnt work properly for all stag
 def run_diabetes():
     california_housing = load_diabetes()
     dataset = apply_data_settings_sklearn(california_housing)
-    
+
     optimizer =  adam(
                     exponential_decay(
                         init_value=0.05,
@@ -134,7 +134,7 @@ def run_diabetes():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
 
 
@@ -150,7 +150,7 @@ def run_wine_quality():
                         staircase=True
                         )
                     )
-    
+
     run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
 
 

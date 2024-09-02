@@ -36,9 +36,9 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef, 
     # Get predictions from the neural network
     prediction_mean, prediction_var_score = jnp.split(nnet_model.apply(treedef(params), dz), 2, axis=-1)
     location = prediction_mean.squeeze()
-    scale = jnp.exp(0.000001 * prediction_var_score.squeeze())
-    # TODO: Change Link function
-
+    # set maximal standard deviation
+    max_scale = jnp.abs(location.mean()) * 2
+    scale = jax.vmap(lambda p: link_function(p, max_scale))(prediction_var_score.squeeze())
     log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
 
     # Regularize the NNET
@@ -46,7 +46,15 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef, 
         l2_loss = pen_lambda * sum(jnp.sum(jnp.square(p)) for p in jax.tree_util.tree_leaves(params))
         return log_prior + log_likelihood + l2_loss
 
+    #jax.debug.print("\nPrecision: {prediction_var_score}Scale: {scale}, Prior: {log_prior}, Likelihood: {"
+    #                "log_likelihood}", prediction_var_score=prediction_var_score.squeeze(), scale=scale,
+    #                log_prior=log_prior, log_likelihood=log_likelihood)
+
     return log_prior + log_likelihood
+
+
+def link_function(x, max_scale):
+    return jnp.clip(jnp.log(1 + jnp.exp(0.00001 * x)), a_max=max_scale, a_min=0.1)
 
 
 def logp_unnormalized_posterior_mulitnomial(params, dz, dy, nnet_model, treedef):
