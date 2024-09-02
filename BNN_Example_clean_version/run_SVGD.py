@@ -43,7 +43,7 @@ def run_MNIST():
     mnist = tf.keras.datasets.mnist
     dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
 
-    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=5, batch_size=300)
+    run_svgd_on_multiclass_data(dataset, network_structure=(200, 75, 40), output_size=10, num_particles=5, batch_size=0)
 
 
 def run_FashionMNIST():

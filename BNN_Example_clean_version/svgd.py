@@ -12,16 +12,16 @@ from BNN_Model import build_model
 from get_posteriori import get_posteriori
 
 
-NUM_ITERATIONS = 30
+NUM_ITERATIONS = 150
 # Early stopping parameters
 WARM_UP_ITERATIONS = 150
 PATIENCE = 100
 MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 # Learning rate schedule with exponential_decay for the optimizer if needed
-INITIAL_LEARNING_RATE = 0.05
-DECAY_RATE = 0.95  # Learning rate decay rate
-DECAY_STEPS = 100  # Learning rate decay steps
+INITIAL_LEARNING_RATE = 0.15
+DECAY_RATE = 1  # Learning rate decay rate
+DECAY_STEPS = 20  # Learning rate decay steps
 
 DEFAULT_NUM_BATCHES = 10
 

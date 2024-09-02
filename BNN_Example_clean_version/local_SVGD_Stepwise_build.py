@@ -195,17 +195,17 @@ def stochastic_svgd_kernel(optimizer: optax.GradientTransformation):
         # Update particles using deterministic part (SVGD)
         updates, opt_state = optimizer.update(functional_gradient, opt_state, particles)
         particles = optax.apply_updates(particles, updates)
-        jax.debug.print("Pred{}",particles)
+        #jax.debug.print("Pred{}",particles)
         # Add stochastic correction
         #Komischerweise immer 2d also z.b. (17684,2)s
         particle_array = jax.vmap(lambda p: ravel_pytree(p)[0])(particles)
-        jax.debug.print("Particals{}",particle_array)
+        #jax.debug.print("Particals{}",particle_array)
         K = kernel_matrix(particle_array, kernel_fn, kernel_params)  # Gram matrix
-        jax.debug.print("Pred{}",K)
+        #jax.debug.print("Pred{}",K)
         noise = stochastic_correction(K, particle_array)  # Ensure noise shape matches particle_array
-        jax.debug.print("Pred{}",noise)
+        #jax.debug.print("Pred{}",noise)
         particles = jax.tree_util.tree_map(lambda p, n: p + n, particles, noise)
-        jax.debug.print("pre{}",particles)
+        #jax.debug.print("pre{}",particles)
 
         return SVGDState(particles, kernel_params, opt_state)
 
