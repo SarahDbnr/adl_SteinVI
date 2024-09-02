@@ -20,7 +20,7 @@ MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer, pen_lambda=0):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -31,7 +31,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
     initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
 
-    logp_model = get_posteriori(nnet_model, tree_def, regression, pen_lambda)
+    logp_model = get_posteriori(nnet_model, tree_def, regression)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, evaluation_metrics_1, evaluation_metrics_2 = svgd_training_loop(

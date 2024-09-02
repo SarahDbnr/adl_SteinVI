@@ -9,13 +9,13 @@ from data_handling import apply_data_settings_sklearn, apply_data_settings_keras
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine
 from plots_validation_metrics import plot_and_save_evaluation_metric
 
-def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100, batch_size=20, pen_lambda=0):
+def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100, batch_size=20):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
     out, z_test, y_test, nnet_model, tree_def, mse_val, averaged_precision_val = train_with_svgd(dataset, output_size,
                                                                 network_structure, batch_size, num_particles,
-                                                                key, regression=True, optimizer=optimizer, pen_lambda=pen_lambda)
+                                                                key, regression=True, optimizer=optimizer)
 
     print("For Test Data:")
     mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test, model_regression=True)

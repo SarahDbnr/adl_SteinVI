@@ -4,7 +4,7 @@ import jax
 from jax.scipy.stats import norm
 
 
-def get_posteriori(nnet_model, tree_def, regression, pen_lambda=0):
+def get_posteriori(nnet_model, tree_def, regression):
     if regression:
         @jax.jit
         def logp_model(params, dz, dy):
@@ -14,7 +14,6 @@ def get_posteriori(nnet_model, tree_def, regression, pen_lambda=0):
                 dz=dz,
                 dy=dy,
                 treedef=tree_def,
-                pen_lambda=pen_lambda,
             )
     else:
         @jax.jit
@@ -29,7 +28,7 @@ def get_posteriori(nnet_model, tree_def, regression, pen_lambda=0):
     return logp_model
 
 
-def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef, pen_lambda):
+def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
     # Calculate the log-prior (Gaussian prior on the weights)
     log_prior = jnp.sum(norm.logpdf(params, loc=0, scale=1))
 
@@ -40,11 +39,6 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef, 
     max_scale = jnp.abs(location.mean()) * 2
     scale = jax.vmap(lambda p: link_function(p, max_scale))(prediction_var_score.squeeze())
     log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
-
-    # Regularize the NNET
-    if pen_lambda != 0:
-        l2_loss = pen_lambda * sum(jnp.sum(jnp.square(p)) for p in jax.tree_util.tree_leaves(params))
-        return log_prior + log_likelihood + l2_loss
 
     #jax.debug.print("\nPrecision: {prediction_var_score}Scale: {scale}, Prior: {log_prior}, Likelihood: {"
     #                "log_likelihood}", prediction_var_score=prediction_var_score.squeeze(), scale=scale,
