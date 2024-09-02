@@ -1,6 +1,7 @@
 import functools
 from typing import Any, Callable, NamedTuple
-
+from jax import grad, jacfwd, random
+from jax.scipy.linalg import cho_solve, cho_factor
 import jax
 import jax.numpy as jnp
 import optax
@@ -170,9 +171,10 @@ def as_top_level_api(
 
 
 
-def stochastic_svgd_kernel(optimizer: optax.GradientTransformation):
+def stochastic_svgd_kernel(optimizer: optax.GradientTransformation ):
     def kernel(
         state: SVGDState,
+        tau:float,
         grad_logdensity_fn: Callable,
         kernel_fn: Callable,
         **grad_params,
@@ -180,61 +182,110 @@ def stochastic_svgd_kernel(optimizer: optax.GradientTransformation):
         particles, kernel_params, opt_state = state
         kernel = functools.partial(kernel_fn, **kernel_params)
         #Computes functional gradient
-        def phi_star_summand(particle, particle_):
-            gradient = grad_logdensity_fn(particle, **grad_params)
-            k, grad_k = jax.value_and_grad(kernel, argnums=0)(particle, particle_)
-            return jax.tree_util.tree_map(lambda g, gk: -(k * g) - gk, gradient, grad_k)
+        # def phi_star_summand(particle, particle_):
+        #     gradient = grad_logdensity_fn(particle, **grad_params)
+        #     k, grad_k = jax.value_and_grad(kernel, argnums=0)(particle, particle_)
+        #     return jax.tree_util.tree_map(lambda g, gk: -(k * g) - gk, gradient, grad_k)
 
-        functional_gradient = jax.vmap(
-            lambda p_: jax.tree_util.tree_map(
+        # functional_gradient = jax.vmap(
+        #     lambda p_: jax.tree_util.tree_map(
+        #         lambda phi_star: phi_star.mean(axis=0),
+        #         jax.vmap(lambda p: phi_star_summand(p, p_))(particles),
+        #     )
+        # )(particles)
+
+        # # Update particles using deterministic part (SVGD)
+        # updates, opt_state = optimizer.update(functional_gradient, opt_state, particles)
+        def compute_velocity_field(particle):
+            def phi_star_summand(particle_, particle):
+                gradient = grad_logdensity_fn(particle_, **grad_params)
+                k, grad_k = jax.value_and_grad(kernel, argnums=0)(particle_, particle)
+                return jax.tree_util.tree_map(lambda g, gk: k * g + gk, gradient, grad_k)
+            
+            # Calculate the average of phi_star_summand over all particles
+            return jax.tree_util.tree_map(
                 lambda phi_star: phi_star.mean(axis=0),
-                jax.vmap(lambda p: phi_star_summand(p, p_))(particles),
+                jax.vmap(lambda p_: phi_star_summand(p_, particle))(particles)
             )
-        )(particles)
-
-        # Update particles using deterministic part (SVGD)
-        updates, opt_state = optimizer.update(functional_gradient, opt_state, particles)
-        particles = optax.apply_updates(particles, updates)
-        #jax.debug.print("Pred{}",particles)
+        #Until here same as before
+        #particles = optax.apply_updates(particles, updates) we do this later now
+        velocity_field = jax.vmap(compute_velocity_field)(particles)
         # Add stochastic correction
-        #Komischerweise immer 2d also z.b. (17684,2)s
         particle_array = jax.vmap(lambda p: ravel_pytree(p)[0])(particles)
-        #jax.debug.print("Particals{}",particle_array)
-        K = kernel_matrix(particle_array, kernel_fn, kernel_params)  # Gram matrix
-        #jax.debug.print("Pred{}",K)
-        noise = stochastic_correction(K, particle_array)  # Ensure noise shape matches particle_array
-        #jax.debug.print("Pred{}",noise)
-        particles = jax.tree_util.tree_map(lambda p, n: p + n, particles, noise)
-        #jax.debug.print("pre{}",particles)
 
+        noise = compute_stochastic_correction(particle_array,kernel,kernel_params)  # Ensure noise shape matches particle_array
+        #K=kernel_matrix(particles,kernel,kernel_params)
+        #noise = jax.random.normal(jax.random.PRNGKey(0), K)
+        particles = jax.tree_util.tree_map(lambda p, u, n: p + (tau+1) * u + jnp.sqrt(tau+1) * n, particles, velocity_field, noise)
+        #particles = optax.apply_updates(particles, updates)# we do this later now
         return SVGDState(particles, kernel_params, opt_state)
 
     return kernel
 
+
 def kernel_matrix(particles, kernel_fn, kernel_params):
+    #only needed when not using theory
     n_particles = particles.shape[0]
-    K = jnp.zeros((n_particles, n_particles))
+    d = particles.shape[1]  # Dimension of each particle
+    K = jnp.zeros((n_particles * d, n_particles * d))
     for i in range(n_particles):
         for j in range(n_particles):
-            K = K.at[i, j].set(kernel_fn(particles[i], particles[j], **kernel_params))
+            # Compute the kernel value k(z_i, z_j)
+            k_ij = 2*kernel_fn(particles[i], particles[j], **kernel_params)
+            # Create a block for K_ij = k(z_i, z_j) * I_{dxd}
+            block = k_ij * jnp.eye(d)
+            # Assign the block to the corresponding position in the matrix K
+            K = K.at[i*d:(i+1)*d, j*d:(j+1)*d].set(block)
+    
+    # Scale the matrix by 1/N
+    K = K / n_particles
+    
     return K
 
-def stochastic_correction(K, particles):
-    """
-    Generate stochastic correction with the same shape as `particles`.
-
-    Args:
-        K: The kernel Gram matrix.
-        particles: The particles for which noise should be generated.
+def compute_stochastic_correction(particles, kernel_fn, kernel_params):
+    n_particles, d = particles.shape
+    Nd = n_particles * d
     
-    Returns:
-        Noise in the shape of the particles.
-    """
-    n_particles, flat_dim = particles.shape
-    L = jnp.linalg.cholesky(K + jnp.eye(n_particles) * 1e-6)  # Cholesky decomposition
-    normal_samples = jax.random.normal(jax.random.PRNGKey(0), (n_particles, flat_dim))
-    noise = jnp.dot(L, normal_samples)
-    return noise
+    # Step 1: Calculate the kernel Gram matrix k_bar
+    k_bar = jnp.zeros((n_particles, n_particles))
+    for i in range(n_particles):
+        for j in range(n_particles):
+            k_bar = k_bar.at[i, j].set(kernel_fn(particles[i], particles[j], **kernel_params))
+    
+    # Step 2: Construct the block-diagonal matrix D_K
+    D_K = jnp.kron(jnp.eye(d), k_bar / n_particles)
+    # Step 3: Compute the Cholesky decomposition of D_K
+    L_DK = jnp.linalg.cholesky(D_K)
+    
+    # Step 4: Generate random normal samples from N(0, I_{Nd x Nd})
+    random_normal_samples = jax.random.normal(jax.random.PRNGKey(0), (Nd,))
+    
+    # Step 5: Create the permutation matrix P
+    P = compute_permutation_matrix(n_particles, d)
+    #P_test = compute_permutation_matrix_test(n_particles, d)
+    #Create test, that checks that the permutation is correct
+    # Step 6: Compute the stochastic correction v^STC
+    v_stc = jnp.sqrt(2) * jnp.dot(P.T, jnp.dot(L_DK, random_normal_samples))
+    return v_stc.reshape(n_particles, d)
+
+def compute_permutation_matrix_test(N, d):
+    Nd = N * d
+    P = jnp.zeros((Nd, Nd))
+    for i in range(d):
+        for j in range(N):
+            P = P.at[i * N + j, j * d + i].set(1)
+    return P
+
+def compute_permutation_matrix(N, d):
+    #should return the same result as the test matrix but i am not sure if this is the case
+    Nd = N * d
+    # Create the identity matrix of size Nd x Nd
+    identity = jnp.eye(Nd)
+    
+    # Reshape and transpose to achieve the desired permutation
+    P = identity.reshape(N, d, N, d).transpose(1, 0, 2, 3).reshape(Nd, Nd)
+    
+    return P
 # The as_top_level_api function would remain largely the same, except it would now use stochastic_svgd_kernel instead of build_kernel.
 def as_top_level_api_stochastic(
     grad_logdensity_fn: Callable,
@@ -250,8 +301,71 @@ def as_top_level_api_stochastic(
     ):
         return init(initial_position, kernel_parameters, optimizer)
 
-    def step_fn(state, **grad_params):
-        state = kernel_(state, grad_logdensity_fn, kernel, **grad_params)
+    def step_fn(state,tau, **grad_params):
+        state = kernel_(state,tau, grad_logdensity_fn, kernel, **grad_params)
         return update_kernel_parameters(state)
 
     return SamplingAlgorithm(init_fn, step_fn)  # type: ignore[arg-type]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #Calculate Damped Hassian
+# def compute_hmn(grad_logdensity_fn, kernel, zp, zm, zn):
+#     """Compute the Hmn matrix component for SVN direction."""
+#     # Gradient and Hessian of log density
+#     hessian_logdensity = jacfwd(grad(grad_logdensity_fn))(zp)
+    
+#     # Kernel gradients
+#     grad_k_zp_zn = jax.grad(lambda x: kernel(x, zn))(zp)
+#     grad_k_zp_zm = jax.grad(lambda x: kernel(x, zm))(zp)
+    
+#     # Hmn calculation
+#     hmn = - kernel(zp, zm) * kernel(zp, zn) * hessian_logdensity \
+#           + jnp.outer(grad_k_zp_zn, grad_k_zp_zm)
+    
+#     return hmn

@@ -11,7 +11,6 @@ from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from BNN_Model import build_model
 from get_posteriori import get_posteriori
 
-
 NUM_ITERATIONS = 150
 # Early stopping parameters
 WARM_UP_ITERATIONS = 150
@@ -19,7 +18,7 @@ PATIENCE = 100
 MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 # Learning rate schedule with exponential_decay for the optimizer if needed
-INITIAL_LEARNING_RATE = 0.15
+INITIAL_LEARNING_RATE = 0.01
 DECAY_RATE = 1  # Learning rate decay rate
 DECAY_STEPS = 20  # Learning rate decay steps
 
@@ -214,17 +213,19 @@ def ssvgd_training_loop(
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
-    def training_step(state, dz, dy):
-        return step(state, dz=dz, dy=dy)
+    def training_step(state, dz, dy,tau):
+        return step(state, dz=dz, dy=dy, tau=tau)
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != 0:
             key = jax.random.PRNGKey(iteration)
             z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
             for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
-                state = training_step(state, training_batch_input, training_batch_output)
+                state = training_step(state, training_batch_input, training_batch_output,tau=iteration)
         else:
-            state = training_step(state, z_train, y_train)
+            print("1")
+            state = training_step(state, z_train, y_train,tau=iteration)
+            print("2")
 
         # TODO: Check time effort for mse and accuracy calc and use as option only
         current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, regression)
