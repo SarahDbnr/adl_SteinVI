@@ -13,19 +13,16 @@ def test_logp_unnormalized_posterior_regression():
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=2,
                                                   hidden_layers=(200, 75, 40),
                                                   use_for_regression=True)
-    pen_lambda = 0
     # when
-    likelihood = logp_unnormalized_posterior_regression(param_vec, z_train, y_train, nnet_model, tree_def, pen_lambda)
+    likelihood = logp_unnormalized_posterior_regression(param_vec, z_train, y_train, nnet_model, tree_def)
     print(likelihood)
 
 
 def test_link_function_in_vmap():
     # given
-    max_scale = 5
     prediction = jnp.arange(10)
     # when
-    scale = jax.vmap(lambda p: link_function(p, max_scale))(prediction)
+    scale = jax.vmap(lambda p: link_function(p))(prediction)
     # then
     assert scale.shape == prediction.shape
-    assert scale[0] == jnp.log(2)
-    assert scale[scale > max_scale].shape == (0,)
+    assert scale[0] == 0
