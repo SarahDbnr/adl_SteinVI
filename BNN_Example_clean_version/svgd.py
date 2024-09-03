@@ -106,10 +106,6 @@ def svgd_training_loop(
                                                                                                                 regression)
         evaluation_metrics_2.append(current_evaluation_metrics_2)
         evaluation_metrics_1.append(current_evaluation_metrics_1)
-        if regression:
-            print(f"\nMSE_val: {current_evaluation_metrics_1}, Precision_val: {current_evaluation_metrics_2}")
-        else:
-            print(f"\nAccuracy: {current_evaluation_metrics_1}")
         best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1,
                                                                                            best_evaluation_metrics_1,
                                                                                            iteration, state, best_state,

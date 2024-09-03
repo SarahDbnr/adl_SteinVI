@@ -28,12 +28,11 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
                                                                                                   z_test,
                                                                                                   y_test,
                                                                                                   model_regression=True)
-    print(f"\nAveraged precision: {averaged_precision_test}, mean squared error: {mse_test}")
     # plot_mse(averaged_precision)
     plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=num_particles,
                                     network_structure=network_structure, eval_metric="MSE")
     plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=num_particles,
-                                    network_structure=network_structure, eval_metric="averaged_precision")
+                                    network_structure=network_structure, eval_metric="averaged_variance")
     print_summary_over_particles(predictions_test)
 
 
@@ -52,7 +51,6 @@ def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 
     accuracy_test, _, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
                                                                                  y_test,
                                                                                  model_regression=False)
-    print(f"\nTest accuracy: {accuracy_test}")
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
     print_summary_over_particles(predictions_test)
@@ -174,4 +172,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_wine_quality()
+    run_MNIST()
