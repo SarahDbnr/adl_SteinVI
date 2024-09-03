@@ -24,7 +24,7 @@ DECAY_STEPS = 20  # Learning rate decay steps
 
 DEFAULT_NUM_BATCHES = 10
 
-
+TAU=0.2
 def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, pen_lambda=0.01):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
@@ -213,18 +213,18 @@ def ssvgd_training_loop(
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
-    def training_step(state, dz, dy,tau):
-        return step(state, dz=dz, dy=dy, tau=tau)
+    def training_step(state, dz, dy):
+        return step(state, dz=dz, dy=dy, tau=TAU)
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != 0:
             key = jax.random.PRNGKey(iteration)
             z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
             for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
-                state = training_step(state, training_batch_input, training_batch_output,tau=iteration)
+                state = training_step(state, training_batch_input, training_batch_output)
         else:
             print("1")
-            state = training_step(state, z_train, y_train,tau=iteration)
+            state = training_step(state, z_train, y_train)
             print("2")
 
         # TODO: Check time effort for mse and accuracy calc and use as option only

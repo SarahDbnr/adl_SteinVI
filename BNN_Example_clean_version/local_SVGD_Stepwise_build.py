@@ -171,6 +171,24 @@ def as_top_level_api(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def stochastic_svgd_kernel(optimizer: optax.GradientTransformation ):
     def kernel(
         state: SVGDState,
@@ -216,7 +234,7 @@ def stochastic_svgd_kernel(optimizer: optax.GradientTransformation ):
         noise = compute_stochastic_correction(particle_array,kernel,kernel_params)  # Ensure noise shape matches particle_array
         #K=kernel_matrix(particles,kernel,kernel_params)
         #noise = jax.random.normal(jax.random.PRNGKey(0), K)
-        particles = jax.tree_util.tree_map(lambda p, u, n: p + (tau+1) * u + jnp.sqrt(tau+1) * n, particles, velocity_field, noise)
+        particles = jax.tree_util.tree_map(lambda p, u, n: p + (tau+1) * u + n, particles, velocity_field, noise)
         #particles = optax.apply_updates(particles, updates)# we do this later now
         return SVGDState(particles, kernel_params, opt_state)
 
