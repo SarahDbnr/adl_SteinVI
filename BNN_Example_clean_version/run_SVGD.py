@@ -1,13 +1,14 @@
 import jax
 import tensorflow as tf
-
 from optax import adam, exponential_decay
 from regression_toy_example import get_regression_toy_example
 from svgd import train_with_svgd
 from validation_and_evaluation import get_evaluation_metrics_over_predictions
-from data_handling import apply_data_settings_sklearn, apply_data_settings_keras
-from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine
+from data_handling import apply_data_settings_sklearn, apply_data_settings_keras,newsgroup_datahandling,adult_income_datahandling
+from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from plots_validation_metrics import plot_and_save_evaluation_metric
+
+
 
 
 def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100,
@@ -102,6 +103,55 @@ def run_CIFAR10():
                                 batch_size=3000)
 
 
+
+def run_20_newsgroups():
+    dataset = newsgroup_datahandling()
+    dataset = apply_data_settings_sklearn(dataset)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.001,
+            transition_steps=100,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(500, 300, 100,50), output_size=20, num_particles=12)
+
+
+
+def run_adult_income():
+    dataset = adult_income_datahandling()
+    dataset = apply_data_settings_sklearn(dataset)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.05,
+            transition_steps=100,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=2)
+
+def run_iris():
+    iris = load_iris()  # Loading the Iris dataset
+    dataset = apply_data_settings_sklearn(iris)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.05,
+            transition_steps=100,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(20, 15, 7), output_size=3, num_particles=10, batch_size=25)
+
+
 def run_regression_toy_example():
     regression_toy_example = get_regression_toy_example(num_points=100)
 
@@ -136,8 +186,8 @@ def run_california_housing():  # TODO: Analyse, dosnt work properly for all stag
 
 
 def run_diabetes():
-    california_housing = load_diabetes()
-    dataset = apply_data_settings_sklearn(california_housing)
+    diabetes = load_diabetes()
+    dataset = apply_data_settings_sklearn(diabetes)
 
     optimizer = adam(
         exponential_decay(
@@ -152,8 +202,8 @@ def run_diabetes():
 
 
 def run_wine_quality():
-    california_housing = load_wine()
-    dataset = apply_data_settings_sklearn(california_housing)
+    wine_quality = load_wine()
+    dataset = apply_data_settings_sklearn(wine_quality)
 
     optimizer = adam(
         exponential_decay(
@@ -168,4 +218,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_MNIST()
+    run_adult_income()
