@@ -55,7 +55,6 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
 
     return out, z_test, y_test, nnet_model, tree_def, evaluation_metrics_1, evaluation_metrics_2
 
-
 # SVGD training loop with early stopping
 def svgd_training_loop(
         log_p,
@@ -93,15 +92,22 @@ def svgd_training_loop(
     # Define a training step function that JIT compiles the SVGD step with minibatched particles
     @jax.jit
     def training_minibatched_step(state, particle_indices, dz, dy):
+        # Get the current state of the optimizer and particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
+        optimizer_state = state.opt_state
+        batch_optimizer_state = get_batched_optimizer_state(optimizer_state, particle_indices)
+
+        # Set the new minibatch state
+        batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
         
-        batch_state = state._replace(particles=batch_particles, opt_state=optimizer.init(batch_particles))
+        #Perform a SVGD step with the minibatch
         updated_batch_state = step(batch_state, dz=dz, dy=dy)
         
-        # Update only the relevant parts of the full state
+        # Update the particles and optimizer state
         new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
-
-        return state._replace(particles=new_particles)
+        new_opt_state = update_optimizer_state(optimizer_state, updated_batch_state, particle_indices)
+        
+        return state._replace(particles=new_particles, opt_state=new_opt_state)
 
     state = svgd.init(initial_position, initial_kernel_parameters)
 
@@ -112,6 +118,7 @@ def svgd_training_loop(
                 particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
                 for indices in particle_indices:
                     state = training_minibatched_step(state, indices, z_train, y_train)
+                state._replace(opt_state=update_optimizer_iteration(state.opt_state))
             else:
                 z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
@@ -145,7 +152,6 @@ def svgd_training_loop(
 
     return best_state, evaluation_metrics_1, evaluation_metrics_2
 
-
 def initialize_particles(param_vec, rng_key_init, num_particles):
     initial_particles_vector = jax.random.normal(
         rng_key_init,
@@ -175,6 +181,34 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     batched_indices = jnp.array_split(indices, num_batches)
     return batched_indices
 
+def get_batched_optimizer_state(optimizer_state, indices):
+    mu = optimizer_state[0].mu
+    nu = optimizer_state[0].nu
+    mu = jnp.take(mu, indices, axis=0)
+    nu = jnp.take(nu, indices, axis=0)
+    batch_optimizer_state_list = list(optimizer_state)
+    batch_optimizer_state_list[0] = batch_optimizer_state_list[0]._replace(
+        mu=mu,
+        nu=nu
+    )
+    batch_optimizer_state = tuple(batch_optimizer_state_list)
+    return batch_optimizer_state
+
+def update_optimizer_state(optimizer_state, batched_state, indices):
+    optimizer_state_list = list(optimizer_state)
+    new_mu = optimizer_state[0].mu.at[indices].set(batched_state.opt_state[0].mu)
+    new_nu = optimizer_state[0].nu.at[indices].set(batched_state.opt_state[0].nu)
+
+    optimizer_state_list[0] = optimizer_state_list[0]._replace(mu=new_mu, nu=new_nu)
+    optimizer_state = tuple(optimizer_state_list)
+    return optimizer_state
+
+def update_optimizer_iteration(optimizer_state):
+    iteration = optimizer_state[1].count
+    iteration += 1
+    new_optimizer_state = optimizer_state[1]._replace(count=iteration)
+    return new_optimizer_state
+
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):
     num_samples = input_data.shape[0]
@@ -182,7 +216,6 @@ def shuffle_paired_data(key, input_data, output_data):
     shuffled_input = jnp.take(input_data, permutation, axis=0)
     shuffled_output = jnp.take(output_data, permutation, axis=0)
     return shuffled_input, shuffled_output
-
 
 def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter):
     # Apply early stopping logic only after warm-up period
