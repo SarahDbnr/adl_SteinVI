@@ -98,17 +98,16 @@ def svgd_training_loop(
             state = training_step(state, z_train, y_train)
 
         # TODO: Check time effort for mse and accuracy calc and use as option only
-        current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
-                                                                                                             nnet_model,
-                                                                                                             tree_def,
-                                                                                                             z_val,
-                                                                                                             y_val,
-                                                                                                             regression)
+        current_evaluation_metrics_1, current_evaluation_metrics_2, _ = get_evaluation_metrics_over_predictions(state,
+                                                                                                                nnet_model,
+                                                                                                                tree_def,
+                                                                                                                z_val,
+                                                                                                                y_val,
+                                                                                                                regression)
         evaluation_metrics_2.append(current_evaluation_metrics_2)
         evaluation_metrics_1.append(current_evaluation_metrics_1)
         if regression:
-            print(f"\nMSE_val: {current_evaluation_metrics_1}")
-            print(f"\nPrecision_val: {current_evaluation_metrics_2}")
+            print(f"\nMSE_val: {current_evaluation_metrics_1}, Precision_val: {current_evaluation_metrics_2}")
         else:
             print(f"\nAccuracy: {current_evaluation_metrics_1}")
         best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1,
