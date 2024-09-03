@@ -7,7 +7,7 @@ from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from data_handling import apply_data_settings_sklearn, apply_data_settings_keras,newsgroup_datahandling,adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from plots_validation_metrics import plot_and_save_evaluation_metric
-
+import datasets_info
 
 
 
@@ -53,7 +53,9 @@ def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 
                                     network_structure=network_structure, eval_metric="Accuracy")
 
 
-def run_MNIST():
+def run_MNIST(info=False):
+    if info:
+        datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
     dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
 
@@ -69,7 +71,10 @@ def run_MNIST():
     run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2)
 
 
-def run_FashionMNIST():
+def run_FashionMNIST(info=False):
+    if info:
+        datasets_info.print_fashion_mnist_dataset_info()
+
     fashion_mnist = tf.keras.datasets.fashion_mnist
     dataset = apply_data_settings_keras(fashion_mnist.load_data(), with_flattening=False)
 
@@ -86,7 +91,9 @@ def run_FashionMNIST():
                                 batch_size=300)
 
 
-def run_CIFAR10():
+def run_CIFAR10(info=True):
+    if info:
+        datasets_info.print_cifar10_dataset_info()
     cifar10 = tf.keras.datasets.cifar10
     dataset = apply_data_settings_keras(cifar10.load_data(), with_flattening=True)
 
@@ -104,7 +111,9 @@ def run_CIFAR10():
 
 
 
-def run_20_newsgroups():
+def run_20_newsgroups(info=True):
+    if info:
+        datasets_info.print_20_newsgroups_dataset_info()
     dataset = newsgroup_datahandling()
     dataset = apply_data_settings_sklearn(dataset)
 
@@ -121,7 +130,9 @@ def run_20_newsgroups():
 
 
 
-def run_adult_income():
+def run_adult_income(info=False):
+    if info:
+        datasets_info.print_adult_income_dataset_info
     dataset = adult_income_datahandling()
     dataset = apply_data_settings_sklearn(dataset)
 
@@ -136,7 +147,9 @@ def run_adult_income():
 
     run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=2)
 
-def run_iris():
+def run_iris(info=False):
+    if info:
+        datasets_info.print_iris_dataset_info()
     iris = load_iris()  # Loading the Iris dataset
     dataset = apply_data_settings_sklearn(iris)
 
@@ -168,7 +181,9 @@ def run_regression_toy_example():
                            num_particles=100)
 
 
-def run_california_housing():  # TODO: Analyse, dosnt work properly for all stages depending on batch size
+def run_california_housing(info= False):  # TODO: Analyse, dosnt work properly for all stages depending on batch size
+    if info:
+        datasets_info.print_california_housing_dataset_info()
     california_housing = fetch_california_housing()
     dataset = apply_data_settings_sklearn(california_housing)
 
@@ -185,7 +200,9 @@ def run_california_housing():  # TODO: Analyse, dosnt work properly for all stag
                            batch_size=2000)
 
 
-def run_diabetes():
+def run_diabetes(info=False):
+    if info:
+        datasets_info.print_diabetes_dataset_info()
     diabetes = load_diabetes()
     dataset = apply_data_settings_sklearn(diabetes)
 
@@ -201,7 +218,9 @@ def run_diabetes():
     run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
 
 
-def run_wine_quality():
+def run_wine_quality(info=False):
+    if info:
+        datasets_info.print_wine_quality_dataset_info()
     wine_quality = load_wine()
     dataset = apply_data_settings_sklearn(wine_quality)
 
@@ -218,4 +237,4 @@ def run_wine_quality():
 
 
 if __name__ == "__main__":
-    run_adult_income()
+    run_wine_quality(info=True)

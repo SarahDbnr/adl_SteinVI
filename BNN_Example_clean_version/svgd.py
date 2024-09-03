@@ -3,7 +3,6 @@ from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from tqdm import tqdm
 import jax
 import jax.numpy as jnp
-
 from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from BNN_Model import build_model
 from get_posteriori import get_posteriori
