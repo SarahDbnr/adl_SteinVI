@@ -6,7 +6,7 @@ from svgd import train_with_svgd
 from validation_and_evaluation import get_evaluation_metrics_over_predictions
 from data_handling import apply_data_settings_sklearn, apply_data_settings_keras,newsgroup_datahandling,adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from plots_validation_metrics import plot_and_save_evaluation_metric
+from plots_validation_metrics import plot_and_save_evaluation_metric,plot_residuals
 import datasets_info
 
 
@@ -32,7 +32,9 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
                                     network_structure=network_structure, eval_metric="MSE")
     plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=num_particles,
                                     network_structure=network_structure, eval_metric="averaged_precision")
-    # TODO plot_mse(mse)
+    # Call the plot_residuals function
+    plot_residuals(nnet_model,tree_def,out,z_test,y_test, num_particles=num_particles,
+                                    network_structure=network_structure)
 
 
 def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
@@ -215,7 +217,7 @@ def run_diabetes(info=False):
         )
     )
 
-    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
+    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=10)
 
 
 def run_wine_quality(info=False):
@@ -237,4 +239,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_wine_quality(info=True)
+    run_diabetes(info=False)
