@@ -19,7 +19,7 @@ MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer, particles_minibatching=False):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -48,6 +48,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
         y_val=y_val,
         batch_size=batch_size,
         regression=regression,
+        particles_minibatching=particles_minibatching,
     )
 
     # TODO: plot mse, val_accuracies
@@ -71,33 +72,53 @@ def svgd_training_loop(
         y_val,
         batch_size,
         regression=False,
+        particles_minibatching = False
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
-    state = svgd.init(initial_position, initial_kernel_parameters)
     step = jax.jit(svgd.step)
-
     best_evaluation_metrics_1 = float('-inf')
     patience_counter = 0
     best_state = None
     evaluation_metrics_1 = []  # mse and accuracy
     evaluation_metrics_2 = []  # val_accuracies
 
+    particles_minibatching = True
+
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
     def training_step(state, dz, dy):
         return step(state, dz=dz, dy=dy)
+    
+    # Define a training step function that JIT compiles the SVGD step with minibatched particles
+    @jax.jit
+    def training_minibatched_step(state, particle_indices, dz, dy):
+        batch_particles = jnp.take(state.particles, particle_indices, axis=0)
+        
+        batch_state = state._replace(particles=batch_particles, opt_state=optimizer.init(batch_particles))
+        updated_batch_state = step(batch_state, dz=dz, dy=dy)
+        
+        # Update only the relevant parts of the full state
+        new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
+
+        return state._replace(particles=new_particles)
+
+    state = svgd.init(initial_position, initial_kernel_parameters)
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != 0:
             key = jax.random.PRNGKey(iteration)
-            z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
-            for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
-                state = training_step(state, training_batch_input, training_batch_output)
+            if particles_minibatching:
+                particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
+                for indices in particle_indices:
+                    state = training_minibatched_step(state, indices, z_train, y_train)
+            else:
+                z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
+                for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
+                    state = training_step(state, training_batch_input, training_batch_output)
         else:
             state = training_step(state, z_train, y_train)
 
-        # TODO: Check time effort for mse and accuracy calc and use as option only
         current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
                                                                                                              nnet_model,
                                                                                                              tree_def,
@@ -119,7 +140,6 @@ def svgd_training_loop(
             print(f"Early stopping triggered at iteration {iteration + 1}")
             break
 
-    # If we didn't trigger early stopping, make sure we return the best state
     if best_state is None:
         best_state = state
 
@@ -149,6 +169,11 @@ def create_minibatches(batch_size, input_data, output_data, key):
         return input_data, output_data
     return input_data, output_data
 
+def create_particle_minibatch_indices(key, num_particles, batch_size):
+    indices = jax.random.permutation(key, num_particles)
+    num_batches = max(1, num_particles // batch_size)
+    batched_indices = jnp.array_split(indices, num_batches)
+    return batched_indices
 
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):

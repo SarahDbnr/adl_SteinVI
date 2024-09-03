@@ -11,7 +11,7 @@ from plots_validation_metrics import plot_and_save_evaluation_metric
 
 
 def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100,
-                           batch_size=20):
+                           batch_size=20, particles_minibatching=False):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
@@ -20,7 +20,8 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
                                                                                                  batch_size,
                                                                                                  num_particles,
                                                                                                  key, regression=True,
-                                                                                                 optimizer=optimizer)
+                                                                                                 optimizer=optimizer,
+                                                                                                 particles_minibatching=particles_minibatching)
 
     print("For Test Data:")
     mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
@@ -35,7 +36,7 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
 
 
 def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=300):
+                                batch_size=300, particles_minibatching=False):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
@@ -43,7 +44,8 @@ def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 
                                                                                  network_structure, batch_size,
                                                                                  num_particles,
                                                                                  key, optimizer=optimizer,
-                                                                                 regression=False)
+                                                                                 regression=False,
+                                                                                 particles_minibatching=particles_minibatching)
 
     accuracy_test, _ = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
                                                                model_regression=False)
@@ -65,7 +67,23 @@ def run_MNIST():
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2)
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=10, batch_size=300)
+
+
+def run_MNIST_minibatched_particles():
+    mnist = tf.keras.datasets.mnist
+    dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.05,
+            transition_steps=100,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=100, batch_size=10, particles_minibatching=True)
 
 
 def run_FashionMNIST():
@@ -164,8 +182,8 @@ def run_wine_quality():
         )
     )
 
-    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
+    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=10)
 
 
 if __name__ == "__main__":
-    run_MNIST()
+    run_MNIST_minibatched_particles()
