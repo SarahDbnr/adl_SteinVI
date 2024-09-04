@@ -1,5 +1,3 @@
-
-
 [packages]
 flax = "*"
 jax = "*"
@@ -11,6 +9,7 @@ tqdm = "*"
 typing = "*"
 scikit-learn = "*"
 tensorflow = "*"
+pytest = "*"
 
 [dev-packages]
 

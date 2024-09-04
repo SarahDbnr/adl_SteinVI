@@ -11,17 +11,17 @@ from plots_validation_metrics import plot_and_save_evaluation_metric
 
 
 def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100,
-                           batch_size=20, particles_minibatching=False):
+                           batch_size=20, particle_batch_size=0):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
     out, z_test, y_test, nnet_model, tree_def, mse_val, averaged_precision_val = train_with_svgd(dataset, output_size,
                                                                                                  network_structure,
                                                                                                  batch_size,
+                                                                                                 particle_batch_size,
                                                                                                  num_particles,
                                                                                                  key, regression=True,
-                                                                                                 optimizer=optimizer,
-                                                                                                 particles_minibatching=particles_minibatching)
+                                                                                                 optimizer=optimizer)
 
     print("For Test Data:")
     mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
@@ -36,16 +36,16 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
 
 
 def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=300, particles_minibatching=False):
+                                batch_size=300, particle_batch_size=0):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
 
     out, z_test, y_test, nnet_model, tree_def, accuracy_val, _ = train_with_svgd(dataset, output_size,
-                                                                                 network_structure, batch_size,
+                                                                                 network_structure, batch_size, particle_batch_size,
                                                                                  num_particles,
-                                                                                 key, optimizer=optimizer,
-                                                                                 regression=False,
-                                                                                 particles_minibatching=particles_minibatching)
+                                                                                 key,
+                                                                                 optimizer=optimizer,
+                                                                                 regression=False)
 
     accuracy_test, _ = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
                                                                model_regression=False)
@@ -67,7 +67,7 @@ def run_MNIST():
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=10, batch_size=300)
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=10, batch_size=0)
 
 
 def run_MNIST_minibatched_particles():
@@ -83,7 +83,7 @@ def run_MNIST_minibatched_particles():
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=100, batch_size=10, particles_minibatching=True)
+    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=20, batch_size=300, particle_batch_size=5)
 
 
 def run_FashionMNIST():
@@ -187,3 +187,4 @@ def run_wine_quality():
 
 if __name__ == "__main__":
     run_MNIST_minibatched_particles()
+

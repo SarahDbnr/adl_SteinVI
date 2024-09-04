@@ -19,7 +19,7 @@ MIN_DELTA = 0.01
 KERNEL_LENGTH = 0.05
 
 
-def train_with_svgd(dataset, output_size, network_structure, batch_size, num_particles, key, regression, optimizer, particles_minibatching=False):
+def train_with_svgd(dataset, output_size, network_structure, batch_size, particle_batch_size, num_particles, key, regression, optimizer):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     # TODO: Change batch size to number of batches
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -48,7 +48,7 @@ def train_with_svgd(dataset, output_size, network_structure, batch_size, num_par
         y_val=y_val,
         batch_size=batch_size,
         regression=regression,
-        particles_minibatching=particles_minibatching,
+        particle_batch_size=particle_batch_size,
     )
 
     # TODO: plot mse, val_accuracies
@@ -70,8 +70,8 @@ def svgd_training_loop(
         z_val,
         y_val,
         batch_size,
+        particle_batch_size,
         regression=False,
-        particles_minibatching = False
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
@@ -82,7 +82,7 @@ def svgd_training_loop(
     evaluation_metrics_1 = []  # mse and accuracy
     evaluation_metrics_2 = []  # val_accuracies
 
-    particles_minibatching = True
+    state = svgd.init(initial_position, initial_kernel_parameters)
 
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
@@ -96,33 +96,37 @@ def svgd_training_loop(
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
         optimizer_state = state.opt_state
         batch_optimizer_state = get_batched_optimizer_state(optimizer_state, particle_indices)
-
         # Set the new minibatch state
         batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
         
-        #Perform a SVGD step with the minibatch
+        # Perform a SVGD step with the minibatch
         updated_batch_state = step(batch_state, dz=dz, dy=dy)
-        
+            
         # Update the particles and optimizer state
         new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
         new_opt_state = update_optimizer_state(optimizer_state, updated_batch_state, particle_indices)
-        
+            
         return state._replace(particles=new_particles, opt_state=new_opt_state)
-
-    state = svgd.init(initial_position, initial_kernel_parameters)
 
     for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
         if batch_size != 0:
             key = jax.random.PRNGKey(iteration)
-            if particles_minibatching:
-                particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
-                for indices in particle_indices:
-                    state = training_minibatched_step(state, indices, z_train, y_train)
-                state._replace(opt_state=update_optimizer_iteration(state.opt_state))
+            if particle_batch_size != 0:
+                z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
+                for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
+                    particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
+                    for indices in particle_indices:
+                        state = training_minibatched_step(state, indices, training_batch_input, training_batch_output)
+                    state = update_optimizer_iteration(state)
             else:
                 z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
                     state = training_step(state, training_batch_input, training_batch_output)
+        elif particle_batch_size != 0: 
+            particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
+            for indices in particle_indices:
+                state = training_minibatched_step(state, indices, z_train, y_train)
+            state = update_optimizer_iteration(state)
         else:
             state = training_step(state, z_train, y_train)
 
@@ -159,7 +163,7 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
     )
     return initial_particles_vector
 
-
+    
 def create_minibatches(batch_size, input_data, output_data, key):
     if batch_size != 0:
         if batch_size is None:
@@ -182,32 +186,34 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     return batched_indices
 
 def get_batched_optimizer_state(optimizer_state, indices):
-    mu = optimizer_state[0].mu
-    nu = optimizer_state[0].nu
-    mu = jnp.take(mu, indices, axis=0)
-    nu = jnp.take(nu, indices, axis=0)
-    batch_optimizer_state_list = list(optimizer_state)
-    batch_optimizer_state_list[0] = batch_optimizer_state_list[0]._replace(
-        mu=mu,
-        nu=nu
-    )
-    batch_optimizer_state = tuple(batch_optimizer_state_list)
-    return batch_optimizer_state
+
+    def batch_fn(x):
+        if hasattr(x, 'ndim') and x.ndim > 0:
+            return jnp.take(x, indices, axis=0)
+        return x
+
+    batched_optimizer_state = jax.tree_map(batch_fn, optimizer_state)
+    return batched_optimizer_state
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
-    optimizer_state_list = list(optimizer_state)
-    new_mu = optimizer_state[0].mu.at[indices].set(batched_state.opt_state[0].mu)
-    new_nu = optimizer_state[0].nu.at[indices].set(batched_state.opt_state[0].nu)
+    
+    def update_fn(orig, batched):
+        if hasattr(orig, 'ndim') and orig.ndim > 0:
+            return orig.at[indices].set(batched)
+        return orig
+    
+    updated_optimizer_state = jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
+    return updated_optimizer_state
 
-    optimizer_state_list[0] = optimizer_state_list[0]._replace(mu=new_mu, nu=new_nu)
-    optimizer_state = tuple(optimizer_state_list)
-    return optimizer_state
+def update_optimizer_iteration(state):
 
-def update_optimizer_iteration(optimizer_state):
-    iteration = optimizer_state[1].count
-    iteration += 1
-    new_optimizer_state = optimizer_state[1]._replace(count=iteration)
-    return new_optimizer_state
+    def increment_count_fn(x):
+        if isinstance(x, jnp.ndarray) and jnp.issubdtype(x.dtype, jnp.integer):
+            return x + 1
+        return x
+
+    new_optimizer_state = jax.tree_map(increment_count_fn, state.opt_state)
+    return state._replace(opt_state=new_optimizer_state)
 
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):
