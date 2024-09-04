@@ -11,10 +11,11 @@ from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_m
 from BNN_Example_clean_version.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, \
     newsgroup_datahandling, adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from BNN_Example_clean_version.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals
+from BNN_Example_clean_version.plots_validation_metrics import plot_and_save_evaluation_metric
+from Evalutation_Class import EvaluationRegression, EvaluationMulticlass
 
 
-def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure, name):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -25,21 +26,14 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def,
                                                            param_vec_ini, parameter, key)
 
-    print("For Test Data:")
-    mse_test, averaged_precision_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
-                                                                                y_test, model_regression=True)
-    print(f"\nAveraged precision: {averaged_precision_test}, mean squared error: {mse_test}")
-    # plot_mse(averaged_precision)
-    plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="MSE")
-    plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="averaged_precision")
-    # Call the plot_residuals function
-    plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
-                   network_structure=network_structure)
+    test_predictions, test_precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
+
+    evaluation = EvaluationRegression(name, y_test, test_predictions, test_precisions)
+
+    print(evaluation)
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure, name):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -72,7 +66,8 @@ def run_MNIST(info=False):
     )
 
     parameter = Parameter(optimizer, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10,
+                                name="MNIST")
 
 
 def run_regression_toy_example():
@@ -89,8 +84,8 @@ def run_regression_toy_example():
 
     parameter = Parameter(optimizer, regression=True)
     run_svgd_on_regression(dataset=regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
-                           output_size=2)
+                           output_size=2, name="Regression Toy Example")
 
 
 if __name__ == "__main__":
-    run_MNIST(info=False)
+    run_regression_toy_example()
