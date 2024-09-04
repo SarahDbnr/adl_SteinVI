@@ -1,17 +1,3 @@
-class Parameter:
-    optimizer: None
-    network_structure: None
-    output_size: int
-    num_particles: int = 10
-    batch_size: int = None
-    iterations: int = 100
-    kernel_length: float = 0.05
-    warm_up_iterations_early_stopping: int = 150
-    patience_early_stopping: int = 100
-    min_delta_early_stopping: float = 0.01
-    use_for_regression: bool = False
-
-
 class EvaluationRegression:
     name: str
     parameter_setting: Parameter

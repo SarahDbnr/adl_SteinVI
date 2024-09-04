@@ -1,28 +1,29 @@
 import jax
 import tensorflow as tf
-
 from optax import adam, exponential_decay
+
 from regression_toy_example import get_regression_toy_example
 from svgd import train_with_svgd
+from BNN_Example_clean_version.BNN_Model import build_model
 from validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
-from data_handling import apply_data_settings_sklearn, apply_data_settings_keras,newsgroup_datahandling,adult_income_datahandling
+from data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
+    adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from plots_validation_metrics import plot_and_save_evaluation_metric,plot_residuals
+from plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals
+from Parameter_Class import Parameter
 import datasets_info
 
 
-
-def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100,
-                           batch_size=20):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
+    z_train, y_train, z_val, y_val, z_test, y_test = dataset
+    nnet_model, tree_def, param_vec_ini = build_model(key, z_train, output_size=output_size,
+                                                      hidden_layers=network_structure,
+                                                      use_for_regression=parameter.use_for_regression)
 
-    out, z_test, y_test, nnet_model, tree_def, mse_val, averaged_precision_val = train_with_svgd(dataset, output_size,
-                                                                                                 network_structure,
-                                                                                                 batch_size,
-                                                                                                 num_particles,
-                                                                                                 key, regression=True,
-                                                                                                 optimizer=optimizer)
+    out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def,
+                                                           param_vec_ini, parameter, key)
 
     print("For Test Data:")
     mse_test, averaged_precision_test, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model,
@@ -31,31 +32,31 @@ def run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), 
                                                                                                   y_test,
                                                                                                   model_regression=True)
     # plot_mse(averaged_precision)
-    plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=num_particles,
+    plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="MSE")
-    plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=num_particles,
-                                    network_structure=network_structure, eval_metric="averaged_variance")
-    plot_residuals(nnet_model,tree_def,out,z_test,y_test, num_particles=num_particles,
-                                    network_structure=network_structure)
+    plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=parameter.num_particles,
+                                    network_structure=network_structure, eval_metric="averaged_precision")
+    # Call the plot_residuals function
+    plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
+                   network_structure=network_structure)
     print_summary_over_particles(predictions_test)
 
 
-def run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=300):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
+    z_train, y_train, z_val, y_val, z_test, y_test = dataset
+    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
+                                                  hidden_layers=network_structure,
+                                                  use_for_regression=parameter.use_for_regression)
 
-    out, z_test, y_test, nnet_model, tree_def, accuracy_val, _ = train_with_svgd(dataset, output_size,
-                                                                                 network_structure, batch_size,
-                                                                                 num_particles,
-                                                                                 key, optimizer=optimizer,
-                                                                                 regression=False)
+    out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key)
 
     print("For Test Data:")
     accuracy_test, _, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
                                                                                  y_test,
                                                                                  model_regression=False)
-    plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=num_particles,
+    plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
     print_summary_over_particles(predictions_test)
 
@@ -75,7 +76,8 @@ def run_MNIST(info=False):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2)
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_FashionMNIST(info=False):
@@ -94,8 +96,8 @@ def run_FashionMNIST(info=False):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=300)
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_CIFAR10(info=True):
@@ -113,9 +115,8 @@ def run_CIFAR10(info=True):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=10, num_particles=2,
-                                batch_size=3000)
-
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_20_newsgroups(info=True):
@@ -133,13 +134,13 @@ def run_20_newsgroups(info=True):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(500, 300, 100,50), output_size=20, num_particles=12)
-
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_adult_income(info=False):
     if info:
-        datasets_info.print_adult_income_dataset_info
+        datasets_info.print_adult_income_dataset_info()
     dataset = adult_income_datahandling()
     dataset = apply_data_settings_sklearn(dataset)
 
@@ -152,7 +153,10 @@ def run_adult_income(info=False):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=2)
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+
+
 
 def run_iris(info=False):
     if info:
@@ -169,7 +173,8 @@ def run_iris(info=False):
         )
     )
 
-    run_svgd_on_multiclass_data(dataset, optimizer, network_structure=(20, 15, 7), output_size=3, num_particles=10, batch_size=25)
+    parameter = Parameter(optimizer, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_regression_toy_example():
@@ -184,11 +189,12 @@ def run_regression_toy_example():
         )
     )
 
-    run_svgd_on_regression(regression_toy_example, optimizer, network_structure=(200, 75, 40), output_size=2,
-                           num_particles=100)
+    parameter = Parameter(optimizer, regression=True)
+    run_svgd_on_multiclass_data(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=10)
 
 
-def run_california_housing(info= False):  # TODO: Analyse, dosnt work properly for all stages depending on batch size
+def run_california_housing(info=False):  # TODO: Analyse, dosnt work properly for all stages depending on batch size
     if info:
         datasets_info.print_california_housing_dataset_info()
     california_housing = fetch_california_housing()
@@ -203,8 +209,9 @@ def run_california_housing(info= False):  # TODO: Analyse, dosnt work properly f
         )
     )
 
-    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=2,
-                           batch_size=2000)
+    parameter = Parameter(optimizer, regression=True)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=10)
 
 
 def run_diabetes(info=False):
@@ -222,7 +229,9 @@ def run_diabetes(info=False):
         )
     )
 
-    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=10)
+    parameter = Parameter(optimizer, regression=True)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=10)
 
 
 def run_wine_quality(info=False):
@@ -240,7 +249,9 @@ def run_wine_quality(info=False):
         )
     )
 
-    run_svgd_on_regression(dataset, optimizer, network_structure=(200, 75, 40), output_size=2, num_particles=100)
+    parameter = Parameter(optimizer, regression=True)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=10)
 
 
 if __name__ == "__main__":
