@@ -13,6 +13,7 @@ def print_iris_dataset_info():
     print("\t\t• Versicolour: Iris-versicolor")
     print("\t\t• Virginica: Iris-virginica")
 
+
 def print_mnist_dataset_info():
     print("Dataset Description")
     print("\t• Number of Instances: 70,000 (60,000 training, 10,000 test)")
@@ -31,7 +32,6 @@ def print_mnist_dataset_info():
     print("\t\t• 7: Digit '7'")
     print("\t\t• 8: Digit '8'")
     print("\t\t• 9: Digit '9'")
-
 
 
 def print_fashion_mnist_dataset_info():
@@ -54,8 +54,6 @@ def print_fashion_mnist_dataset_info():
     print("\t\t• 9: Ankle boot")
 
 
-
-
 def print_cifar10_dataset_info():
     print("Dataset Description")
     print("\t• Number of Instances: 60,000 (50,000 training, 10,000 test)")
@@ -74,7 +72,6 @@ def print_cifar10_dataset_info():
     print("\t\t• 7: Horse")
     print("\t\t• 8: Ship")
     print("\t\t• 9: Truck")
-
 
 
 def print_20_newsgroups_dataset_info():
@@ -106,6 +103,7 @@ def print_20_newsgroups_dataset_info():
     print("\t\t• talk.politics.misc")
     print("\t\t• talk.religion.misc")
 
+
 def print_adult_income_dataset_info():
     print("Dataset Description")
     print("\t• Number of Instances: 48,842 (32,561 training, 16,281 test)")
@@ -129,7 +127,6 @@ def print_adult_income_dataset_info():
     print("\t\t• >50K: Individuals earning more than $50,000.")
 
 
-
 def print_california_housing_dataset_info():
     print("Dataset Description")
     print("\t• Number of Instances: 20,640")
@@ -145,7 +142,6 @@ def print_california_housing_dataset_info():
     print("\t\t• Longitude: Block group longitude. Continuous. Range: [-124.35, -114.31]")
     print("\t• Target:")
     print("\t\t• MedHouseVal: Median house value in block group (in $100,000s). Continuous. Range: [0.14999, 5.00001]")
-
 
 
 def print_diabetes_dataset_info():
@@ -165,6 +161,7 @@ def print_diabetes_dataset_info():
     print("\t\t• S6: Blood sugar level. Normalized. Continuous. Range: [-0.13776723, 0.13561183]")
     print("\t• Target:")
     print("\t\t• Disease progression one year after baseline. Continuous. Range: [25.0, 346.0]")
+
 
 def print_wine_quality_dataset_info():
     print("Dataset Description")
