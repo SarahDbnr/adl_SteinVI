@@ -14,6 +14,7 @@ This repository includes the following:
 1. Download and install python 3.11
 2. Create a new environment using `pipenv install --dev`
 3. Create new shell using `pipenv shell`
+4. Add PYTHONPATH to the rootdirectory of the project
 
 # Getting started
 

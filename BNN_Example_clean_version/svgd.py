@@ -4,9 +4,9 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from validation_and_evaluation import get_evaluation_metrics_over_predictions
-from BNN_Model import build_model
-from get_posteriori import get_posteriori
+from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_metrics_over_predictions
+from BNN_Example_clean_version.BNN_Model import build_model
+from BNN_Example_clean_version.get_posteriori import get_posteriori
 
 NUM_ITERATIONS = 30
 
@@ -205,6 +205,7 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
     updated_optimizer_state = jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
     return updated_optimizer_state
 
+# TODO: Ref better for variable count
 def update_optimizer_iteration(state):
 
     def increment_count_fn(x):
