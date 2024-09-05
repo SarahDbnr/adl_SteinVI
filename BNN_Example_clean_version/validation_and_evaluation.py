@@ -17,7 +17,9 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        print(f"\nAccuracy: {accuracy} with mean predictions of {predictions.squeeze().mean()}")
+        # TODO:
+        most_common_prediction = get_most_common_class_over_particles(predictions)
+        print(f"\nAccuracy: {accuracy} with mean predictions of {most_common_prediction.mean()}")
         return accuracy, None, predictions
 
 
@@ -44,3 +46,22 @@ def calculate_mean_span_over_particles(predictions):
     upper_quantile_prediction_over_particles = jnp.quantile(predictions, 1 - ALPHA / 2)
     lower_quantile_prediction_over_particles = jnp.quantile(predictions, ALPHA / 2)
     return upper_quantile_prediction_over_particles - lower_quantile_prediction_over_particles
+
+
+def calculate_number_of_different_classified_by_particles(predictions):
+    num_input_values = predictions.shape[1]
+    difference_classified_by_particles = []
+    for i in range(num_input_values):
+        unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
+        difference_classified_by_particles.append(col_counts.sum()-col_counts.max())
+    return difference_classified_by_particles
+
+
+def get_most_common_class_over_particles(predictions):
+    num_input_values = predictions.shape[1]
+    most_common_prediction_over_particles = []
+    for i in range(num_input_values):
+        unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
+        max_index = jnp.argmax(col_counts)
+        most_common_prediction_over_particles.append(unique_vals[max_index])
+    return most_common_prediction_over_particles
