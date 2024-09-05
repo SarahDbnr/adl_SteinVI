@@ -5,55 +5,37 @@ import jax
 import jax.numpy as jnp
 
 from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_metrics_over_predictions
-from BNN_Example_clean_version.BNN_Model import build_model
 from BNN_Example_clean_version.get_posteriori import get_posteriori
-
-NUM_ITERATIONS = 30
 
 DEFAULT_NUM_BATCHES = 10
 
-# Early stopping parameters
-WARM_UP_ITERATIONS = 150
-PATIENCE = 100
-MIN_DELTA = 0.01
-KERNEL_LENGTH = 0.05
 
-
-def train_with_svgd(dataset, output_size, network_structure, batch_size, particle_batch_size, num_particles, key, regression, optimizer):
+def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
-    # TODO: Change batch size to number of batches
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
-                                                  hidden_layers=network_structure,
-                                                  use_for_regression=regression)
 
     # Initialize particles for the SVGD algorithm
     rng_key_observed, rng_key_init = jax.random.split(key, 2)
-    initial_particles_vector = initialize_particles(param_vec, rng_key_init, num_particles)
+    initial_particles_vector = initialize_particles(param_vec, rng_key_init, parameter.num_particles)
 
-    logp_model = get_posteriori(nnet_model, tree_def, regression)
+    logp_model = get_posteriori(nnet_model, tree_def, parameter.use_for_regression)
 
     # Run SVGD training loop with Adam optimizer and validation accuracy tracking
     out, evaluation_metrics_1, evaluation_metrics_2 = svgd_training_loop(
         log_p=logp_model,
         initial_position=initial_particles_vector,
-        initial_kernel_parameters={"length_scale": KERNEL_LENGTH},
+        initial_kernel_parameters={"length_scale": parameter.kernel_length},
         kernel=rbf_kernel,
-        optimizer=optimizer,
-        num_iterations=NUM_ITERATIONS,
+        optimizer=parameter.optimizer,
         nnet_model=nnet_model,
         tree_def=tree_def,
         z_train=z_train,
         y_train=y_train,
         z_val=z_val,
         y_val=y_val,
-        batch_size=batch_size,
-        regression=regression,
-        particle_batch_size=particle_batch_size,
+        svgd_parameter=parameter,
     )
 
-    # TODO: plot mse, val_accuracies
-
-    return out, z_test, y_test, nnet_model, tree_def, evaluation_metrics_1, evaluation_metrics_2
+    return out, evaluation_metrics_1, evaluation_metrics_2
 
 # SVGD training loop with early stopping
 def svgd_training_loop(
@@ -62,16 +44,13 @@ def svgd_training_loop(
         initial_kernel_parameters,
         kernel,
         optimizer,
-        num_iterations,
         nnet_model,
         tree_def,
         z_train,
         y_train,
         z_val,
         y_val,
-        batch_size,
-        particle_batch_size,
-        regression=False,
+        svgd_parameter,
 ):
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
@@ -108,8 +87,8 @@ def svgd_training_loop(
             
         return state._replace(particles=new_particles, opt_state=new_opt_state)
 
-    for iteration in tqdm(range(num_iterations), desc="SVGD Training"):
-        if batch_size != 0:
+    for iteration in tqdm(range(svgd_parameter.num_iterations), desc="SVGD Training"):
+        if svgd_parameter.batch_size != 0:
             key = jax.random.PRNGKey(iteration)
             if particle_batch_size != 0:
                 z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
@@ -138,7 +117,7 @@ def svgd_training_loop(
                                                                                                              regression)
         evaluation_metrics_2.append(current_evaluation_metrics_2)
         evaluation_metrics_1.append(current_evaluation_metrics_1)
-        if regression:
+        if svgd_parameter.use_for_regression:
             print(f"\nMSE_val: {current_evaluation_metrics_1}")
             print(f"\nPrecision_val: {current_evaluation_metrics_2}")
         else:
@@ -146,9 +125,11 @@ def svgd_training_loop(
         best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1,
                                                                                            best_evaluation_metrics_1,
                                                                                            iteration, state, best_state,
-                                                                                           patience_counter)
-        if patience_counter >= PATIENCE:
+                                                                                           patience_counter,
+                                                                                           svgd_parameter)
+        if patience_counter >= svgd_parameter.patience_early_stopping:
             print(f"Early stopping triggered at iteration {iteration + 1}")
+            svgd_parameter.stopped_at_iteration = iteration + 1
             break
 
     if best_state is None:
@@ -224,10 +205,12 @@ def shuffle_paired_data(key, input_data, output_data):
     shuffled_output = jnp.take(output_data, permutation, axis=0)
     return shuffled_input, shuffled_output
 
-def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter):
+
+def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter,
+                             parameter):
     # Apply early stopping logic only after warm-up period
-    if iteration >= WARM_UP_ITERATIONS:
-        if val_accuracy > best_evaluation_metrics_1 + MIN_DELTA:
+    if iteration >= parameter.warm_up_iterations_early_stopping:
+        if val_accuracy > best_evaluation_metrics_1 + parameter.min_delta_early_stopping:
             best_evaluation_metrics_1 = val_accuracy
             patience_counter = 0
             best_state = state

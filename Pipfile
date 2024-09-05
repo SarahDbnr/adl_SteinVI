@@ -10,6 +10,7 @@ typing = "*"
 scikit-learn = "*"
 tensorflow = "*"
 pytest = "*"
+pandas = "*"
 
 [dev-packages]
 

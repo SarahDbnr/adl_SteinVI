@@ -1,6 +1,12 @@
 import jax
 import jax.numpy as jnp
-
+from sklearn.datasets import fetch_20newsgroups, fetch_openml
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from scipy.sparse import issparse  # Import from scipy to check for sparse matrices
 VAL_SPLIT = 0.1
 
 
@@ -30,10 +36,10 @@ def apply_data_settings_sklearn(new_dataset, fraction=1):
     y = new_dataset.target
     # Shuffle and split data
     key, subkey = jax.random.split(key)
-    perm = jax.random.permutation(subkey, len(x))
+    perm = jax.random.permutation(subkey, x.shape[0])
     x, y = x[perm], y[perm]
 
-    num_train = int(0.8 * len(x))
+    num_train = int(0.8 * x.shape[0])
     num_val = int(VAL_SPLIT * num_train)
 
     x_train, y_train = x[:num_train], y[:num_train]
@@ -65,3 +71,61 @@ def print_data_information(x_train, y_train, x_val, y_val, x_test, y_test):
     print(f"Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}")
     print(f"Validation data shape: {x_val.shape}, Validation labels shape: {y_val.shape}")
     print(f"Test data shape: {x_test.shape}, Test labels shape: {y_test.shape}")
+
+
+def newsgroup_datahandling():
+    # Load the 20 Newsgroups dataset
+    newsgroups = fetch_20newsgroups(subset='all')
+
+    # Convert the text data to a TF-IDF feature matrix
+    vectorizer = TfidfVectorizer(max_features=2000)  # Limiting to 2000 features to make it manageable
+    X = vectorizer.fit_transform(newsgroups.data).toarray()  # Convert sparse matrix to dense array
+    y = newsgroups.target
+
+    # Create a new dataset object as expected by `apply_data_settings_sklearn`
+    class CustomDataset:
+        def __init__(self, data, target):
+            self.data = data
+            self.target = target
+
+    dataset = CustomDataset(X, y)
+    return dataset
+
+def adult_income_datahandling():
+    # Fetching the Adult Income dataset
+    adult_income = fetch_openml(data_id=1590, as_frame=True)
+    
+    # Separate features and target
+    X = adult_income.data
+    y = (adult_income.target == '>50K').astype(int)  # Binary classification: '>50K' is class 1, otherwise 0
+    
+    # Define preprocessing for numerical and categorical data
+    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
+    categorical_features = X.select_dtypes(include=['object']).columns
+    
+    # Create a preprocessing pipeline
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), numeric_features),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+        ]
+    )
+    
+    # Apply preprocessing
+    X_processed = preprocessor.fit_transform(X)
+
+    # Convert the processed features to a dense array if necessary
+    if issparse(X_processed):
+        X_processed = X_processed.toarray()
+
+    # Convert y to a numpy array
+    y = y.to_numpy()
+
+    # Create a new dataset object as expected by `apply_data_settings_sklearn`
+    class CustomDataset:
+        def __init__(self, data, target):
+            self.data = data
+            self.target = target
+
+    dataset = CustomDataset(X_processed, y)
+    return dataset
