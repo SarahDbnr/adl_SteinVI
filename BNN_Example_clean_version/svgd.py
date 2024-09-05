@@ -219,5 +219,5 @@ def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration,
             best_state = state
         else:
             patience_counter += 1
-            return None, float('-inf'), patience_counter
+            return None, best_evaluation_metrics_1, patience_counter
     return best_state, best_evaluation_metrics_1, patience_counter

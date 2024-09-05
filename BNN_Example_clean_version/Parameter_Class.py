@@ -7,7 +7,7 @@ class Parameter:
     num_iterations: int
     stopped_at_iteration: int
     kernel_length: float = 0.05
-    warm_up_iterations_early_stopping: int = 40
+    warm_up_iterations_early_stopping: int = 30
     patience_early_stopping: int = 15
     min_delta_early_stopping: float = 0.005
 
