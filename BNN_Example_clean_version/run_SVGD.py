@@ -80,7 +80,9 @@ def run_MNIST(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
-def run_MNIST_minibatched_particles():
+def run_MNIST_minibatched_particles(info=False):
+    if info:
+        datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
     dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
 
@@ -92,8 +94,8 @@ def run_MNIST_minibatched_particles():
             staircase=True
         )
     )
-    
-    parameter = Parameter(optimizer, regression=False)
+
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles = 4, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -272,4 +274,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes(info=False)
+    run_MNIST_minibatched_particles(info=False)

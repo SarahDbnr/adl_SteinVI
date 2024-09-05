@@ -7,7 +7,6 @@ from BNN_Example_clean_version.BNN_Model import build_model
 from BNN_Example_clean_version import datasets_info
 from BNN_Example_clean_version.regression_toy_example import get_regression_toy_example
 from BNN_Example_clean_version.svgd import train_with_svgd
-from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_metrics_over_predictions
 from BNN_Example_clean_version.data_handling import apply_data_settings_keras
 from print_evaluation import print_evaluation_regression_to_csv, print_evaluation_multiclass_to_csv
 
@@ -85,4 +84,4 @@ def run_regression_toy_example():
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    run_MNIST()

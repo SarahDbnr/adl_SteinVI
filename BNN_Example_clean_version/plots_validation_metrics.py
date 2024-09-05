@@ -1,7 +1,7 @@
 import os
 import datetime
 import jax
-
+import matplotlib.pyplot as plt
 
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
                                     kernel_length=None, adam_learning_rate=None,
@@ -46,9 +46,6 @@ def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_part
     plt.close()
 
     print(f"Plot saved as: {filepath}")
-
-
-import matplotlib.pyplot as plt
 
 
 def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None, network_structure=None,

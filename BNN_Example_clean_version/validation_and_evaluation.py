@@ -17,9 +17,6 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        # TODO:
-        most_common_prediction = jnp.array(get_most_common_class_over_particles(predictions))
-        print(f"\nAccuracy: {accuracy} with mean predictions of {most_common_prediction.mean()}")
         return accuracy, None, predictions
 
 

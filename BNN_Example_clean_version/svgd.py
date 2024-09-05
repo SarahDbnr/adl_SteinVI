@@ -90,31 +90,31 @@ def svgd_training_loop(
     for iteration in tqdm(range(svgd_parameter.num_iterations), desc="SVGD Training"):
         if svgd_parameter.batch_size != 0:
             key = jax.random.PRNGKey(iteration)
-            if particle_batch_size != 0:
-                z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
+            if svgd_parameter.particle_batch_size != 0:
+                z_train_batched, y_train_batched = create_minibatches(svgd_parameter.batch_size, z_train, y_train, key)
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
-                    particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
+                    particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size)
                     for indices in particle_indices:
                         state = training_minibatched_step(state, indices, training_batch_input, training_batch_output)
                     state = update_optimizer_iteration(state)
             else:
-                z_train_batched, y_train_batched = create_minibatches(batch_size, z_train, y_train, key)
+                z_train_batched, y_train_batched = create_minibatches(svgd_parameter.batch_size, z_train, y_train, key)
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
                     state = training_step(state, training_batch_input, training_batch_output)
-        elif particle_batch_size != 0: 
-            particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], batch_size)
+        elif svgd_parameter.particle_batch_size != 0: 
+            particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size)
             for indices in particle_indices:
                 state = training_minibatched_step(state, indices, z_train, y_train)
             state = update_optimizer_iteration(state)
         else:
             state = training_step(state, z_train, y_train)
 
-        current_evaluation_metrics_1, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
+        current_evaluation_metrics_1, _, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
                                                                                                              nnet_model,
                                                                                                              tree_def,
                                                                                                              z_val,
                                                                                                              y_val,
-                                                                                                             regression)
+                                                                                                             svgd_parameter.use_for_regression)
         evaluation_metrics_2.append(current_evaluation_metrics_2)
         evaluation_metrics_1.append(current_evaluation_metrics_1)
         if svgd_parameter.use_for_regression:
@@ -161,6 +161,9 @@ def create_minibatches(batch_size, input_data, output_data, key):
     return input_data, output_data
 
 def create_particle_minibatch_indices(key, num_particles, batch_size):
+    if num_particles < batch_size:
+        num_batches = 2
+        print("\n WARNING: Batch size to large, particle batching with 2 batches will be used!")
     indices = jax.random.permutation(key, num_particles)
     num_batches = max(1, num_particles // batch_size)
     batched_indices = jnp.array_split(indices, num_batches)

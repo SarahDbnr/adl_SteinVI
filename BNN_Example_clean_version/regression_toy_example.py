@@ -1,6 +1,7 @@
 import jax
-from BNN_Example_clean_version.data_handling import print_data_information, VAL_SPLIT
 import math
+from BNN_Example_clean_version.data_handling import print_data_information, VAL_SPLIT
+
 
 
 def generate_data(x):
