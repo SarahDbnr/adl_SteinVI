@@ -99,6 +99,7 @@ def svgd_training_loop(
                                                                                            svgd_parameter)
         if patience_counter >= svgd_parameter.patience_early_stopping:
             print(f"Early stopping triggered at iteration {iteration + 1}")
+            svgd_parameter.stopped_at_iteration = iteration + 1
             break
 
     # If we didn't trigger early stopping, make sure we return the best state

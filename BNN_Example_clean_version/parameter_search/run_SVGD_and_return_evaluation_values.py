@@ -8,11 +8,8 @@ from BNN_Example_clean_version import datasets_info
 from BNN_Example_clean_version.regression_toy_example import get_regression_toy_example
 from BNN_Example_clean_version.svgd import train_with_svgd
 from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_metrics_over_predictions
-from BNN_Example_clean_version.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, \
-    newsgroup_datahandling, adult_income_datahandling
-from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from BNN_Example_clean_version.plots_validation_metrics import plot_and_save_evaluation_metric
-from Evalutation_Class import EvaluationRegression, EvaluationMulticlass
+from BNN_Example_clean_version.data_handling import apply_data_settings_keras
+from print_evaluation import print_evaluation_regression_to_csv, print_evaluation_multiclass_to_csv
 
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure, name):
@@ -28,26 +25,22 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure, n
 
     test_predictions, test_precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
 
-    evaluation = EvaluationRegression(name, y_test, test_predictions, test_precisions)
-
-    print(evaluation)
+    print_evaluation_regression_to_csv(name, parameter, y_test, test_predictions, test_precisions)
 
 
 def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure, name):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
-                                                  hidden_layers=network_structure,
-                                                  use_for_regression=parameter.use_for_regression)
+    nnet_model, tree_def, param_vec_ini = build_model(key, z_train, output_size=output_size,
+                                                      hidden_layers=network_structure,
+                                                      use_for_regression=parameter.use_for_regression)
 
-    out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key)
+    out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, param_vec_ini, parameter, key)
 
-    accuracy_test, _ = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test, y_test,
-                                                               model_regression=False)
-    print(f"\nTest accuracy: {accuracy_test}")
-    plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="Accuracy")
+    test_predictions, test_precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
+
+    print_evaluation_multiclass_to_csv(name, parameter, y_test, test_predictions)
 
 
 def run_MNIST(info=False):
@@ -65,7 +58,9 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
+    # num_particles = [10,20,50,80,100,150,200,250]
+    #    for
+    parameter = Parameter(optimizer, regression=False, num_particles=2, num_iterations=20)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10,
                                 name="MNIST")
 

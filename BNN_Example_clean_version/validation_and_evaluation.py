@@ -18,7 +18,7 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
     else:
         accuracy = calculate_accuracy(precisions, true_output)
         # TODO:
-        most_common_prediction = get_most_common_class_over_particles(predictions)
+        most_common_prediction = jnp.array(get_most_common_class_over_particles(predictions))
         print(f"\nAccuracy: {accuracy} with mean predictions of {most_common_prediction.mean()}")
         return accuracy, None, predictions
 
@@ -61,7 +61,12 @@ def get_most_common_class_over_particles(predictions):
     num_input_values = predictions.shape[1]
     most_common_prediction_over_particles = []
     for i in range(num_input_values):
-        unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
-        max_index = jnp.argmax(col_counts)
-        most_common_prediction_over_particles.append(unique_vals[max_index])
+        most_common_class = get_most_common_class(predictions[:, i])
+        most_common_prediction_over_particles.append(most_common_class)
     return most_common_prediction_over_particles
+
+
+def get_most_common_class(column):
+    unique_vals, col_counts = jnp.unique(column, return_counts=True)
+    max_index = jnp.argmax(col_counts)
+    return unique_vals[max_index]
