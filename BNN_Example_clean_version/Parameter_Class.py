@@ -6,9 +6,9 @@ class Parameter:
     num_iterations: int
     stopped_at_iteration: int
     kernel_length: float = 0.05
-    warm_up_iterations_early_stopping: int = 150
-    patience_early_stopping: int = 100
-    min_delta_early_stopping: float = 0.01
+    warm_up_iterations_early_stopping: int = 50
+    patience_early_stopping: int = 30
+    min_delta_early_stopping: float = 0.05
 
     def __init__(self, optimizer, regression, batch_size=None, num_particles=10, num_iterations=100):
         self.optimizer = optimizer

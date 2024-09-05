@@ -58,11 +58,11 @@ def run_MNIST(info=False):
         )
     )
 
-    # num_particles = [10,20,50,80,100,150,200,250]
-    #    for
-    parameter = Parameter(optimizer, regression=False, num_particles=2, num_iterations=20)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10,
-                                name="MNIST")
+    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
+    for num_particles in array_num_particles:
+        parameter = Parameter(optimizer, regression=False, num_particles=num_particles, num_iterations=200)
+        run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10,
+                                    name="MNIST")
 
 
 def run_regression_toy_example():
@@ -77,9 +77,11 @@ def run_regression_toy_example():
         )
     )
 
-    parameter = Parameter(optimizer, regression=True)
-    run_svgd_on_regression(dataset=regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
-                           output_size=2, name="Regression Toy Example")
+    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
+    for num_particles in array_num_particles:
+        parameter = Parameter(optimizer, regression=True, num_particles=num_particles)
+        run_svgd_on_regression(dataset=regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
+                               output_size=2, name="Regression Toy Example")
 
 
 if __name__ == "__main__":
