@@ -192,7 +192,7 @@ def get_batched_optimizer_state(optimizer_state, indices):
             return jnp.take(x, indices, axis=0)
         return x
 
-    batched_optimizer_state = jax.tree_map(batch_fn, optimizer_state)
+    batched_optimizer_state = jax.tree.map(batch_fn, optimizer_state)
     return batched_optimizer_state
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
@@ -202,7 +202,7 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
             return orig.at[indices].set(batched)
         return orig
     
-    updated_optimizer_state = jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
+    updated_optimizer_state = jax.tree.map(update_fn, optimizer_state, batched_state.opt_state)
     return updated_optimizer_state
 
 # TODO: Ref better for variable count
@@ -213,7 +213,7 @@ def update_optimizer_iteration(state):
             return x + 1
         return x
 
-    new_optimizer_state = jax.tree_map(increment_count_fn, state.opt_state)
+    new_optimizer_state = jax.tree.map(increment_count_fn, state.opt_state)
     return state._replace(opt_state=new_optimizer_state)
 
 @jax.jit
