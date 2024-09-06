@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 
-from BNN_Example_clean_version.get_posteriori import logp_unnormalized_posterior_regression, link_function
-from BNN_Example_clean_version.regression_toy_example import get_regression_toy_example
-from BNN_Example_clean_version.BNN_Model import build_model
+from src.algorithm.get_posteriori import logp_unnormalized_posterior_regression, link_function
+from src.data.regression_toy_example import get_regression_toy_example
+from src.model.BNN_Model import build_model
 
 def test_logp_unnormalized_posterior_regression():
     # given

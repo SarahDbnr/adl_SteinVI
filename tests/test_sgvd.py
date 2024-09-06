@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import jax
 
-from BNN_Example_clean_version.svgd import create_particle_minibatch_indices
+from src.algorithm.svgd import create_particle_minibatch_indices
 
 def test_create_particle_minibatch_indices():
     # given

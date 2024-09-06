@@ -1,12 +1,12 @@
 import pandas as pd
 import jax.numpy as jnp
 
-from BNN_Example_clean_version.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
+from src.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
                                                                  calculate_accuracy,
                                                                  calculate_number_of_different_classified_by_particles,
                                                                  get_most_common_class_over_particles,
                                                                  get_most_common_class)
-from BNN_Example_clean_version.svgd import DEFAULT_NUM_BATCHES
+from src.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
 def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):

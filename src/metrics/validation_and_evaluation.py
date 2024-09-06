@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 
-from BNN_Example_clean_version.get_posteriori import link_function
+from src.algorithm.get_posteriori import link_function
 
 ALPHA = 0.05
 

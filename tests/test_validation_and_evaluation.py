@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 
-from BNN_Example_clean_version.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
+from src.metrics.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
                                                                  get_most_common_class_over_particles)
 
 

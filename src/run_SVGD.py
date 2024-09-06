@@ -2,16 +2,16 @@ import jax
 import tensorflow as tf
 from optax import adam, exponential_decay
 
-from regression_toy_example import get_regression_toy_example
-from svgd import train_with_svgd
-from BNN_Example_clean_version.BNN_Model import build_model
-from validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
-from data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
+from src.data.regression_toy_example import get_regression_toy_example
+from src.algorithm.svgd import train_with_svgd
+from src.model.BNN_Model import build_model
+from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
+from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals
+from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals
 from Parameter_Class import Parameter
-import datasets_info
+import src.data.datasets_info as datasets_info
 
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure):

@@ -1,6 +1,6 @@
 import jax
 import math
-from BNN_Example_clean_version.data_handling import print_data_information, VAL_SPLIT
+from src.data.data_handling import print_data_information, VAL_SPLIT
 
 
 

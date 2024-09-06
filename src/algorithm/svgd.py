@@ -4,8 +4,8 @@ from tqdm import tqdm
 import jax
 import jax.numpy as jnp
 
-from BNN_Example_clean_version.validation_and_evaluation import get_evaluation_metrics_over_predictions
-from BNN_Example_clean_version.get_posteriori import get_posteriori
+from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
+from src.algorithm.get_posteriori import get_posteriori
 
 DEFAULT_NUM_BATCHES = 10
 

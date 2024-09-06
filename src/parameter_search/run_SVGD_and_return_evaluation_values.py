@@ -2,12 +2,12 @@ import jax
 import tensorflow as tf
 from optax import adam, exponential_decay
 
-from BNN_Example_clean_version.Parameter_Class import Parameter
-from BNN_Example_clean_version.BNN_Model import build_model
-from BNN_Example_clean_version import datasets_info
-from BNN_Example_clean_version.regression_toy_example import get_regression_toy_example
-from BNN_Example_clean_version.svgd import train_with_svgd
-from BNN_Example_clean_version.data_handling import apply_data_settings_keras
+from src.Parameter_Class import Parameter
+from src.model.BNN_Model import build_model
+from src.data import datasets_info
+from src.data.regression_toy_example import get_regression_toy_example
+from src.algorithm.svgd import train_with_svgd
+from src.data.data_handling import apply_data_settings_keras
 from print_evaluation import print_evaluation_regression_to_csv, print_evaluation_multiclass_to_csv
 
 
