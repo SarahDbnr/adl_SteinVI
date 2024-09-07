@@ -37,11 +37,8 @@ def logp_unnormalized_posterior_regression(params, dz, dy, nnet_model, treedef):
     location = prediction_mean.squeeze()
     # set maximal standard deviation
     scale = jax.vmap(lambda p: link_function(p))(prediction_var_score.squeeze())
-    log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
 
-    # jax.debug.print("\nPrecision: {prediction_var_score}Scale: {scale}, Prior: {log_prior}, Likelihood: {"
-    #                "log_likelihood}", prediction_var_score=prediction_var_score.squeeze(), scale=scale,
-    #                log_prior=log_prior, log_likelihood=log_likelihood)
+    log_likelihood = jnp.sum(norm.logpdf(dy, loc=location, scale=scale))
 
     return log_prior + log_likelihood
 

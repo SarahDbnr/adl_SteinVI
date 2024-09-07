@@ -13,6 +13,7 @@ pytest = "*"
 pandas = "*"
 
 [dev-packages]
+sphinx = "*"
 
 [requires]
 python_version = "3.10"

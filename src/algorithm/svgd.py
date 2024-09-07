@@ -109,7 +109,7 @@ def svgd_training_loop(
         else:
             state = training_step(state, z_train, y_train)
 
-        current_evaluation_metrics_1, _, current_evaluation_metrics_2 = get_evaluation_metrics_over_predictions(state,
+        current_evaluation_metrics_1, current_evaluation_metrics_2, _ = get_evaluation_metrics_over_predictions(state,
                                                                                                              nnet_model,
                                                                                                              tree_def,
                                                                                                              z_val,
@@ -119,7 +119,7 @@ def svgd_training_loop(
         evaluation_metrics_1.append(current_evaluation_metrics_1)
         if svgd_parameter.use_for_regression:
             print(f"\nMSE_val: {current_evaluation_metrics_1}")
-            print(f"\nPrecision_val: {current_evaluation_metrics_2}")
+            print(f"Precision_val: {current_evaluation_metrics_2}")
         else:
             print(f"\nAccuracy: {current_evaluation_metrics_1}")
         best_state, best_evaluation_metrics_1, patience_counter = check_for_early_stopping(current_evaluation_metrics_1,

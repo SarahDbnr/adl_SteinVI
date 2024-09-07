@@ -25,12 +25,13 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def,
                                                            param_vec_ini, parameter, key)
 
-    print("For Test Data:")
     mse_test, averaged_precision_test, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model,
                                                                                                   tree_def,
                                                                                                   z_test,
                                                                                                   y_test,
                                                                                                   model_regression=True)
+    print("For Test Data: MSE ", mse_test, " Averaged Precision ", averaged_precision_test)
+
     # plot_mse(averaged_precision)
     plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="MSE")
@@ -52,10 +53,10 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
 
     out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key)
 
-    print("For Test Data:")
     accuracy_test, _, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
                                                                                  y_test,
                                                                                  model_regression=False)
+    print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
     print_summary_over_particles(predictions_test)
@@ -146,15 +147,15 @@ def run_20_newsgroups(info=True):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.001,
+            init_value=0.05,
             transition_steps=100,
             decay_rate=0.95,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+    parameter = Parameter(optimizer, regression=False, batch_size=100)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 200, 75, 40), output_size=20)
 
 
 def run_adult_income(info=False):
@@ -165,15 +166,15 @@ def run_adult_income(info=False):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
+            init_value=0.001,
+            transition_steps=1000,
             decay_rate=0.95,
-            staircase=True
+            staircase=True  
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+    parameter = Parameter(optimizer, regression=False, batch_size=2000)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=2)
 
 
 
@@ -193,11 +194,11 @@ def run_iris(info=False):
     )
 
     parameter = Parameter(optimizer, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=3)
 
 
-def run_regression_toy_example():
-    regression_toy_example = get_regression_toy_example(num_points=100)
+def run_regression_toy_example(info=False):
+    regression_toy_example = get_regression_toy_example(num_points=10000)
 
     optimizer = adam(
         exponential_decay(
@@ -208,12 +209,13 @@ def run_regression_toy_example():
         )
     )
 
-    parameter = Parameter(optimizer, regression=True)
-    run_svgd_on_multiclass_data(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=10)
+    parameter = Parameter(optimizer, num_iterations=250, regression=True)
+    parameter.set_early_stopping(10000, 1000, 3)
+    run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=2)
 
 
-def run_california_housing(info=False):  # TODO: Analyse, dosnt work properly for all stages depending on batch size
+def run_california_housing(info=False):
     if info:
         datasets_info.print_california_housing_dataset_info()
     california_housing = fetch_california_housing()
@@ -221,16 +223,27 @@ def run_california_housing(info=False):  # TODO: Analyse, dosnt work properly fo
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
-            decay_rate=0.95,
+            init_value=0.075,
+            transition_steps=150,
+            decay_rate=0.975,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, regression=True)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=10)
+    #optimizer = adam(
+    #    exponential_decay(
+    #        init_value=0.025,
+    #        transition_steps=150,
+    #        decay_rate=0.995,
+    #        staircase=True
+    #    )
+    #)
+
+    parameter = Parameter(optimizer, regression=True, batch_size=1000, num_iterations=10000)
+    parameter.set_early_stopping(10000, 1000, 3)
+
+    run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=2)
 
 
 def run_diabetes(info=False):
@@ -241,16 +254,17 @@ def run_diabetes(info=False):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
+            init_value=0.01,
+            transition_steps=50,
             decay_rate=0.95,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, regression=True)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=10)
+    parameter = Parameter(optimizer, regression=True ,num_iterations=1000)
+    parameter.set_early_stopping(10000, 1000, 3)
+    run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=2)
 
 
 def run_wine_quality(info=False):
@@ -261,17 +275,17 @@ def run_wine_quality(info=False):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
+            init_value=0.005,
+            transition_steps=10,
             decay_rate=0.95,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, regression=True)
+    parameter = Parameter(optimizer, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=10)
+                                output_size=3)
 
 
 if __name__ == "__main__":
-    run_MNIST_minibatched_particles(info=False)
+    run_california_housing(info=True)
