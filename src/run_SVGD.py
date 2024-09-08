@@ -61,7 +61,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    print_summary_over_particles(predictions_test)
+    #print_summary_over_particles(predictions_test)
 
 
 def run_MNIST(info=False):
@@ -290,4 +290,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes(info=True)
+    run_MNIST_minibatched_particles(info=True)

@@ -60,7 +60,7 @@ def svgd_training_loop(
     best_state = None
     evaluation_metrics_1 = []  # mse and accuracy
     evaluation_metrics_2 = []  # val_accuracies
-
+    first_loop = True
     state = svgd.init(initial_position, initial_kernel_parameters)
 
     # Define a training step function that JIT compiles the SVGD step
@@ -88,12 +88,13 @@ def svgd_training_loop(
         return state._replace(particles=new_particles, opt_state=new_opt_state)
 
     for iteration in tqdm(range(svgd_parameter.num_iterations), desc="SVGD Training"):
+        key = jax.random.PRNGKey(iteration)
         if svgd_parameter.batch_size != 0:
-            key = jax.random.PRNGKey(iteration)
             if svgd_parameter.particle_batch_size != 0:
                 z_train_batched, y_train_batched = create_minibatches(svgd_parameter.batch_size, z_train, y_train, key)
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
-                    particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size)
+                    particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size, first_loop)
+                    first_loop = False
                     for indices in particle_indices:
                         state = training_minibatched_step(state, indices, training_batch_input, training_batch_output)
                     state = update_optimizer_iteration(state)
@@ -102,7 +103,8 @@ def svgd_training_loop(
                 for training_batch_input, training_batch_output in zip(z_train_batched, y_train_batched):
                     state = training_step(state, training_batch_input, training_batch_output)
         elif svgd_parameter.particle_batch_size != 0: 
-            particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size)
+            particle_indices = create_particle_minibatch_indices(key, state.particles.shape[0], svgd_parameter.particle_batch_size, first_loop)
+            first_loop=False
             for indices in particle_indices:
                 state = training_minibatched_step(state, indices, z_train, y_train)
             state = update_optimizer_iteration(state)
@@ -160,12 +162,14 @@ def create_minibatches(batch_size, input_data, output_data, key):
         return input_data, output_data
     return input_data, output_data
 
-def create_particle_minibatch_indices(key, num_particles, batch_size):
+def create_particle_minibatch_indices(key, num_particles, batch_size, first_loop):
+    indices = jax.random.permutation(key, num_particles)
     if num_particles < batch_size:
         num_batches = 2
-        print("\n WARNING: Batch size to large, particle batching with 2 batches will be used!")
-    indices = jax.random.permutation(key, num_particles)
-    num_batches = max(1, num_particles // batch_size)
+        if first_loop:
+            print("\n WARNING: Batch size to large, particle batching with 2 batches will be used!")
+    else: 
+        num_batches = max(1, num_particles // batch_size)
     batched_indices = jnp.array_split(indices, num_batches)
     return batched_indices
 
