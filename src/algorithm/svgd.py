@@ -11,6 +11,19 @@ DEFAULT_NUM_BATCHES = 10
 
 
 def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
+    """_summary_
+
+    Args:
+        dataset (_type_): _description_
+        nnet_model (_type_): _description_
+        tree_def (_type_): _description_
+        param_vec (_type_): _description_
+        parameter (_type_): _description_
+        key (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
 
     # Initialize particles for the SVGD algorithm
@@ -52,6 +65,25 @@ def svgd_training_loop(
         y_val,
         svgd_parameter,
 ):
+    """_summary_
+
+    Args:
+        log_p (_type_): _description_
+        initial_position (_type_): _description_
+        initial_kernel_parameters (_type_): _description_
+        kernel (_type_): _description_
+        optimizer (_type_): _description_
+        nnet_model (_type_): _description_
+        tree_def (_type_): _description_
+        z_train (_type_): _description_
+        y_train (_type_): _description_
+        z_val (_type_): _description_
+        y_val (_type_): _description_
+        svgd_parameter (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
     step = jax.jit(svgd.step)
@@ -66,11 +98,32 @@ def svgd_training_loop(
     # Define a training step function that JIT compiles the SVGD step
     @jax.jit
     def training_step(state, dz, dy):
+        """_summary_
+
+        Args:
+            state (_type_): _description_
+            dz (_type_): _description_
+            dy (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """        
         return step(state, dz=dz, dy=dy)
     
     # Define a training step function that JIT compiles the SVGD step with minibatched particles
     @jax.jit
     def training_minibatched_step(state, particle_indices, dz, dy):
+        """_summary_
+
+        Args:
+            state (_type_): _description_
+            particle_indices (_type_): _description_
+            dz (_type_): _description_
+            dy (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """        
         # Get the current state of the optimizer and particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
         optimizer_state = state.opt_state
@@ -138,6 +191,16 @@ def svgd_training_loop(
     return best_state, evaluation_metrics_1, evaluation_metrics_2
 
 def initialize_particles(param_vec, rng_key_init, num_particles):
+    """_summary_
+
+    Args:
+        param_vec (_type_): _description_
+        rng_key_init (_type_): _description_
+        num_particles (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     initial_particles_vector = jax.random.normal(
         rng_key_init,
         shape=(num_particles,) + param_vec.shape
@@ -146,6 +209,17 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
 
     
 def create_minibatches(batch_size, input_data, output_data, key):
+    """_summary_
+
+    Args:
+        batch_size (_type_): _description_
+        input_data (_type_): _description_
+        output_data (_type_): _description_
+        key (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     if batch_size != 0:
         if batch_size is None:
             num_batches = DEFAULT_NUM_BATCHES
@@ -161,6 +235,16 @@ def create_minibatches(batch_size, input_data, output_data, key):
     return input_data, output_data
 
 def create_particle_minibatch_indices(key, num_particles, batch_size):
+    """_summary_
+
+    Args:
+        key (_type_): _description_
+        num_particles (_type_): _description_
+        batch_size (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     if num_particles < batch_size:
         num_batches = 2
         print("\n WARNING: Batch size to large, particle batching with 2 batches will be used!")
@@ -170,6 +254,12 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     return batched_indices
 
 def get_batched_optimizer_state(optimizer_state, indices):
+    """_summary_
+
+    Args:
+        optimizer_state (_type_): _description_
+        indices (_type_): _description_
+    """    
 
     def batch_fn(x):
         if hasattr(x, 'ndim') and x.ndim > 0:
@@ -180,6 +270,13 @@ def get_batched_optimizer_state(optimizer_state, indices):
     return batched_optimizer_state
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
+    """_summary_
+
+    Args:
+        optimizer_state (_type_): _description_
+        batched_state (_type_): _description_
+        indices (_type_): _description_
+    """    
     
     def update_fn(orig, batched):
         if hasattr(orig, 'ndim') and orig.ndim > 0:
@@ -191,6 +288,11 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
 
 # TODO: Ref better for variable count
 def update_optimizer_iteration(state):
+    """_summary_
+
+    Args:
+        state (_type_): _description_
+    """    
 
     def increment_count_fn(x):
         if isinstance(x, jnp.ndarray) and jnp.issubdtype(x.dtype, jnp.integer):
@@ -202,6 +304,16 @@ def update_optimizer_iteration(state):
 
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):
+    """_summary_
+
+    Args:
+        key (_type_): _description_
+        input_data (_type_): _description_
+        output_data (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     num_samples = input_data.shape[0]
     permutation = jax.random.permutation(key, num_samples)
     shuffled_input = jnp.take(input_data, permutation, axis=0)
@@ -211,6 +323,20 @@ def shuffle_paired_data(key, input_data, output_data):
 
 def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter,
                              parameter):
+    """check_for_early_stopping
+
+    Args:
+        val_accuracy (_type_): _description_
+        best_evaluation_metrics_1 (_type_): _description_
+        iteration (_type_): _description_
+        state (_type_): _description_
+        best_state (_type_): _description_
+        patience_counter (_type_): _description_
+        parameter (_type_): _description_
+
+    Returns:
+        best_state: test
+    """    
     # Apply early stopping logic only after warm-up period
     if iteration >= parameter.warm_up_iterations_early_stopping:
         if val_accuracy > best_evaluation_metrics_1 + parameter.min_delta_early_stopping:

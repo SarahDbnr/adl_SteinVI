@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>svgd module &mdash; Bayesian Neural Networks through Stein VI in JAX 23.09.2024 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2f4b7aac"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="data_handling module" href="data_handling.html" />
+    <link rel="prev" title="run_SVGD module" href="run_SVGD.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bayesian Neural Networks through Stein VI in JAX
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">svgd module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.check_for_early_stopping"><code class="docutils literal notranslate"><span class="pre">check_for_early_stopping()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.create_minibatches"><code class="docutils literal notranslate"><span class="pre">create_minibatches()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.create_particle_minibatch_indices"><code class="docutils literal notranslate"><span class="pre">create_particle_minibatch_indices()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.get_batched_optimizer_state"><code class="docutils literal notranslate"><span class="pre">get_batched_optimizer_state()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.initialize_particles"><code class="docutils literal notranslate"><span class="pre">initialize_particles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.shuffle_paired_data"><code class="docutils literal notranslate"><span class="pre">shuffle_paired_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.svgd_training_loop"><code class="docutils literal notranslate"><span class="pre">svgd_training_loop()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.train_with_svgd"><code class="docutils literal notranslate"><span class="pre">train_with_svgd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_iteration"><code class="docutils literal notranslate"><span class="pre">update_optimizer_iteration()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets_info.html">datasets_info module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="print_evaluation.html">print_evaluation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regression_toy_example.html">regression_toy_example module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_SVGD_and_return_evaluation_values.html">run_SVGD_and_return_evaluation_values module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validation_and_evaluation.html">validation_and_evaluation module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bayesian Neural Networks through Stein VI in JAX</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">svgd module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/svgd.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.algorithm.svgd">
+<span id="svgd-module"></span><h1>svgd module<a class="headerlink" href="#module-src.algorithm.svgd" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.check_for_early_stopping">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">check_for_early_stopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val_accuracy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_evaluation_metrics_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.check_for_early_stopping" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val_accuracy</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>best_evaluation_metrics_1</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>iteration</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>state</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>best_state</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>patience_counter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>test</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>best_state</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.create_minibatches">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">create_minibatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.create_minibatches" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>input_data</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>output_data</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.create_particle_minibatch_indices">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">create_particle_minibatch_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.create_particle_minibatch_indices" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>num_particles</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>batch_size</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.get_batched_optimizer_state">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">get_batched_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.get_batched_optimizer_state" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer_state</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>indices</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.initialize_particles">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">initialize_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_key_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.initialize_particles" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_vec</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>rng_key_init</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>num_particles</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.shuffle_paired_data">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">shuffle_paired_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.shuffle_paired_data" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>input_data</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>output_data</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.svgd_training_loop">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">svgd_training_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_kernel_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svgd_parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.svgd_training_loop" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_p</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>initial_position</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>initial_kernel_parameters</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>kernel</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>optimizer</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>nnet_model</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>tree_def</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>z_train</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>y_train</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>z_val</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>y_val</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>svgd_parameter</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.train_with_svgd">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">train_with_svgd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.train_with_svgd" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>nnet_model</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>tree_def</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>param_vec</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.update_optimizer_iteration">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.update_optimizer_iteration" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.algorithm.svgd.update_optimizer_state">
+<span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batched_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.update_optimizer_state" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer_state</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>batched_state</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>indices</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="run_SVGD.html" class="btn btn-neutral float-left" title="run_SVGD module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_handling.html" class="btn btn-neutral float-right" title="data_handling module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Sarah Deubner, Kilian Runnwerth and Luke-Liam Bergmeier.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
