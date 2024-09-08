@@ -13,7 +13,7 @@ This repository employs a Stein Variational Inference (Stein VI) approach to app
 
 Parameter_Class
 run_SVGD
-get_posterior
+get_posteriori
 svgd
 data_handling
 BNN_Model

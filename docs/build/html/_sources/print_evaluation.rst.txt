@@ -1,7 +1,7 @@
 print\_evaluation module
 ========================
 
-.. automodule:: print_evaluation
+.. automodule:: src.parameter_search.print_evaluation
    :members:
    :undoc-members:
    :show-inheritance:

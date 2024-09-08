@@ -46,8 +46,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter_Class module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parameter_Class module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Parameter_Class.Parameter"><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.batch_size"><code class="docutils literal notranslate"><span class="pre">Parameter.batch_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.kernel_length"><code class="docutils literal notranslate"><span class="pre">Parameter.kernel_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.min_delta_early_stopping"><code class="docutils literal notranslate"><span class="pre">Parameter.min_delta_early_stopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.num_iterations"><code class="docutils literal notranslate"><span class="pre">Parameter.num_iterations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.num_particles"><code class="docutils literal notranslate"><span class="pre">Parameter.num_particles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.optimizer"><code class="docutils literal notranslate"><span class="pre">Parameter.optimizer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.particle_batch_size"><code class="docutils literal notranslate"><span class="pre">Parameter.particle_batch_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.patience_early_stopping"><code class="docutils literal notranslate"><span class="pre">Parameter.patience_early_stopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.set_early_stopping"><code class="docutils literal notranslate"><span class="pre">Parameter.set_early_stopping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.stopped_at_iteration"><code class="docutils literal notranslate"><span class="pre">Parameter.stopped_at_iteration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.use_for_regression"><code class="docutils literal notranslate"><span class="pre">Parameter.use_for_regression</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Parameter_Class.Parameter.warm_up_iterations_early_stopping"><code class="docutils literal notranslate"><span class="pre">Parameter.warm_up_iterations_early_stopping</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
@@ -83,8 +101,84 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="parameter-class-module">
-<h1>Parameter_Class module<a class="headerlink" href="#parameter-class-module" title="Link to this heading"></a></h1>
+  <section id="module-src.Parameter_Class">
+<span id="parameter-class-module"></span><h1>Parameter_Class module<a class="headerlink" href="#module-src.Parameter_Class" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Parameter_Class.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.Parameter_Class.Parameter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.batch_size">
+<span class="sig-name descname"><span class="pre">batch_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.batch_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.kernel_length">
+<span class="sig-name descname"><span class="pre">kernel_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.kernel_length" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.min_delta_early_stopping">
+<span class="sig-name descname"><span class="pre">min_delta_early_stopping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.005</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.min_delta_early_stopping" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.num_iterations">
+<span class="sig-name descname"><span class="pre">num_iterations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.num_iterations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.num_particles">
+<span class="sig-name descname"><span class="pre">num_particles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.num_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.optimizer">
+<span class="sig-name descname"><span class="pre">optimizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.optimizer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.particle_batch_size">
+<span class="sig-name descname"><span class="pre">particle_batch_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.particle_batch_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.patience_early_stopping">
+<span class="sig-name descname"><span class="pre">patience_early_stopping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.patience_early_stopping" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.set_early_stopping">
+<span class="sig-name descname"><span class="pre">set_early_stopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warm_up_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_delta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.Parameter_Class.Parameter.set_early_stopping" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>warm_up_iterations</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>patience</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>min_delta</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.stopped_at_iteration">
+<span class="sig-name descname"><span class="pre">stopped_at_iteration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.stopped_at_iteration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.use_for_regression">
+<span class="sig-name descname"><span class="pre">use_for_regression</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.use_for_regression" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Parameter_Class.Parameter.warm_up_iterations_early_stopping">
+<span class="sig-name descname"><span class="pre">warm_up_iterations_early_stopping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#src.Parameter_Class.Parameter.warm_up_iterations_early_stopping" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

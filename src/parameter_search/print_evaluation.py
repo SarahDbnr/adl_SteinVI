@@ -10,6 +10,15 @@ from src.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
 def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):
+    """_summary_
+
+    Args:
+        name (_type_): _description_
+        parameter (_type_): _description_
+        true_output (_type_): _description_
+        test_predictions (_type_): _description_
+        test_precision (_type_): _description_
+    """    
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
     else:
@@ -47,6 +56,14 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
 
 
 def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions):
+    """_summary_
+
+    Args:
+        name (_type_): _description_
+        parameter (_type_): _description_
+        true_output (_type_): _description_
+        test_predictions (_type_): _description_
+    """    
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
     else:

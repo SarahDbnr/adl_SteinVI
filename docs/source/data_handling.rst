@@ -1,7 +1,7 @@
 data\_handling module
 =====================
 
-.. automodule:: data_handling
+.. automodule:: src.data.data_handling
    :members:
    :undoc-members:
    :show-inheritance:

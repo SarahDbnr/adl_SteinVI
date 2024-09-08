@@ -1,7 +1,7 @@
 run\_SVGD module
 ================
 
-.. automodule:: run_SVGD
+.. automodule:: src.run_SVGD
    :members:
    :undoc-members:
    :show-inheritance:

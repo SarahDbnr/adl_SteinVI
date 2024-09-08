@@ -48,12 +48,17 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets_info.html">datasets_info module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">print_evaluation module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">print_evaluation module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv"><code class="docutils literal notranslate"><span class="pre">print_evaluation_multiclass_to_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.parameter_search.print_evaluation.print_evaluation_regression_to_csv"><code class="docutils literal notranslate"><span class="pre">print_evaluation_regression_to_csv()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="regression_toy_example.html">regression_toy_example module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD_and_return_evaluation_values.html">run_SVGD_and_return_evaluation_values module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation_and_evaluation.html">validation_and_evaluation module</a></li>
@@ -83,8 +88,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="print-evaluation-module">
-<h1>print_evaluation module<a class="headerlink" href="#print-evaluation-module" title="Link to this heading"></a></h1>
+  <section id="module-src.parameter_search.print_evaluation">
+<span id="print-evaluation-module"></span><h1>print_evaluation module<a class="headerlink" href="#module-src.parameter_search.print_evaluation" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv">
+<span class="sig-prename descclassname"><span class="pre">src.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_multiclass_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>true_output</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>test_predictions</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.parameter_search.print_evaluation.print_evaluation_regression_to_csv">
+<span class="sig-prename descclassname"><span class="pre">src.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_regression_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_precision</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.print_evaluation.print_evaluation_regression_to_csv" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>true_output</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>test_predictions</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>test_precision</strong> (<em>_type_</em>) – _description_</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

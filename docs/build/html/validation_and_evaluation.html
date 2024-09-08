@@ -55,7 +55,17 @@
 <li class="toctree-l1"><a class="reference internal" href="print_evaluation.html">print_evaluation module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="regression_toy_example.html">regression_toy_example module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD_and_return_evaluation_values.html">run_SVGD_and_return_evaluation_values module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">validation_and_evaluation module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">validation_and_evaluation module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.calculate_accuracy"><code class="docutils literal notranslate"><span class="pre">calculate_accuracy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.calculate_mean_span_over_particles"><code class="docutils literal notranslate"><span class="pre">calculate_mean_span_over_particles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.calculate_mse"><code class="docutils literal notranslate"><span class="pre">calculate_mse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles"><code class="docutils literal notranslate"><span class="pre">calculate_number_of_different_classified_by_particles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions"><code class="docutils literal notranslate"><span class="pre">get_evaluation_metrics_over_predictions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.get_most_common_class"><code class="docutils literal notranslate"><span class="pre">get_most_common_class()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.get_most_common_class_over_particles"><code class="docutils literal notranslate"><span class="pre">get_most_common_class_over_particles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.metrics.validation_and_evaluation.print_summary_over_particles"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles()</span></code></a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -82,8 +92,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="validation-and-evaluation-module">
-<h1>validation_and_evaluation module<a class="headerlink" href="#validation-and-evaluation-module" title="Link to this heading"></a></h1>
+  <section id="module-src.metrics.validation_and_evaluation">
+<span id="validation-and-evaluation-module"></span><h1>validation_and_evaluation module<a class="headerlink" href="#module-src.metrics.validation_and_evaluation" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_accuracy">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_accuracy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_mean_span_over_particles">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_mean_span_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_mean_span_over_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_mse">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_mse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_mse" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_number_of_different_classified_by_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_evaluation_metrics_over_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_regression</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_most_common_class">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_most_common_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_most_common_class" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_most_common_class_over_particles">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_most_common_class_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_most_common_class_over_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.print_summary_over_particles">
+<span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_summary_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.print_summary_over_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 
 
