@@ -6,9 +6,12 @@
 Bayesian Neural Networks through Stein VI in JAX documentation
 ==============================================================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+# Collaborative Work
+This repository is a collaborative work by **Sarah Deubner**, **Kilian Runnwerth**, and **Luke-Liam Bergmeier**.
+
+# Introduction
+This repository employs a Stein Variational Inference (Stein VI) approach to apply Bayesian Inference via Variational Gradient Descent (VGD) for optimizing Bayesian Neural Networks (BNNs). The work is based on the ideas presented in the following paper: 
+[Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm](https://arxiv.org/abs/1608.04471).
 
 
 .. toctree::

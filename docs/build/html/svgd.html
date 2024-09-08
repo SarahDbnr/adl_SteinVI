@@ -20,9 +20,7 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="data_handling module" href="data_handling.html" />
-    <link rel="prev" title="run_SVGD module" href="run_SVGD.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,33 +42,23 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">svgd module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.check_for_early_stopping"><code class="docutils literal notranslate"><span class="pre">check_for_early_stopping()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.create_minibatches"><code class="docutils literal notranslate"><span class="pre">create_minibatches()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.create_particle_minibatch_indices"><code class="docutils literal notranslate"><span class="pre">create_particle_minibatch_indices()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.get_batched_optimizer_state"><code class="docutils literal notranslate"><span class="pre">get_batched_optimizer_state()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.initialize_particles"><code class="docutils literal notranslate"><span class="pre">initialize_particles()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.shuffle_paired_data"><code class="docutils literal notranslate"><span class="pre">shuffle_paired_data()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.svgd_training_loop"><code class="docutils literal notranslate"><span class="pre">svgd_training_loop()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.train_with_svgd"><code class="docutils literal notranslate"><span class="pre">train_with_svgd()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_iteration"><code class="docutils literal notranslate"><span class="pre">update_optimizer_iteration()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">svgd module</a><ul>
+<li><a class="reference internal" href="#src.algorithm.svgd.check_for_early_stopping"><code class="docutils literal notranslate"><span class="pre">check_for_early_stopping()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.create_minibatches"><code class="docutils literal notranslate"><span class="pre">create_minibatches()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.create_particle_minibatch_indices"><code class="docutils literal notranslate"><span class="pre">create_particle_minibatch_indices()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.get_batched_optimizer_state"><code class="docutils literal notranslate"><span class="pre">get_batched_optimizer_state()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.initialize_particles"><code class="docutils literal notranslate"><span class="pre">initialize_particles()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.shuffle_paired_data"><code class="docutils literal notranslate"><span class="pre">shuffle_paired_data()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.svgd_training_loop"><code class="docutils literal notranslate"><span class="pre">svgd_training_loop()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.train_with_svgd"><code class="docutils literal notranslate"><span class="pre">train_with_svgd()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_iteration"><code class="docutils literal notranslate"><span class="pre">update_optimizer_iteration()</span></code></a></li>
+<li><a class="reference internal" href="#src.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets_info.html">datasets_info module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="print_evaluation.html">print_evaluation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="regression_toy_example.html">regression_toy_example module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run_SVGD_and_return_evaluation_values.html">run_SVGD_and_return_evaluation_values module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="validation_and_evaluation.html">validation_and_evaluation module</a></li>
 </ul>
-
+</div>
         </div>
       </div>
     </nav>
@@ -305,10 +293,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="run_SVGD.html" class="btn btn-neutral float-left" title="run_SVGD module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="data_handling.html" class="btn btn-neutral float-right" title="data_handling module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

@@ -17,6 +17,7 @@ release = '23.09.2024'
 extensions = [
     'sphinx.ext.autodoc',  # Automatically generate documentation from docstrings
     'sphinx.ext.napoleon', # Support for Google-style docstrings
+    'myst_parser',         # Support for markdown
 ]
 
 templates_path = ['_templates']
@@ -29,3 +30,8 @@ exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}

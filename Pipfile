@@ -11,9 +11,11 @@ scikit-learn = "*"
 tensorflow = "*"
 pytest = "*"
 pandas = "*"
+myst-parser = "*"
 
 [dev-packages]
 sphinx = "*"
+myst-parser = "*"
 
 [requires]
 python_version = "3.10"
