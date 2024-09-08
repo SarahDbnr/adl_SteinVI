@@ -8,6 +8,7 @@ from src.model.BNN_Model import build_model
 from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
+from src.metrics.view_missclassified_images import view_missclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
@@ -45,7 +46,7 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     print_summary_over_particles(predictions_test)
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure, analys_classification = False):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -61,7 +62,10 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    print_summary_over_particles(predictions_test)
+    #print_summary_over_particles(predictions_test)
+    
+    if analys_classification:
+        view_missclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
 
 
 def run_MNIST(info=False):
@@ -79,8 +83,8 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
+    parameter = Parameter(optimizer, batch_size=300,num_iterations=5 ,particle_batch_size=0, num_particles = 10, regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10, analys_classification=True)
 
 
 def run_MNIST_minibatched_particles(info=False):
@@ -118,7 +122,7 @@ def run_FashionMNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=0, num_particles = 10, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -137,7 +141,7 @@ def run_CIFAR10(info=True):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
+    parameter = Parameter(optimizer, batch_size=3000, particle_batch_size=0, num_particles = 5, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -290,4 +294,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes(info=True)
+    run_MNIST(info=True)
