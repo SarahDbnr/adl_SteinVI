@@ -12,9 +12,9 @@ from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine,
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
+from src.Random_Forest.random_forest import random_forest
 
-
-def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
     """_summary_
 
     Args:
@@ -51,9 +51,14 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
                    network_structure=network_structure)
     print_summary_over_particles(predictions_test)
+    if comparisson_random_forrest:
+
+        metrics = random_forest(dataset,"regression")
+        print(f"Test MSE Random Forest: {metrics['Test MSE']:.4f}")
+        print(f"Test Precision Random Forest: {metrics['Test Precision']:.4f}")
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure,comparisson_random_forrest = True):
     """_summary_
 
     Args:
@@ -77,7 +82,10 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    print_summary_over_particles(predictions_test)
+    #print_summary_over_particles(predictions_test)
+    if comparisson_random_forrest:
+        metrics = random_forest(dataset,"classification")
+        print(f"Test Accuracy Random Forest: {metrics['Test Accuracy']:.4f}")
 
 
 def run_MNIST(info=False):
@@ -100,7 +108,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
+    parameter = Parameter(optimizer, num_iterations=30,batch_size=300, particle_batch_size=0, num_particles = 5, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -153,7 +161,7 @@ def run_FashionMNIST(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
-def run_CIFAR10(info=True):
+def run_CIFAR10(info=False):
     """_summary_
 
     Args:
@@ -177,7 +185,7 @@ def run_CIFAR10(info=True):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
-def run_20_newsgroups(info=True):
+def run_20_newsgroups(info=False):
     """_summary_
 
     Args:
@@ -361,4 +369,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes(info=True)
+    run_MNIST(info=False)
