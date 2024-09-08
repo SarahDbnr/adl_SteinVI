@@ -9,7 +9,7 @@ from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_pr
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals
+from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
 
@@ -39,6 +39,8 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
                                     network_structure=network_structure, eval_metric="averaged_precision")
     # Call the plot_residuals function
     plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
+                   network_structure=network_structure)
+    plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
                    network_structure=network_structure)
     print_summary_over_particles(predictions_test)
 
@@ -288,4 +290,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_california_housing(info=True)
+    run_diabetes(info=True)

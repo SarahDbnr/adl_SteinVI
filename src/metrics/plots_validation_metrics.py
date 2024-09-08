@@ -2,7 +2,8 @@ import os
 import datetime
 import jax
 import matplotlib.pyplot as plt
-
+from src.algorithm.get_posteriori import link_function
+import jax.numpy as jnp
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
                                     kernel_length=None, adam_learning_rate=None,
                                     warm_up_iterations=None, output_folder="svgd_plots"):
@@ -98,3 +99,59 @@ def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None
     plt.close()
 
     print(f"Residual plot saved as: {filepath}")
+
+
+
+def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=None, network_structure=None,
+                   kernel_length=None, adam_learning_rate=None, actual_iterations=None, warm_up_iterations=None,
+                   output_folder="svgd_plots"):
+    # Calculate predictions
+    prediction_location, prediction_var_score = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
+    prediction_location = prediction_location.mean(0)  # Averaging over particles
+    prediction_location = prediction_location.squeeze()
+    prediction_var_score = prediction_var_score.mean(0)  # Averaging over particles
+    prediction_var_score = prediction_var_score.squeeze()
+    predicted_scale = jax.vmap(lambda p: link_function(p))(prediction_var_score)
+    # set maximal standard deviation
+
+    # Create the output folder in the current directory if it doesn't exist
+    current_dir = os.getcwd()
+    output_path = os.path.join(current_dir, output_folder)
+    os.makedirs(output_path, exist_ok=True)
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.scatter(prediction_location, predicted_scale, alpha=0.5)
+    plt.axhline(0, color='red', linestyle='--', linewidth=1)
+    plt.title("Location in relation to Scale Prediction")
+    plt.xlabel("Predicted Location values")
+    plt.ylabel("Predicted Scale Values")
+
+    # Add metadata text
+    info_text = (
+        f"Particles: {num_particles}\n"
+        f"Network: {network_structure}\n"
+        f"Kernel length: {kernel_length}\n"
+        f"Adam learning rate: {adam_learning_rate}\n"
+        f"Actual iterations: {actual_iterations}\n"
+        f"Warm-up iterations: {warm_up_iterations}"
+    )
+    plt.text(0.02, 0.02, info_text, transform=plt.gca().transAxes,
+             verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    plt.tight_layout()
+
+    # Generate a timestamp for the filename
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"relationship_scale_location{timestamp}.png"
+
+    # Save the plot in the specified folder
+    filepath = os.path.join(output_path, filename)
+    plt.savefig(filepath, dpi=300)
+
+    # Show the plot
+    plt.show()
+
+    # Close the plot
+    plt.close()
+
+    print(f"Location Scale plot saved as: {filepath}")
