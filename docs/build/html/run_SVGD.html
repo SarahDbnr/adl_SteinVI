@@ -47,7 +47,22 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">run_SVGD module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">run_SVGD module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_20_newsgroups"><code class="docutils literal notranslate"><span class="pre">run_20_newsgroups()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_CIFAR10"><code class="docutils literal notranslate"><span class="pre">run_CIFAR10()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_FashionMNIST"><code class="docutils literal notranslate"><span class="pre">run_FashionMNIST()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_MNIST"><code class="docutils literal notranslate"><span class="pre">run_MNIST()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_MNIST_minibatched_particles"><code class="docutils literal notranslate"><span class="pre">run_MNIST_minibatched_particles()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_adult_income"><code class="docutils literal notranslate"><span class="pre">run_adult_income()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_california_housing"><code class="docutils literal notranslate"><span class="pre">run_california_housing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_diabetes"><code class="docutils literal notranslate"><span class="pre">run_diabetes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_iris"><code class="docutils literal notranslate"><span class="pre">run_iris()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_regression_toy_example"><code class="docutils literal notranslate"><span class="pre">run_regression_toy_example()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_svgd_on_multiclass_data"><code class="docutils literal notranslate"><span class="pre">run_svgd_on_multiclass_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_svgd_on_regression"><code class="docutils literal notranslate"><span class="pre">run_svgd_on_regression()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.run_SVGD.run_wine_quality"><code class="docutils literal notranslate"><span class="pre">run_wine_quality()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
@@ -84,8 +99,84 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="run-svgd-module">
-<h1>run_SVGD module<a class="headerlink" href="#run-svgd-module" title="Link to this heading"></a></h1>
+  <section id="module-src.run_SVGD">
+<span id="run-svgd-module"></span><h1>run_SVGD module<a class="headerlink" href="#module-src.run_SVGD" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_20_newsgroups">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_20_newsgroups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_20_newsgroups" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_CIFAR10">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_CIFAR10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_CIFAR10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_FashionMNIST">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_FashionMNIST</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_FashionMNIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_MNIST">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_MNIST</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_MNIST" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_MNIST_minibatched_particles">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_MNIST_minibatched_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_MNIST_minibatched_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_adult_income">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_adult_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_adult_income" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_california_housing">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_california_housing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_california_housing" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_diabetes">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_diabetes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_diabetes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_iris">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_iris</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_iris" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_regression_toy_example">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_regression_toy_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_regression_toy_example" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_svgd_on_multiclass_data">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_svgd_on_multiclass_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_svgd_on_multiclass_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_svgd_on_regression">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_svgd_on_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_svgd_on_regression" title="Link to this definition"></a></dt>
+<dd><p>Run the SVGD algorithm on a regression dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>Teat</em>) – Teat</p></li>
+<li><p><strong>parameter</strong> (<em>Teat</em>) – Teat</p></li>
+<li><p><strong>output_size</strong> (<em>Teat</em>) – Teat</p></li>
+<li><p><strong>network_structure</strong> (<em>Teat</em>) – Teat</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.run_SVGD.run_wine_quality">
+<span class="sig-prename descclassname"><span class="pre">src.run_SVGD.</span></span><span class="sig-name descname"><span class="pre">run_wine_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.run_SVGD.run_wine_quality" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 
 

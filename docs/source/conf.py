@@ -5,6 +5,15 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+
+# Add the src and its subdirectories to sys.path
+sys.path.insert(0, os.path.abspath('../src'))
+sys.path.insert(0, os.path.abspath('../src/parameter_search'))
+sys.path.insert(0, os.path.abspath('../src/metrics'))
+sys.path.insert(0, os.path.abspath('../src/algorithm'))
+sys.path.insert(0, os.path.abspath('../src/data'))
 
 project = 'Bayesian Neural Networks through Stein VI in JAX'
 copyright = '2024, Sarah Deubner, Kilian Runnwerth and Luke-Liam Bergmeier'

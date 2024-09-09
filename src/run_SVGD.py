@@ -10,18 +10,18 @@ from src.data.data_handling import apply_data_settings_sklearn, apply_data_setti
     adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
-from Parameter_Class import Parameter
+from src.Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
 
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
-    """_summary_
+    """Run the SVGD algorithm on a regression dataset.
 
     Args:
-        dataset (_type_): _description_
-        parameter (_type_): _description_
-        output_size (_type_): _description_
-        network_structure (_type_): _description_
+        dataset (Teat): Teat
+        parameter (Teat): Teat
+        output_size (Teat): Teat
+        network_structure (Teat): Teat
     """    
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
@@ -54,14 +54,6 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
 
 
 def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
-    """_summary_
-
-    Args:
-        dataset (_type_): _description_
-        parameter (_type_): _description_
-        output_size (_type_): _description_
-        network_structure (_type_): _description_
-    """    
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -81,11 +73,6 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
 
 
 def run_MNIST(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
@@ -105,11 +92,6 @@ def run_MNIST(info=False):
 
 
 def run_MNIST_minibatched_particles(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
@@ -129,11 +111,6 @@ def run_MNIST_minibatched_particles(info=False):
 
 
 def run_FashionMNIST(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_fashion_mnist_dataset_info()
 
@@ -153,12 +130,7 @@ def run_FashionMNIST(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
-def run_CIFAR10(info=True):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to True.
-    """    
+def run_CIFAR10(info=True):  
     if info:
         datasets_info.print_cifar10_dataset_info()
     cifar10 = tf.keras.datasets.cifar10
@@ -178,11 +150,6 @@ def run_CIFAR10(info=True):
 
 
 def run_20_newsgroups(info=True):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to True.
-    """    
     if info:
         datasets_info.print_20_newsgroups_dataset_info()
     dataset = newsgroup_datahandling()
@@ -202,11 +169,6 @@ def run_20_newsgroups(info=True):
 
 
 def run_adult_income(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_adult_income_dataset_info()
     dataset = adult_income_datahandling()
@@ -227,11 +189,6 @@ def run_adult_income(info=False):
 
 
 def run_iris(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_iris_dataset_info()
     iris = load_iris()  # Loading the Iris dataset
@@ -251,11 +208,6 @@ def run_iris(info=False):
 
 
 def run_regression_toy_example(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     regression_toy_example = get_regression_toy_example(num_points=10000)
 
     optimizer = adam(
@@ -274,11 +226,6 @@ def run_regression_toy_example(info=False):
 
 
 def run_california_housing(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
     if info:
         datasets_info.print_california_housing_dataset_info()
     california_housing = fetch_california_housing()
@@ -309,12 +256,7 @@ def run_california_housing(info=False):
                                 output_size=2)
 
 
-def run_diabetes(info=False):
-    """_summary_
-
-    Args:
-        info (bool, optional): _description_. Defaults to False.
-    """    
+def run_diabetes(info=False): 
     if info:
         datasets_info.print_diabetes_dataset_info()
     diabetes = load_diabetes()
@@ -336,11 +278,6 @@ def run_diabetes(info=False):
 
 
 def run_wine_quality(info=False):
-    """test
-
-    Args:
-        info (bool, optional): test. Defaults to False.
-    """    
     if info:
         datasets_info.print_wine_quality_dataset_info()
     wine_quality = load_wine()

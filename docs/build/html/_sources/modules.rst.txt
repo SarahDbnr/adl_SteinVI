@@ -1,8 +1,8 @@
-src
-===
+parameter_search
+================
 
 .. toctree::
    :maxdepth: 4
 
-   Parameter_Class
-   run_SVGD
+   print_evaluation
+   run_SVGD_and_return_evaluation_values
