@@ -15,7 +15,6 @@ def generate_data(x):
     Returns:
         jax.numpy.ndarray: An array of shape (n_samples,) containing the computed outputs with added noise.
     """
-    key = jax.r
     key = jax.random.PRNGKey(1)
     x1 = x[:, 0]
     x2 = x[:, 1]
