@@ -12,7 +12,7 @@ from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine,
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
-from src.Random_Forest.random_forest import random_forest
+from algorithm.random_forest import random_forest
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
     """_summary_
