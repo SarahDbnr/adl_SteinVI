@@ -20,4 +20,4 @@ venv/
 svgd_plots/
 
 # docs
-#docs/build/
+docs/build/
