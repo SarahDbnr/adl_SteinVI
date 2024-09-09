@@ -13,11 +13,13 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         mse = calculate_mse(predictions.squeeze(), true_output)
         scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
         averaged_var = jnp.sqrt(scale).mean()
-        #print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
+        print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        return accuracy, predictions, None
+        most_common_class = get_most_common_class(predictions.squeeze())
+        print(f"\nAccuracy: {accuracy} with most common predictions of {most_common_class}")
+        return accuracy, None, predictions
 
 
 def calculate_mse(predictions, true_output):
@@ -32,7 +34,7 @@ def calculate_accuracy(precisions, true_output):
     return jnp.mean(predicted_classes == true_output)
 
 
-def print_summary_over_particles(predictions):
+def print_summary_over_particles_regression(predictions):
     predictions = predictions.squeeze()
     prediction_span = calculate_mean_span_over_particles(predictions)
     print("\nAverage prediction span including " + str(1 - ALPHA) + "% of particles :" + str(prediction_span.mean()) +
@@ -43,6 +45,14 @@ def calculate_mean_span_over_particles(predictions):
     upper_quantile_prediction_over_particles = jnp.quantile(predictions, 1 - ALPHA / 2)
     lower_quantile_prediction_over_particles = jnp.quantile(predictions, ALPHA / 2)
     return upper_quantile_prediction_over_particles - lower_quantile_prediction_over_particles
+
+
+def print_summary_over_particles_multiclass(predictions):
+    predictions = predictions.squeeze()
+    number_of_different_classified_by_particles = jnp.array(
+        calculate_number_of_different_classified_by_particles(predictions))
+    print("\nAverage number of different classifications over all particles "
+          + str(number_of_different_classified_by_particles.mean()))
 
 
 def calculate_number_of_different_classified_by_particles(predictions):
