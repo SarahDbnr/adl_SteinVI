@@ -11,19 +11,24 @@ DEFAULT_NUM_BATCHES = 10
 
 
 def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
-    """_summary_
+    """
+    Function for training a neural network with Stein Variational Gradient Descent (SVGD).
 
     Args:
-        dataset (_type_): _description_
-        nnet_model (_type_): _description_
-        tree_def (_type_): _description_
-        param_vec (_type_): _description_
-        parameter (_type_): _description_
-        key (_type_): _description_
+        dataset (tuple of ndarray): Tuple containing three ndarrays for training, validation, and testing data, 
+                                    each split into covariates and targets (e.g., (X_train, y_train), (X_val, y_val), (X_test, y_test)).
+        nnet_model (flax.linen.Module): Neural network model to be trained, should be a Flax model instance.
+        tree_def (jax.tree_util.PyTreeDef): Automatically generated structure used to flatten and unflatten the 
+                                           model parameters. This helps in handling parameters as a single vector.
+        param_vec (jax.numpy.ndarray): Flattened array of model parameters initialized for the SVGD algorithm.
+        parameter (src.Parameter_Class): Parameter Class object containing all necessary configurations and 
+                                         hyperparameters for the SVGD algorithm, such as learning rate, batch size, etc.
+        key (jax.random.PRNGKey): PRNG key used for random number generation in JAX, necessary for stochastic 
+                                  elements of the SVGD algorithm like shuffling data or initializing parameters.
 
     Returns:
-        _type_: _description_
-    """    
+        tuple: Output of the src.algorithm.svgd.svgd_training_loop is passd through
+    """
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
 
     # Initialize particles for the SVGD algorithm
@@ -65,25 +70,26 @@ def svgd_training_loop(
         y_val,
         svgd_parameter,
 ):
-    """_summary_
+    """
+    Executes the training loop for Stein Variational Gradient Descent (SVGD) on a neural network model.
 
     Args:
-        log_p (_type_): _description_
-        initial_position (_type_): _description_
-        initial_kernel_parameters (_type_): _description_
-        kernel (_type_): _description_
-        optimizer (_type_): _description_
-        nnet_model (_type_): _description_
-        tree_def (_type_): _description_
-        z_train (_type_): _description_
-        y_train (_type_): _description_
-        z_val (_type_): _description_
-        y_val (_type_): _description_
-        svgd_parameter (_type_): _description_
+        log_p (Callable): The log posterior function to be optimized.
+        initial_position (jax.numpy.ndarray): Initial position of the particles in the parameter space.
+        initial_kernel_parameters (dict): Parameters for the RBF kernel used in SVGD.
+        kernel (Callable): Kernel function used in SVGD to compute pairwise interactions between particles.
+        optimizer (Optimizer): Optimizer used to update particle positions based on the gradients.
+        nnet_model (flax.linen.Module): Neural network model for which parameters are optimized.
+        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter vectorization.
+        z_train (jax.numpy.ndarray): Training input data.
+        y_train (jax.numpy.ndarray): Training target data.
+        z_val (jax.numpy.ndarray): Validation input data.
+        y_val (jax.numpy.ndarray): Validation target data.
+        svgd_parameter (src.Parameter_Class): Configuration class containing SVGD-specific settings such as batch sizes and number of iterations.
 
     Returns:
-        _type_: _description_
-    """    
+        tuple: The final state of the SVGD optimizer, and lists containing evaluation metrics over training iterations.
+    """
     grad_log_posterior = jax.grad(log_p)
     svgd = blackjax.svgd(grad_log_posterior, optimizer, kernel, update_median_heuristic)
     step = jax.jit(svgd.step)
@@ -95,35 +101,35 @@ def svgd_training_loop(
 
     state = svgd.init(initial_position, initial_kernel_parameters)
 
-    # Define a training step function that JIT compiles the SVGD step
     @jax.jit
     def training_step(state, dz, dy):
-        """_summary_
+        """
+        Performs a single training step for SVGD using the entire given data.
 
         Args:
-            state (_type_): _description_
-            dz (_type_): _description_
-            dy (_type_): _description_
+            state (object): Current state of the SVGD optimizer, containing particles and optimizer state.
+            dz (jax.numpy.ndarray): Input data for training.
+            dy (jax.numpy.ndarray): Output data for training, corresponding to dz.
 
         Returns:
-            _type_: _description_
-        """        
+            object: Updated state of the SVGD optimizer after applying one step of gradient updates.
+        """
         return step(state, dz=dz, dy=dy)
     
-    # Define a training step function that JIT compiles the SVGD step with minibatched particles
     @jax.jit
     def training_minibatched_step(state, particle_indices, dz, dy):
-        """_summary_
+        """
+        Performs a single training step for a minibatch of particles in SVGD, updating only the selected particles.
 
         Args:
-            state (_type_): _description_
-            particle_indices (_type_): _description_
-            dz (_type_): _description_
-            dy (_type_): _description_
+            state (object): Current state of the SVGD optimizer, containing all particles and optimizer state.
+            particle_indices (jax.numpy.ndarray): Indices of the particles to update in this step.
+            dz (jax.numpy.ndarray): Batch of input data for training.
+            dy (jax.numpy.ndarray): Batch of output data for training, corresponding to dz.
 
         Returns:
-            _type_: _description_
-        """        
+            object: Updated state of the SVGD optimizer with only the selected particles updated.
+        """     
         # Get the current state of the optimizer and particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
         optimizer_state = state.opt_state
@@ -191,16 +197,18 @@ def svgd_training_loop(
     return best_state, evaluation_metrics_1, evaluation_metrics_2
 
 def initialize_particles(param_vec, rng_key_init, num_particles):
-    """_summary_
+    """
+    Initializes particles for the SVGD algorithm by sampling from a normal distribution. Each particle is initialized
+    to have the same shape as the provided parameter vector but with values drawn from a normal distribution.
 
     Args:
-        param_vec (_type_): _description_
-        rng_key_init (_type_): _description_
-        num_particles (_type_): _description_
+        param_vec (jax.numpy.ndarray): The initial parameter vector which dictates the shape of each particle.
+        rng_key_init (jax.random.PRNGKey): JAX random key used to ensure reproducible results in particle initialization.
+        num_particles (int): Number of particles to initialize, which determines the number of separate sets of parameters to optimize.
 
     Returns:
-        _type_: _description_
-    """    
+        jax.numpy.ndarray: An array of initialized particles, where each particle is a perturbed version of the initial parameter vector.
+    """
     initial_particles_vector = jax.random.normal(
         rng_key_init,
         shape=(num_particles,) + param_vec.shape
@@ -209,17 +217,19 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
 
     
 def create_minibatches(batch_size, input_data, output_data, key):
-    """_summary_
+    """
+    Divides the provided input and output data into minibatches of specified size. If the batch size is zero,
+    the entire dataset is returned as one batch.
 
     Args:
-        batch_size (_type_): _description_
-        input_data (_type_): _description_
-        output_data (_type_): _description_
-        key (_type_): _description_
+        batch_size (int): The number of samples per batch. If set to zero, the entire dataset is treated as a single batch.
+        input_data (jax.numpy.ndarray): The complete set of input data.
+        output_data (jax.numpy.ndarray): The complete set of output data corresponding to the input data.
+        key (jax.random.PRNGKey): JAX random key used for shuffling the data to prevent ordered data from influencing the training.
 
     Returns:
-        _type_: _description_
-    """    
+        list of tuples: Each tuple contains two ndarrays, with the first being a batch of input data and the second being the corresponding batch of output data.
+    """
     if batch_size != 0:
         if batch_size is None:
             num_batches = DEFAULT_NUM_BATCHES
@@ -235,16 +245,17 @@ def create_minibatches(batch_size, input_data, output_data, key):
     return input_data, output_data
 
 def create_particle_minibatch_indices(key, num_particles, batch_size):
-    """_summary_
+    """
+    Generates indices for minibatching particles in the SVGD algorithm.
 
     Args:
-        key (_type_): _description_
-        num_particles (_type_): _description_
-        batch_size (_type_): _description_
+        key (jax.random.PRNGKey): Random key used for generating indices.
+        num_particles (int): Total number of particles.
+        batch_size (int): Number of particles in each minibatch.
 
     Returns:
-        _type_: _description_
-    """    
+        list of jnp.ndarray: List of arrays where each array contains indices for a minibatch of particles.
+    """
     if num_particles < batch_size:
         num_batches = 2
         print("\n WARNING: Batch size to large, particle batching with 2 batches will be used!")
@@ -254,13 +265,16 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     return batched_indices
 
 def get_batched_optimizer_state(optimizer_state, indices):
-    """_summary_
+    """
+    Extracts the optimizer state for a specific batch of particles.
 
     Args:
-        optimizer_state (_type_): _description_
-        indices (_type_): _description_
-    """    
+        optimizer_state (object): The global optimizer state.
+        indices (jnp.ndarray): Indices of the particles for which to retrieve the optimizer state.
 
+    Returns:
+        object: Optimizer state corresponding to the batched particles.
+    """
     def batch_fn(x):
         if hasattr(x, 'ndim') and x.ndim > 0:
             return jnp.take(x, indices, axis=0)
@@ -270,14 +284,17 @@ def get_batched_optimizer_state(optimizer_state, indices):
     return batched_optimizer_state
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
-    """_summary_
+    """
+    Updates the global optimizer state with changes from a minibatched optimizer state.
 
     Args:
-        optimizer_state (_type_): _description_
-        batched_state (_type_): _description_
-        indices (_type_): _description_
-    """    
-    
+        optimizer_state (object): Current global optimizer state.
+        batched_state (object): Updated optimizer state from a minibatch step.
+        indices (jnp.ndarray): Indices of the particles that were updated.
+
+    Returns:
+        object: Updated global optimizer state.
+    """
     def update_fn(orig, batched):
         if hasattr(orig, 'ndim') and orig.ndim > 0:
             return orig.at[indices].set(batched)
@@ -288,12 +305,15 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
 
 # TODO: Ref better for variable count
 def update_optimizer_iteration(state):
-    """_summary_
+    """
+    Increments optimization-related counters or state properties, such as the number of iterations completed.
 
     Args:
-        state (_type_): _description_
-    """    
+        state (object): Current state of the SVGD optimizer.
 
+    Returns:
+        object: Updated state with incremented properties.
+    """
     def increment_count_fn(x):
         if isinstance(x, jnp.ndarray) and jnp.issubdtype(x.dtype, jnp.integer):
             return x + 1
@@ -304,16 +324,17 @@ def update_optimizer_iteration(state):
 
 @jax.jit
 def shuffle_paired_data(key, input_data, output_data):
-    """_summary_
+    """
+    Shuffles paired input and output data arrays using a JAX random key.
 
     Args:
-        key (_type_): _description_
-        input_data (_type_): _description_
-        output_data (_type_): _description_
+        key (jax.random.PRNGKey): Random key for shuffling data.
+        input_data (jax.numpy.ndarray): Input data to shuffle.
+        output_data (jax.numpy.ndarray): Output data to shuffle, aligned with input data.
 
     Returns:
-        _type_: _description_
-    """    
+        tuple of jax.numpy.ndarray: Shuffled input and output data.
+    """
     num_samples = input_data.shape[0]
     permutation = jax.random.permutation(key, num_samples)
     shuffled_input = jnp.take(input_data, permutation, axis=0)
@@ -323,21 +344,21 @@ def shuffle_paired_data(key, input_data, output_data):
 
 def check_for_early_stopping(val_accuracy, best_evaluation_metrics_1, iteration, state, best_state, patience_counter,
                              parameter):
-    """check_for_early_stopping
+    """
+    Evaluates if early stopping criteria are met based on validation performance metrics after a warmup period.
 
     Args:
-        val_accuracy (_type_): _description_
-        best_evaluation_metrics_1 (_type_): _description_
-        iteration (_type_): _description_
-        state (_type_): _description_
-        best_state (_type_): _description_
-        patience_counter (_type_): _description_
-        parameter (_type_): _description_
+        val_accuracy (float): Validation accuracy of the current iteration.
+        best_evaluation_metrics_1 (float): Best validation accuracy observed so far.
+        iteration (int): Current iteration count.
+        state (object): Current state of the SVGD optimizer.
+        best_state (object): Best state of the SVGD optimizer observed so far.
+        patience_counter (int): Counter for the number of consecutive iterations without improvement.
+        parameter (src.Parameter_Class): Contains settings for early stopping, including the number of iterations to wait without improvement (patience) and the minimum change in validation accuracy required to reset the patience counter (min_delta).
 
     Returns:
-        best_state: test
-    """    
-    # Apply early stopping logic only after warm-up period
+        tuple: Updated best state of the optimizer, best evaluation metric, and patience counter. If stopping criteria are met, also provides a command to halt training.
+    """
     if iteration >= parameter.warm_up_iterations_early_stopping:
         if val_accuracy > best_evaluation_metrics_1 + parameter.min_delta_early_stopping:
             best_evaluation_metrics_1 = val_accuracy

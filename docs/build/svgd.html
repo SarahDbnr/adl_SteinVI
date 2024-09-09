@@ -101,23 +101,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.check_for_early_stopping">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">check_for_early_stopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val_accuracy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_evaluation_metrics_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.check_for_early_stopping" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Evaluates if early stopping criteria are met based on validation performance metrics after a warmup period.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>val_accuracy</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>best_evaluation_metrics_1</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>iteration</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>state</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>best_state</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>patience_counter</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>val_accuracy</strong> (<em>float</em>) – Validation accuracy of the current iteration.</p></li>
+<li><p><strong>best_evaluation_metrics_1</strong> (<em>float</em>) – Best validation accuracy observed so far.</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – Current iteration count.</p></li>
+<li><p><strong>state</strong> (<em>object</em>) – Current state of the SVGD optimizer.</p></li>
+<li><p><strong>best_state</strong> (<em>object</em>) – Best state of the SVGD optimizer observed so far.</p></li>
+<li><p><strong>patience_counter</strong> (<em>int</em>) – Counter for the number of consecutive iterations without improvement.</p></li>
+<li><p><strong>parameter</strong> (<em>src.Parameter_Class</em>) – Contains settings for early stopping, including the number of iterations to wait without improvement (patience) and the minimum change in validation accuracy required to reset the patience counter (min_delta).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>test</p>
+<dd class="field-even"><p>Updated best state of the optimizer, best evaluation metric, and patience counter. If stopping criteria are met, also provides a command to halt training.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>best_state</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -147,20 +148,20 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.create_particle_minibatch_indices">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">create_particle_minibatch_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.create_particle_minibatch_indices" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Generates indices for minibatching particles in the SVGD algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>num_particles</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>batch_size</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – Random key used for generating indices.</p></li>
+<li><p><strong>num_particles</strong> (<em>int</em>) – Total number of particles.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Number of particles in each minibatch.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p>List of arrays where each array contains indices for a minibatch of particles.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>_type_</p>
+<dd class="field-odd"><p>list of jnp.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,13 +169,19 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.get_batched_optimizer_state">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">get_batched_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.get_batched_optimizer_state" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Extracts the optimizer state for a specific batch of particles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optimizer_state</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>indices</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>optimizer_state</strong> (<em>object</em>) – The global optimizer state.</p></li>
+<li><p><strong>indices</strong> (<em>jnp.ndarray</em>) – Indices of the particles for which to retrieve the optimizer state.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optimizer state corresponding to the batched particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -203,20 +210,20 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.shuffle_paired_data">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">shuffle_paired_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.shuffle_paired_data" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Shuffles paired input and output data arrays using a JAX random key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>input_data</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>output_data</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – Random key for shuffling data.</p></li>
+<li><p><strong>input_data</strong> (<em>jax.numpy.ndarray</em>) – Input data to shuffle.</p></li>
+<li><p><strong>output_data</strong> (<em>jax.numpy.ndarray</em>) – Output data to shuffle, aligned with input data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p>Shuffled input and output data.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>_type_</p>
+<dd class="field-odd"><p>tuple of jax.numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -224,29 +231,29 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.svgd_training_loop">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">svgd_training_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_kernel_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svgd_parameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.svgd_training_loop" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Executes the training loop for Stein Variational Gradient Descent (SVGD) on a neural network model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>log_p</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>initial_position</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>initial_kernel_parameters</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>kernel</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>optimizer</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>nnet_model</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>tree_def</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>z_train</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>y_train</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>z_val</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>y_val</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>svgd_parameter</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>log_p</strong> (<em>Callable</em>) – The log posterior function to be optimized.</p></li>
+<li><p><strong>initial_position</strong> (<em>jax.numpy.ndarray</em>) – Initial position of the particles in the parameter space.</p></li>
+<li><p><strong>initial_kernel_parameters</strong> (<em>dict</em>) – Parameters for the RBF kernel used in SVGD.</p></li>
+<li><p><strong>kernel</strong> (<em>Callable</em>) – Kernel function used in SVGD to compute pairwise interactions between particles.</p></li>
+<li><p><strong>optimizer</strong> (<em>Optimizer</em>) – Optimizer used to update particle positions based on the gradients.</p></li>
+<li><p><strong>nnet_model</strong> (<em>flax.linen.Module</em>) – Neural network model for which parameters are optimized.</p></li>
+<li><p><strong>tree_def</strong> (<em>jax.tree_util.PyTreeDef</em>) – Tree structure used for parameter vectorization.</p></li>
+<li><p><strong>z_train</strong> (<em>jax.numpy.ndarray</em>) – Training input data.</p></li>
+<li><p><strong>y_train</strong> (<em>jax.numpy.ndarray</em>) – Training target data.</p></li>
+<li><p><strong>z_val</strong> (<em>jax.numpy.ndarray</em>) – Validation input data.</p></li>
+<li><p><strong>y_val</strong> (<em>jax.numpy.ndarray</em>) – Validation target data.</p></li>
+<li><p><strong>svgd_parameter</strong> (<em>src.Parameter_Class</em>) – Configuration class containing SVGD-specific settings such as batch sizes and number of iterations.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p>The final state of the SVGD optimizer, and lists containing evaluation metrics over training iterations.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>_type_</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -254,23 +261,31 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.train_with_svgd">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">train_with_svgd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.train_with_svgd" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Function for training a neural network with Stein Variational Gradient Descent (SVGD).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>nnet_model</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>tree_def</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>param_vec</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>key</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>dataset</strong> (<em>tuple</em><em> of </em><em>ndarray</em>) – Tuple containing three ndarrays for training, validation, and testing data,
+each split into covariates and targets (e.g., (X_train, y_train), (X_val, y_val), (X_test, y_test)).</p></li>
+<li><p><strong>nnet_model</strong> (<em>flax.linen.Module</em>) – Neural network model to be trained, should be a Flax model instance.</p></li>
+<li><p><strong>tree_def</strong> (<em>jax.tree_util.PyTreeDef</em>) – Automatically generated structure used to flatten and unflatten the
+model parameters. This helps in handling parameters as a single vector.</p></li>
+<li><p><strong>param_vec</strong> (<em>jax.numpy.ndarray</em>) – Flattened array of model parameters initialized for the SVGD algorithm.</p></li>
+<li><p><strong>parameter</strong> (<em>src.Parameter_Class</em>) – Parameter Class object containing all necessary configurations and
+hyperparameters for the SVGD algorithm, such as learning rate, batch size, etc.</p></li>
+<li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – PRNG key used for random number generation in JAX, necessary for stochastic
+elements of the SVGD algorithm like shuffling data or initializing parameters.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>_description_</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Contains the trained neural network model and any other relevant training outputs such as</dt><dd><p>training history or final parameter values.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>_type_</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -278,10 +293,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.update_optimizer_iteration">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.update_optimizer_iteration" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Increments optimization-related counters or state properties, such as the number of iterations completed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>state</strong> (<em>_type_</em>) – _description_</p>
+<dd class="field-odd"><p><strong>state</strong> (<em>object</em>) – Current state of the SVGD optimizer.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated state with incremented properties.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -289,14 +310,20 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.algorithm.svgd.update_optimizer_state">
 <span class="sig-prename descclassname"><span class="pre">src.algorithm.svgd.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batched_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.algorithm.svgd.update_optimizer_state" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Updates the global optimizer state with changes from a minibatched optimizer state.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optimizer_state</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>batched_state</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>indices</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>optimizer_state</strong> (<em>object</em>) – Current global optimizer state.</p></li>
+<li><p><strong>batched_state</strong> (<em>object</em>) – Updated optimizer state from a minibatch step.</p></li>
+<li><p><strong>indices</strong> (<em>jnp.ndarray</em>) – Indices of the particles that were updated.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated global optimizer state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
