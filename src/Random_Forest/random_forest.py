@@ -1,12 +1,8 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import accuracy_score, mean_squared_error
 import jax.numpy as jnp
-import tensorflow as tf
-import src.data.datasets_info as datasets_info
-from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
-    adult_income_datahandling
-from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from src.data.regression_toy_example import get_regression_toy_example
+
+
 def random_forest(dataset, task_type='classification'):
     """
     Performs Random Forest for a given dataset consisting of a train dataset, a validation dataset, 
