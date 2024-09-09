@@ -5,11 +5,14 @@ from optax import adam, exponential_decay
 from src.data.regression_toy_example import get_regression_toy_example
 from src.algorithm.svgd import train_with_svgd
 from src.model.BNN_Model import build_model
-from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
+from src.metrics.validation_and_evaluation import (get_evaluation_metrics_over_predictions,
+                                                   print_summary_over_particles_regression,
+                                                   print_summary_over_particles_multiclass)
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
+from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, \
+    plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
 
@@ -41,8 +44,8 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
                    network_structure=network_structure)
     plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
-                   network_structure=network_structure)
-    print_summary_over_particles(predictions_test)
+                                       network_structure=network_structure)
+    print_summary_over_particles_regression(predictions_test)
 
 
 def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
@@ -61,7 +64,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    #print_summary_over_particles(predictions_test)
+    print_summary_over_particles_multiclass(predictions_test)
 
 
 def run_MNIST(info=False):
@@ -98,7 +101,7 @@ def run_MNIST_minibatched_particles(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles = 4, regression=False)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -171,13 +174,12 @@ def run_adult_income(info=False):
             init_value=0.001,
             transition_steps=1000,
             decay_rate=0.95,
-            staircase=True  
+            staircase=True
         )
     )
 
     parameter = Parameter(optimizer, regression=False, batch_size=2000)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=2)
-
 
 
 def run_iris(info=False):
@@ -214,7 +216,7 @@ def run_regression_toy_example(info=False):
     parameter = Parameter(optimizer, num_iterations=250, regression=True)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
 def run_california_housing(info=False):
@@ -232,20 +234,20 @@ def run_california_housing(info=False):
         )
     )
 
-    #optimizer = adam(
+    # optimizer = adam(
     #    exponential_decay(
     #        init_value=0.025,
     #        transition_steps=150,
     #        decay_rate=0.995,
     #        staircase=True
     #    )
-    #)
+    # )
 
     parameter = Parameter(optimizer, regression=True, batch_size=1000, num_iterations=10000)
     parameter.set_early_stopping(10000, 1000, 3)
 
     run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
 def run_diabetes(info=False):
@@ -263,10 +265,10 @@ def run_diabetes(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=True ,num_iterations=1000)
+    parameter = Parameter(optimizer, regression=True, num_iterations=1000)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
 def run_wine_quality(info=False):
@@ -290,4 +292,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST_minibatched_particles(info=True)
+    run_MNIST(info=True)

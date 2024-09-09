@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 
 from src.metrics.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
-                                                                 get_most_common_class_over_particles)
+                                                   get_most_common_class_over_particles)
 
 
 def test_calculate_number_of_different_classified_by_particles():
@@ -13,9 +13,8 @@ def test_calculate_number_of_different_classified_by_particles():
     # when
     num_differently_classified = calculate_number_of_different_classified_by_particles(predictions)
     # then
-    assert sum(num_differently_classified) == num_particles*10
+    assert sum(num_differently_classified) == num_particles * 10
 
-test_calculate_number_of_different_classified_by_particles()
 
 def test_get_most_common_class_over_particles():
     # given
