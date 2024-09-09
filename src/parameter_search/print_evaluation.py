@@ -2,10 +2,10 @@ import pandas as pd
 import jax.numpy as jnp
 
 from src.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
-                                                                 calculate_accuracy,
-                                                                 calculate_number_of_different_classified_by_particles,
-                                                                 get_most_common_class_over_particles,
-                                                                 get_most_common_class)
+                                                   calculate_accuracy,
+                                                   calculate_number_of_different_classified_by_particles,
+                                                   get_most_common_class_over_particles,
+                                                   get_most_common_class)
 from src.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
@@ -79,7 +79,8 @@ def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predic
     else:
         batch_size = parameter.batch_size
     most_common_prediction_over_particles = jnp.array(get_most_common_class_over_particles(test_predictions))
-    number_of_different_classified_by_particles = jnp.array(calculate_number_of_different_classified_by_particles(test_predictions))
+    number_of_different_classified_by_particles = jnp.array(
+        calculate_number_of_different_classified_by_particles(test_predictions))
     data = {
         "name": name,
         # TODO: if we want to change the optimizer we need to specify something here: "optimizer": parameter.optimizer,
