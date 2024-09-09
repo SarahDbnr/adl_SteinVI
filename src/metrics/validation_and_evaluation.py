@@ -17,8 +17,7 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        most_common_class = get_most_common_class(predictions.squeeze())
-        print(f"\nAccuracy: {accuracy} with most common predictions of {most_common_class}")
+        print(f"\nAccuracy: {accuracy} ")
         return accuracy, None, predictions
 
 
