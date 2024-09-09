@@ -27,7 +27,7 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
                                   elements of the SVGD algorithm like shuffling data or initializing parameters.
 
     Returns:
-        tuple: Output of the src.algorithm.svgd.svgd_training_loop is passd through
+        tuple: Output of the src.algorithm.svgd.svgd_training_loop is passed through
     """
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
 
