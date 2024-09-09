@@ -82,7 +82,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=False)
+    parameter = Parameter(optimizer, num_iterations=30,regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -292,4 +292,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST(info=True)
+    run_regression_toy_example(info=True)
