@@ -13,7 +13,10 @@ def test_calculate_number_of_different_classified_by_particles():
     # when
     num_differently_classified = calculate_number_of_different_classified_by_particles(predictions)
     # then
-    assert sum(num_differently_classified) == num_particles * 10
+    first_column = predictions[:, 0]
+    argmax_first_column = first_column[jnp.argmax(first_column)]
+    print(first_column, argmax_first_column)
+    assert first_column[first_column != argmax_first_column].size == num_differently_classified[0]
 
 
 def test_get_most_common_class_over_particles():
