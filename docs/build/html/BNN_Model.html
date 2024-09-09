@@ -48,32 +48,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">BNN_Model module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.activation"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.activation</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.bias_init"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.bias_init()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.hidden_layers"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.hidden_layers</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.kernel_init"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.kernel_init()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.name"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.output_size"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.output_size</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.parent"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.parent</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.predict"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.predict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.scope"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.scope</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.FlexibleSimpleNN.use_for_regression"><code class="docutils literal notranslate"><span class="pre">FlexibleSimpleNN.use_for_regression</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#src.model.BNN_Model.SimpleCNN"><code class="docutils literal notranslate"><span class="pre">SimpleCNN</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.SimpleCNN.name"><code class="docutils literal notranslate"><span class="pre">SimpleCNN.name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.SimpleCNN.num_classes"><code class="docutils literal notranslate"><span class="pre">SimpleCNN.num_classes</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.SimpleCNN.parent"><code class="docutils literal notranslate"><span class="pre">SimpleCNN.parent</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src.model.BNN_Model.SimpleCNN.scope"><code class="docutils literal notranslate"><span class="pre">SimpleCNN.scope</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#src.model.BNN_Model.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BNN_Model module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets_info.html">datasets_info module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="print_evaluation.html">print_evaluation module</a></li>
@@ -106,102 +84,160 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-src.model.BNN_Model">
-<span id="bnn-model-module"></span><h1>BNN_Model module<a class="headerlink" href="#module-src.model.BNN_Model" title="Link to this heading"></a></h1>
+  <section id="bnn-model-module">
+<h1>BNN_Model module<a class="headerlink" href="#bnn-model-module" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">FlexibleSimpleNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hidden_layers:</span> <span class="pre">Sequence[int]</span> <span class="pre">=</span> <span class="pre">(50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span> <span class="pre">=</span> <span class="pre">&lt;jax._src.custom_derivatives.custom_jvp</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x122695ab0&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">variance_scaling.&lt;locals&gt;.init</span> <span class="pre">at</span> <span class="pre">0x122cd83a0&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">zeros</span> <span class="pre">at</span> <span class="pre">0x122685360&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_regression:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">Union[flax.linen.module.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flax.core.scope.Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flax.linen.module._Sentinel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x1227911e0&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">FlexibleSimpleNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hidden_layers:</span> <span class="pre">~typing.Sequence[int]</span> <span class="pre">=</span> <span class="pre">(50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation:</span> <span class="pre">callable</span> <span class="pre">=</span> <span class="pre">&lt;jax._src.custom_derivatives.custom_jvp</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init:</span> <span class="pre">callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">variance_scaling.&lt;locals&gt;.init&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init:</span> <span class="pre">callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">zeros&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_regression:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~flax.linen.module.Module</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~flax.linen.module._Sentinel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A flexible neural network model that can be customized for different architectures and tasks.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.activation">
-<span class="sig-name descname"><span class="pre">activation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">callable</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;jax._src.custom_derivatives.custom_jvp</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.activation" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.bias_init">
-<span class="sig-name descname"><span class="pre">bias_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">~collections.abc.Sequence[int</span> <span class="pre">|</span> <span class="pre">~typing.Any],</span> <span class="pre">dtype:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'jax.numpy.float64'&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Array</span></span></span><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.bias_init" title="Link to this definition"></a></dt>
-<dd><p>An initializer that returns a constant array full of zeros.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> argument is ignored.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">jax</span><span class="o">,</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<span class="go">Array([[0., 0., 0.],</span>
-<span class="go">       [0., 0., 0.]], dtype=float32)</span>
-</pre></div>
-</div>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">hidden_layers</span></span></dt>
+<dd><p>Sequence of integers where each integer defines the number of neurons in a hidden layer. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sequence[int]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.hidden_layers">
-<span class="sig-name descname"><span class="pre">hidden_layers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(50,)</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.hidden_layers" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">output_size</span></span></dt>
+<dd><p>Size of the output layer. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">activation</span></span></dt>
+<dd><p>Activation function to use in the hidden layers. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">kernel_init</span></span></dt>
+<dd><p>Initialization function for kernel weights. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">bias_init</span></span></dt>
+<dd><p>Initialization function for biases. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">use_for_regression</span></span></dt>
+<dd><p>Flag to determine whether the network is used for regression or classification. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Module</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Sentinel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.kernel_init">
-<span class="sig-name descname"><span class="pre">kernel_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">~collections.abc.Sequence[int</span> <span class="pre">|</span> <span class="pre">~typing.Any],</span> <span class="pre">dtype:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'jax.numpy.float64'&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Array</span></span></span><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.kernel_init" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.output_size">
-<span class="sig-name descname"><span class="pre">output_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.output_size" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.parent">
-<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Module</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Sentinel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.parent" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.predict" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.scope">
-<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.scope" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.FlexibleSimpleNN.use_for_regression">
-<span class="sig-name descname"><span class="pre">use_for_regression</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#src.model.BNN_Model.FlexibleSimpleNN.use_for_regression" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="src.model.BNN_Model.SimpleCNN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">SimpleCNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">Union[flax.linen.module.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flax.core.scope.Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flax.linen.module._Sentinel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x1227911e0&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.model.BNN_Model.SimpleCNN" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">SimpleCNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~flax.linen.module.Module</span> <span class="pre">|</span> <span class="pre">~flax.core.scope.Scope</span> <span class="pre">|</span> <span class="pre">~flax.linen.module._Sentinel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;flax.linen.module._Sentinel</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Defines a simple convolutional neural network (CNN) for image classification.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.SimpleCNN.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.SimpleCNN.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">num_classes</span></span></dt>
+<dd><p>Number of output classes for the classification task. :no-index:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.SimpleCNN.num_classes">
-<span class="sig-name descname"><span class="pre">num_classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#src.model.BNN_Model.SimpleCNN.num_classes" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Module</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Sentinel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.SimpleCNN.parent">
-<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Module</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Sentinel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.SimpleCNN.parent" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.model.BNN_Model.SimpleCNN.scope">
-<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.model.BNN_Model.SimpleCNN.scope" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Scope</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.model.BNN_Model.build_model">
-<span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers=(50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size=10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=&lt;jax._src.custom_derivatives.custom_jvp</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">variance_scaling.&lt;locals&gt;.init&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_CNN=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_regression=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.model.BNN_Model.build_model" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">src.model.BNN_Model.</span></span><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers=(50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size=10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=&lt;jax._src.custom_derivatives.custom_jvp</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">variance_scaling.&lt;locals&gt;.init&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_CNN=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_regression=False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Builds and initializes a neural network model based on specified configurations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – JAX random key for initialization.</p></li>
+<li><p><strong>x_train</strong> (<em>jax.numpy.ndarray</em>) – Sample input data used to define input shape.</p></li>
+<li><p><strong>hidden_layers</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple defining the number of units in each hidden layer.</p></li>
+<li><p><strong>output_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the output layer.</p></li>
+<li><p><strong>activation</strong> (<em>callable</em><em>, </em><em>optional</em>) – Activation function for the hidden layers.</p></li>
+<li><p><strong>kernel_init</strong> (<em>callable</em><em>, </em><em>optional</em>) – Weight initialization function.</p></li>
+<li><p><strong>bias_init</strong> (<em>callable</em><em>, </em><em>optional</em>) – Bias initialization function.</p></li>
+<li><p><strong>use_CNN</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to choose between CNN and a simple flexible network.</p></li>
+<li><p><strong>use_for_regression</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to specify if the model is intended for regression.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The initialized model, the tree definition for parameter transformation, and a flattened parameter vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

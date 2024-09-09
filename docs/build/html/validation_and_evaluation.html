@@ -47,6 +47,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
@@ -97,42 +98,145 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_accuracy">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_accuracy" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the accuracy of classification predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>precisions</strong> (<em>jax.numpy.ndarray</em>) – Model precisions or probabilities output for each class.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – True class labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The classification accuracy as the percentage of correct predictions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_mean_span_over_particles">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_mean_span_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_mean_span_over_particles" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the span of predictions that include the central (1-ALPHA)% of data over particles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predictions from an ensemble of particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The difference between the upper and lower quantiles of the predictions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_mse">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_mse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_mse" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the mean squared error (MSE) between predicted values and the true output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predicted values from the model, expected to be means over an ensemble of particles.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – True output values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Computed mean squared error.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">calculate_number_of_different_classified_by_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the number of different classifications made by particles for each input instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predictions from an ensemble of particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list where each element is the number of different predictions made by particles for an input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_evaluation_metrics_over_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_regression</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out</strong> (<em>object</em>) – Output object containing particles representing different model parameters.</p></li>
+<li><p><strong>nnet_model</strong> (<em>object</em>) – The neural network model used for making predictions.</p></li>
+<li><p><strong>tree_def</strong> (<em>object</em>) – Tree structure used for parameter transformation in JAX.</p></li>
+<li><p><strong>x_input</strong> (<em>jax.numpy.ndarray</em>) – Input features to the model.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – True output labels or values for the given input.</p></li>
+<li><p><strong>model_regression</strong> (<em>bool</em>) – A flag indicating whether the model is used for regression or classification.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_most_common_class">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_most_common_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_most_common_class" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Identifies the most common class in a set of predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>column</strong> (<em>jax.numpy.ndarray</em>) – A column vector of predictions for a single input across multiple particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The most frequently occurring class in the column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>scalar</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.get_most_common_class_over_particles">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">get_most_common_class_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.get_most_common_class_over_particles" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Determines the most common class predicted by particles for each input instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predictions from an ensemble of particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the most commonly predicted class for each input instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.validation_and_evaluation.print_summary_over_particles">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_summary_over_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.validation_and_evaluation.print_summary_over_particles" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Prints a summary of predictions over particles, including the average prediction span and the mean prediction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predictions from an ensemble of particles.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

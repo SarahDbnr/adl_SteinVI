@@ -12,14 +12,15 @@ from src.parameter_search.print_evaluation import print_evaluation_regression_to
 
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure, name):
-    """Test the SVGD algorithm on a regression dataset.
+    """
+    Test the SVGD algorithm on a regression dataset.
 
     Args:
-        dataset (_type_): _description_
-        parameter (_type_): _description_
-        output_size (_type_): _description_
-        network_structure (_type_): _description_
-        name (_type_): _description_
+        dataset (tuple): The dataset tuple containing training, validation, and test sets.
+        parameter (Parameter): Object containing parameters for the SVGD algorithm.
+        output_size (int): The size of the output layer for the regression task.
+        network_structure (tuple): Tuple specifying the number of units in each hidden layer.
+        name (str): A string used to name the output CSV file for evaluation metrics.
     """
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
@@ -37,7 +38,16 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure, n
 
 
 def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure, name):
-    # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
+    """
+    Test the SVGD algorithm on a multiclass classification dataset.
+
+    Args:
+        dataset (tuple): The dataset tuple containing training, validation, and test sets.
+        parameter (Parameter): Object containing parameters for the SVGD algorithm.
+        output_size (int): The size of the output layer for the classification task.
+        network_structure (tuple): Tuple specifying the number of units in each hidden layer.
+        name (str): A string used to name the output CSV file for evaluation metrics.
+    """    
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     nnet_model, tree_def, param_vec_ini = build_model(key, z_train, output_size=output_size,
@@ -52,6 +62,12 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
 
 
 def run_MNIST(info=False):
+    """
+    Run SVGD on the MNIST dataset using different numbers of particles.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
@@ -74,6 +90,9 @@ def run_MNIST(info=False):
 
 
 def run_regression_toy_example():
+    """
+    Run SVGD on a synthetic regression dataset with varying numbers of particles.
+    """
     regression_toy_example = get_regression_toy_example(num_points=100)
 
     optimizer = adam(

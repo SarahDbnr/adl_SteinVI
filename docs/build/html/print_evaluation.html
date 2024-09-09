@@ -93,15 +93,22 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv">
 <span class="sig-prename descclassname"><span class="pre">src.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_multiclass_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>true_output</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>test_predictions</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the model or experiment for identifying the file.</p></li>
+<li><p><strong>parameter</strong> (<em>object</em>) – Object containing SVGD training parameters like batch size, num_particles,
+kernel length, and early stopping parameters.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – The true output values (ground truth) for the test set.</p></li>
+<li><p><strong>test_predictions</strong> (<em>jax.numpy.ndarray</em>) – Predicted class probabilities from the SVGD model over particles.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function saves the evaluation to a CSV file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -109,16 +116,23 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.print_evaluation.print_evaluation_regression_to_csv">
 <span class="sig-prename descclassname"><span class="pre">src.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_regression_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_precision</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.print_evaluation.print_evaluation_regression_to_csv" title="Link to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Saves evaluation metrics for a regression model into a CSV file. If the file already exists, it appends the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>true_output</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>test_predictions</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>test_precision</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the model or experiment for identifying the file.</p></li>
+<li><p><strong>parameter</strong> (<em>object</em>) – Object containing SVGD training parameters like batch size, num_particles,
+kernel length, and early stopping parameters.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – The true output values (ground truth) for the test set.</p></li>
+<li><p><strong>test_predictions</strong> (<em>jax.numpy.ndarray</em>) – Predicted values from the SVGD model over particles.</p></li>
+<li><p><strong>test_precision</strong> (<em>jax.numpy.ndarray</em>) – Predicted precision values from the model over particles.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function saves the evaluation to a CSV file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

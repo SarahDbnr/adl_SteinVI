@@ -95,17 +95,36 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.run_SVGD_and_return_evaluation_values.run_MNIST">
 <span class="sig-prename descclassname"><span class="pre">src.parameter_search.run_SVGD_and_return_evaluation_values.</span></span><span class="sig-name descname"><span class="pre">run_MNIST</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.run_SVGD_and_return_evaluation_values.run_MNIST" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Run SVGD on the MNIST dataset using different numbers of particles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, prints dataset information. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.run_SVGD_and_return_evaluation_values.run_regression_toy_example">
 <span class="sig-prename descclassname"><span class="pre">src.parameter_search.run_SVGD_and_return_evaluation_values.</span></span><span class="sig-name descname"><span class="pre">run_regression_toy_example</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.run_SVGD_and_return_evaluation_values.run_regression_toy_example" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Run SVGD on a synthetic regression dataset with varying numbers of particles.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.run_SVGD_and_return_evaluation_values.run_svgd_on_multiclass_data">
 <span class="sig-prename descclassname"><span class="pre">src.parameter_search.run_SVGD_and_return_evaluation_values.</span></span><span class="sig-name descname"><span class="pre">run_svgd_on_multiclass_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parameter_search.run_SVGD_and_return_evaluation_values.run_svgd_on_multiclass_data" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Test the SVGD algorithm on a multiclass classification dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset tuple containing training, validation, and test sets.</p></li>
+<li><p><strong>parameter</strong> (<em>Parameter</em>) – Object containing parameters for the SVGD algorithm.</p></li>
+<li><p><strong>output_size</strong> (<em>int</em>) – The size of the output layer for the classification task.</p></li>
+<li><p><strong>network_structure</strong> (<em>tuple</em>) – Tuple specifying the number of units in each hidden layer.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A string used to name the output CSV file for evaluation metrics.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.parameter_search.run_SVGD_and_return_evaluation_values.run_svgd_on_regression">
@@ -114,11 +133,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>parameter</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>output_size</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>network_structure</strong> (<em>_type_</em>) – _description_</p></li>
-<li><p><strong>name</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset tuple containing training, validation, and test sets.</p></li>
+<li><p><strong>parameter</strong> (<em>Parameter</em>) – Object containing parameters for the SVGD algorithm.</p></li>
+<li><p><strong>output_size</strong> (<em>int</em>) – The size of the output layer for the regression task.</p></li>
+<li><p><strong>network_structure</strong> (<em>tuple</em>) – Tuple specifying the number of units in each hidden layer.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A string used to name the output CSV file for evaluation metrics.</p></li>
 </ul>
 </dd>
 </dl>

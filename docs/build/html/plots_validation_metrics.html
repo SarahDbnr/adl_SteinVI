@@ -94,17 +94,81 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.plots_validation_metrics.plot_and_save_evaluation_metric">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.plots_validation_metrics.</span></span><span class="sig-name descname"><span class="pre">plot_and_save_evaluation_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluation_metric_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adam_learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'svgd_plots'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.plots_validation_metrics.plot_and_save_evaluation_metric" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plots and saves a graph of evaluation metrics over iterations for a neural network model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evaluation_metric_val</strong> (<em>list</em><em> or </em><em>array</em>) – Values of the evaluation metric over iterations.</p></li>
+<li><p><strong>eval_metric</strong> (<em>str</em>) – Name of the evaluation metric, e.g., ‘accuracy’, ‘loss’.</p></li>
+<li><p><strong>num_particles</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of particles used in SVGD.</p></li>
+<li><p><strong>network_structure</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the network’s architecture.</p></li>
+<li><p><strong>kernel_length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length parameter for the kernel used in SVGD.</p></li>
+<li><p><strong>adam_learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for the Adam optimizer.</p></li>
+<li><p><strong>warm_up_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up iterations before actual training starts.</p></li>
+<li><p><strong>output_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory where the plot will be saved. Defaults to ‘svgd_plots’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Prints:</dt><dd><p>Path to the saved plot file.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.plots_validation_metrics.plot_location_in_relation_to_scale">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.plots_validation_metrics.</span></span><span class="sig-name descname"><span class="pre">plot_location_in_relation_to_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adam_learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'svgd_plots'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.plots_validation_metrics.plot_location_in_relation_to_scale" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plots and saves the relationship between predicted location values and scale values for a neural network model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nnet_model</strong> (<em>object</em>) – The neural network model used for predictions.</p></li>
+<li><p><strong>tree_def</strong> (<em>object</em>) – Tree structure used for parameter transformation in JAX.</p></li>
+<li><p><strong>out</strong> (<em>object</em>) – Output from the model prediction, containing particles.</p></li>
+<li><p><strong>z_test</strong> (<em>array</em>) – Test input features.</p></li>
+<li><p><strong>num_particles</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of particles used in SVGD.</p></li>
+<li><p><strong>network_structure</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the network’s architecture.</p></li>
+<li><p><strong>kernel_length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length parameter for the kernel used in SVGD.</p></li>
+<li><p><strong>adam_learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for the Adam optimizer.</p></li>
+<li><p><strong>actual_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of iterations actually performed.</p></li>
+<li><p><strong>warm_up_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up iterations before actual training starts.</p></li>
+<li><p><strong>output_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory where the plot will be saved. Defaults to ‘svgd_plots’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Prints:</dt><dd><p>Path to the saved plot file.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.metrics.plots_validation_metrics.plot_residuals">
 <span class="sig-prename descclassname"><span class="pre">src.metrics.plots_validation_metrics.</span></span><span class="sig-name descname"><span class="pre">plot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nnet_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adam_learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_up_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'svgd_plots'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.metrics.plots_validation_metrics.plot_residuals" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates and plots the residuals of predictions against true values for a regression model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nnet_model</strong> (<em>object</em>) – The neural network model used for predictions.</p></li>
+<li><p><strong>tree_def</strong> (<em>object</em>) – Tree structure used for parameter transformation in JAX.</p></li>
+<li><p><strong>out</strong> (<em>object</em>) – Output from the model prediction, containing particles.</p></li>
+<li><p><strong>z_test</strong> (<em>array</em>) – Test input features.</p></li>
+<li><p><strong>y_true</strong> (<em>array</em>) – True output values for the test set.</p></li>
+<li><p><strong>num_particles</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of particles used in SVGD.</p></li>
+<li><p><strong>network_structure</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the network’s architecture.</p></li>
+<li><p><strong>kernel_length</strong> (<em>float</em><em>, </em><em>optional</em>) – Length parameter for the kernel used in SVGD.</p></li>
+<li><p><strong>adam_learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for the Adam optimizer.</p></li>
+<li><p><strong>actual_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of iterations actually performed.</p></li>
+<li><p><strong>warm_up_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warm-up iterations before actual training starts.</p></li>
+<li><p><strong>output_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory where the plot will be saved. Defaults to ‘svgd_plots’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Prints:</dt><dd><p>Path to the saved residual plot file.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

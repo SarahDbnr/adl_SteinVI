@@ -48,6 +48,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Parameter_Class.html">Parameter_Class module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_SVGD.html">run_SVGD module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_posteriori.html">get_posteriori module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="svgd.html">svgd module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_handling.html">data_handling module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="BNN_Model.html">BNN_Model module</a></li>
@@ -92,12 +93,52 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="src.data.regression_toy_example.generate_data">
 <span class="sig-prename descclassname"><span class="pre">src.data.regression_toy_example.</span></span><span class="sig-name descname"><span class="pre">generate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.regression_toy_example.generate_data" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generates output data for a given input matrix x using a specific polynomial function with noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>jax.numpy.ndarray</em>) – An array of shape (n_samples, n_features) where each row represents a sample
+with features used to compute the output.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array of shape (n_samples,) containing the computed outputs with added noise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>jax.numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.data.regression_toy_example.get_regression_toy_example">
 <span class="sig-prename descclassname"><span class="pre">src.data.regression_toy_example.</span></span><span class="sig-name descname"><span class="pre">get_regression_toy_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.data.regression_toy_example.get_regression_toy_example" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generates a synthetic regression dataset based on a specified polynomial function with added noise,
+and splits it into training, validation, and test sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_points</strong> (<em>int</em>) – Total number of data points to generate.</p></li>
+<li><p><strong>input_dimension</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of input features for each data point. Defaults to 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing six elements:</dt><dd><ul class="simple">
+<li><p>x_train (jax.numpy.ndarray): Training data features.</p></li>
+<li><p>y_train (jax.numpy.ndarray): Training data outputs.</p></li>
+<li><p>x_val (jax.numpy.ndarray): Validation data features.</p></li>
+<li><p>y_val (jax.numpy.ndarray): Validation data outputs.</p></li>
+<li><p>x_test (jax.numpy.ndarray): Test data features.</p></li>
+<li><p>y_test (jax.numpy.ndarray): Test data outputs.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

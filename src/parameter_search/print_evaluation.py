@@ -10,15 +10,20 @@ from src.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
 def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):
-    """_summary_
+    """
+    Saves evaluation metrics for a regression model into a CSV file. If the file already exists, it appends the data.
 
     Args:
-        name (_type_): _description_
-        parameter (_type_): _description_
-        true_output (_type_): _description_
-        test_predictions (_type_): _description_
-        test_precision (_type_): _description_
-    """    
+        name (str): The name of the model or experiment for identifying the file.
+        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+                            kernel length, and early stopping parameters.
+        true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
+        test_predictions (jax.numpy.ndarray): Predicted values from the SVGD model over particles.
+        test_precision (jax.numpy.ndarray): Predicted precision values from the model over particles.
+
+    Returns:
+        None: The function saves the evaluation to a CSV file.
+    """
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
     else:
@@ -56,13 +61,18 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
 
 
 def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions):
-    """_summary_
+    """
+    Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.
 
     Args:
-        name (_type_): _description_
-        parameter (_type_): _description_
-        true_output (_type_): _description_
-        test_predictions (_type_): _description_
+        name (str): The name of the model or experiment for identifying the file.
+        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+                            kernel length, and early stopping parameters.
+        true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
+        test_predictions (jax.numpy.ndarray): Predicted class probabilities from the SVGD model over particles.
+
+    Returns:
+        None: The function saves the evaluation to a CSV file.
     """    
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
