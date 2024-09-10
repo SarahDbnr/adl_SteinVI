@@ -8,7 +8,7 @@ from src.model.BNN_Model import build_model
 from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
-from src.metrics.view_missclassified_images import view_missclassified
+from src.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from Parameter_Class import Parameter
@@ -65,7 +65,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     #print_summary_over_particles(predictions_test)
     
     if analys_classification:
-        view_missclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
+        view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
 
 
 def run_MNIST(info=False):
@@ -83,7 +83,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300,num_iterations=5 ,particle_batch_size=0, num_particles = 10, regression=False)
+    parameter = Parameter(optimizer, batch_size=300,num_iterations=2 ,particle_batch_size=0, num_particles = 10, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10, analys_classification=True)
 
 
