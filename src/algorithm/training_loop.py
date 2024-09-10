@@ -41,7 +41,7 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
     z_train, y_train, z_val, y_val, _, _  = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
@@ -66,7 +66,7 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
@@ -95,7 +95,7 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
     z_train, y_train, z_val, y_val, _, _  = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
@@ -124,7 +124,7 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
     z_train, y_train, z_val, y_val = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):

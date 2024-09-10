@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from tqdm import tqdm
 
@@ -50,7 +51,7 @@ def update_svgd(state, logp_model, z_batch, y_batch, particle_indices, kernel_fn
     Performs an update step for SVGD. Supports both particle and data minibatching.
     """
     grad_log_posterior = jax.grad(logp_model)
-    svgd = svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
+    svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
     step_fn = jax.jit(svgd.step)
     
     if particle_indices is not None:
