@@ -14,9 +14,10 @@ from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine,
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from src.Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
+from algorithm.random_forest import random_forest
 
 
-def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
     """
     Run the Stein Variational Gradient Descent (SVGD) algorithm on a regression dataset.
 
@@ -25,6 +26,7 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
         parameter (Parameter): The SVGD parameter object, containing settings such as optimizer, number of particles, and iterations.
         output_size (int): The size of the output layer of the neural network.
         network_structure (tuple): The structure of the neural network, defined by the number of units in each hidden layer.
+        comparisson_random_forrest (bool): If you want to compare the results of the BNN with SVGD to Random Forest
     """
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
@@ -54,9 +56,13 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
                                        network_structure=network_structure)
     print_summary_over_particles_regression(predictions_test)
+    if comparisson_random_forrest:
+        metrics = random_forest(dataset,"regression")
+        print(f"Test MSE Random Forest: {metrics['Test MSE']:.4f}")
+        print(f"Test Precision Random Forest: {metrics['Test Precision']:.4f}")
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure,comparisson_random_forrest = False):
     """
     Run the Stein Variational Gradient Descent (SVGD) algorithm on a multiclass classification dataset.
 
@@ -65,6 +71,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
         parameter (Parameter): The SVGD parameter object, containing settings such as optimizer, number of particles, and iterations.
         output_size (int): The size of the output layer of the neural network.
         network_structure (tuple): The structure of the neural network, defined by the number of units in each hidden layer.
+        comparisson_random_forrest (bool): If you want to compare the results of the BNN with SVGD to Random Forest
     """
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -81,6 +88,9 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
     print_summary_over_particles_multiclass(predictions_test)
+    if comparisson_random_forrest:
+        metrics = random_forest(dataset,"classification")
+        print(f"Test Accuracy Random Forest: {metrics['Test Accuracy']:.4f}")
 
 
 def run_MNIST(info=False):
@@ -104,7 +114,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, num_iterations=30,regression=False)
+    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=30,regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -374,4 +384,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST(info=True)
+    run_regression_toy_example(info=True)
