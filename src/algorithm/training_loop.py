@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 DEFAULT_NUM_BATCHES = 10
 
-def train_general_algorithm(dataset, nnet_model, tree_def, param_vec, parameter, key, initialize_particles_fn, update_fn, evaluate_fn, early_stopping_fn):
+def train_general_algorithm(dataset, nnet_model, tree_def, param_vec, parameter, key, initialize_particles_fn, initalize_state_fn, update_fn, evaluate_fn, early_stopping_fn):
     """
     General training function that supports different mini-batching modes for both data and particles.
     
@@ -14,7 +14,7 @@ def train_general_algorithm(dataset, nnet_model, tree_def, param_vec, parameter,
 
     # Initialize particles/parameters
     state = initialize_particles_fn(param_vec, rng_key_init, parameter.num_particles)
-
+    state = initalize_state_fn()
     evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 

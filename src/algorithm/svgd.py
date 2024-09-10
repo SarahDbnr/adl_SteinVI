@@ -25,6 +25,8 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     # Define the kernel function
     kernel_fn = rbf_kernel
     
+    svgd_state = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
+
     # SVGD-specific update function
     def svgd_update_fn(state, z_batch, y_batch, particle_indices=None):
         return update_svgd(state, logp_model, z_batch, y_batch, particle_indices, kernel_fn, parameter)
@@ -37,13 +39,22 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
         param_vec=param_vec,
         parameter=parameter,
         key=key,
-        initialize_particles_fn=initialize_particles,
+        state=svgd_state,
         update_fn=svgd_update_fn,
         evaluate_fn=evaluate_model_fn,
         early_stopping_fn=early_stopping_fn
     )
 
     return best_state, eval_metrics_1, eval_metrics_2
+
+def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter):
+    """
+    Initializes the SVGD state with the log posterior, particles, and kernel function.
+    """
+    grad_log_posterior = jax.grad(logp_model)
+    svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
+    initial_kernel_params = {"length_scale": parameter.kernel_length}
+    return svgd.init(initial_particles_vector, initial_kernel_params)
 
 
 def update_svgd(state, logp_model, z_batch, y_batch, particle_indices, kernel_fn, parameter):
@@ -105,7 +116,7 @@ def get_batched_optimizer_state(optimizer_state, indices):
             return jnp.take(x, indices, axis=0)
         return x
 
-    return jax.tree_map(batch_fn, optimizer_state)
+    return jax.tree.map(batch_fn, optimizer_state)
 
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
@@ -118,3 +129,4 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
         return orig
     
     return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
+
