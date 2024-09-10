@@ -5,19 +5,19 @@ import jax.numpy as jnp
 
 def random_forest(dataset, task_type='classification'):
     """
-    Performs Random Forest for a given dataset consisting of a train dataset, a validation dataset, 
-    and a test dataset. The datasets can be different. If it is a regression task, it 
-    computes the mean squared error (MSE) and precision. For classification, the accuracy is computed.
-
-    The validation set is used both for initial validation and for training the final model.
-
-    Parameters:
-    - dataset: A tuple containing the train, validation, and test datasets. The expected format is
-               (X_train, y_train, X_val, y_val, X_test, y_test).
-    - task_type: A string indicating the type of task ('classification' or 'regression').
-
+    Trains and evaluates a Random Forest model on the provided dataset for either classification or regression tasks.
+    
+    Args:
+        dataset (tuple): A tuple containing the training, validation, and test datasets. Expected format:
+                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data and y represents the labels.
+        task_type (str, optional): The type of task to perform, either 'classification' or 'regression'. Defaults to 'classification'.
+        
     Returns:
-    - metrics: A dictionary containing the relevant metrics for the task.
+        dict: A dictionary containing the computed performance metrics based on the task type. For classification, this includes:
+              - 'Test Accuracy': Accuracy score on the test set.
+              For regression, this includes:
+              - 'Test MSE': Mean Squared Error on the test set.
+              - 'Test Precision': Standard deviation of the predicted values.
     """
 
     # Unpack the dataset directly into 6 variables
