@@ -100,6 +100,7 @@ class FlexibleSimpleNN(nn.Module):
         return prediction, precision
 
 
+
 def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
                 bias_init=nn.initializers.zeros, use_CNN=False, use_for_regression=False):
