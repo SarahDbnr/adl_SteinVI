@@ -144,6 +144,8 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
                    output_folder="svgd_plots"):
     """
     Plots and saves the relationship between predicted location values and scale values for a neural network model.
+    Based on the paper: A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro
+    and Daniel Saromo Mori.
 
     Args:
         nnet_model (object): The neural network model used for predictions.
@@ -176,7 +178,7 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
     plt.axhline(0, color='red', linestyle='--', linewidth=1)
     plt.title("Location in relation to Scale Prediction")
     plt.xlabel("Predicted Location values")
-    plt.ylabel("Predicted Scale Values")
+    plt.ylabel("Predicted Variance Values")
 
     # Add metadata text
     info_text = (
