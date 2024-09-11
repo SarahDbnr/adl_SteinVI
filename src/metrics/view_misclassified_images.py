@@ -1,7 +1,7 @@
 import jax
 import matplotlib.pyplot as plt
 import jax.numpy as jnp
-from src.metrics.validation_and_evaluation import view_probabilities_classification
+from src.metrics.plots_validation_metrics import view_probabilities_classification
 def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_data):
     """
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.

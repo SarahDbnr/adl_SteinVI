@@ -208,3 +208,44 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
     plt.close()
 
     print(f"Location Scale plot saved as: {filepath}")
+
+
+
+
+
+def view_probabilities_classification(averaged_precision, predicted_class,true_class):
+    """
+    This function creates a plot to visualize the probabilities for each class, allowing you to see whether
+    the classification decision was clear or if the probabilities were close to each other.
+
+    Args:
+        averaged_precision (array): Array of shape (num_samples, num_classes) containing the probabilities for each class.
+        predicted_classes (int): Index of the predicted class.
+        true_class (int): Index of the true class.
+    """
+    num_classes = len(averaged_precision)
+    y_pos = jnp.arange(num_classes)
+
+    plt.figure(figsize=(8, 6))
+    
+    # Plotting the bars
+    bars = plt.barh(y_pos, averaged_precision, color='skyblue', edgecolor='black')
+    
+    # Highlight the predicted class
+    bars[predicted_class].set_color('orange')
+    bars[predicted_class].set_edgecolor('red')
+    
+    # Mark the true class with a dot
+    plt.plot(averaged_precision[true_class], y_pos[true_class], 'ko')
+    
+    # Add text annotations for each bar
+    for i in range(num_classes):
+        plt.text(averaged_precision[i] + 0.01, y_pos[i], f'{averaged_precision[i]:.2f}', va='center')
+
+    plt.yticks(y_pos, [f'Class {i}' for i in range(num_classes)])
+    plt.xlabel('Probability')
+    plt.title(f'Predicted Class: {predicted_class} (True Class: {true_class})')
+    
+    plt.show()
+    
+    

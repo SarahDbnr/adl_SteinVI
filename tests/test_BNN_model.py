@@ -173,6 +173,7 @@ def test_build_model():
     assert param_vec.size == expected_num_params, f"Expected {expected_num_params} parameters, but got {param_vec.size}."
 
     # Test that the tree_def can be used to reconstruct the parameters correctly
+    params_reconstructed = tree_def(param_vec)
     original_params = nnet_model.init(key, x_train)
 
     # Check that all elements in the original and reconstructed trees are close (numerically equal)
