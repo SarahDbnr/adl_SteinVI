@@ -5,51 +5,6 @@ import jax
 import jax.numpy as jnp
 
 
-class SimpleCNN(nn.Module):
-    """
-    Defines a simple convolutional neural network (CNN) for image classification.
-
-    Attributes:
-        num_classes (int): Number of output classes for the classification task. :no-index:
-    """
-    num_classes: int = 10
-
-    @nn.compact
-    def __call__(self, x):
-        # First convolutional layer
-        x = nn.Conv(features=32, kernel_size=(3, 3), strides=(1, 1))(x)
-        x = nn.relu(x)
-        x = nn.max_pool(x, window_shape=(2, 2), strides=(2, 2))
-
-        # Second convolutional layer
-        x = nn.Conv(features=64, kernel_size=(3, 3), strides=(1, 1))(x)
-        x = nn.relu(x)
-        x = nn.max_pool(x, window_shape=(2, 2), strides=(2, 2))
-
-        # Third convolutional layer
-        x = nn.Conv(features=128, kernel_size=(3, 3), strides=(1, 1))(x)
-        x = nn.relu(x)
-        x = nn.max_pool(x, window_shape=(2, 2), strides=(2, 2))
-
-        # Flattening layer
-        x = x.reshape((x.shape[0], -1))
-
-        # First dense layer
-        x = nn.Dense(features=128)(x)
-        x = nn.relu(x)
-
-        # Optional Dropout layer for regularization
-        # x = nn.Dropout(rate=0.5)(x, deterministic=False)
-
-        # Second dense layer
-        x = nn.Dense(features=64)(x)
-        x = nn.relu(x)
-
-        # Output layer
-        x = nn.Dense(features=self.num_classes)(x)
-        return x
-
-
 class FlexibleSimpleNN(nn.Module):
     """
     A flexible neural network model that can be customized for different architectures and tasks.
@@ -103,7 +58,7 @@ class FlexibleSimpleNN(nn.Module):
 
 def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
-                bias_init=nn.initializers.zeros, use_CNN=False, use_for_regression=False):
+                bias_init=nn.initializers.zeros, use_for_regression=False):
     """
     Builds and initializes a neural network model based on specified configurations.
 
@@ -115,16 +70,13 @@ def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn
         activation (callable, optional): Activation function for the hidden layers.
         kernel_init (callable, optional): Weight initialization function.
         bias_init (callable, optional): Bias initialization function.
-        use_CNN (bool, optional): Flag to choose between CNN and a simple flexible network.
         use_for_regression (bool, optional): Flag to specify if the model is intended for regression.
 
     Returns:
         tuple: The initialized model, the tree definition for parameter transformation, and a flattened parameter vector.
     """
-    if use_CNN:
-        nnet_model = SimpleCNN() # TODO: doesnt run through validation and evaluation, has no predict
-    else:
-        nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
+    
+    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
                                       use_for_regression)
 
     init_param = nnet_model.init(key, x_train)
