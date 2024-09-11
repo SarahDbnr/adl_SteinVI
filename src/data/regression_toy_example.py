@@ -5,6 +5,16 @@ from src.data.data_handling import print_data_information, VAL_SPLIT
 
 
 def generate_data(x):
+    """
+    Generates output data for a given input matrix x using a specific polynomial function with noise.
+
+    Args:
+        x (jax.numpy.ndarray): An array of shape (n_samples, n_features) where each row represents a sample
+                               with features used to compute the output.
+
+    Returns:
+        jax.numpy.ndarray: An array of shape (n_samples,) containing the computed outputs with added noise.
+    """
     key = jax.random.PRNGKey(1)
     x1 = x[:, 0]
     x2 = x[:, 1]
@@ -14,6 +24,23 @@ def generate_data(x):
 
 
 def get_regression_toy_example(num_points, input_dimension=2):
+    """
+    Generates a synthetic regression dataset based on a specified polynomial function with added noise,
+    and splits it into training, validation, and test sets.
+
+    Args:
+        num_points (int): Total number of data points to generate.
+        input_dimension (int, optional): Number of input features for each data point. Defaults to 2.
+
+    Returns:
+        tuple: A tuple containing six elements:
+               - x_train (jax.numpy.ndarray): Training data features.
+               - y_train (jax.numpy.ndarray): Training data outputs.
+               - x_val (jax.numpy.ndarray): Validation data features.
+               - y_val (jax.numpy.ndarray): Validation data outputs.
+               - x_test (jax.numpy.ndarray): Test data features.
+               - y_test (jax.numpy.ndarray): Test data outputs.
+    """
     key = jax.random.PRNGKey(1)
     # Split the number of points into training and testing
     num_train = math.floor(0.8 * num_points)

@@ -5,17 +5,30 @@ from optax import adam, exponential_decay
 from src.data.regression_toy_example import get_regression_toy_example
 from src.algorithm.svgd import train_with_svgd
 from src.model.BNN_Model import build_model
-from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions, print_summary_over_particles
+from src.metrics.validation_and_evaluation import (get_evaluation_metrics_over_predictions,
+                                                   print_summary_over_particles_regression,
+                                                   print_summary_over_particles_multiclass)
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling
 from src.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
-from Parameter_Class import Parameter
+from src.Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
+from algorithm.random_forest import random_forest
 
 
-def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
+    """
+    Run the Stein Variational Gradient Descent (SVGD) algorithm on a regression dataset.
+
+    Args:
+        dataset (tuple): The dataset containing training, validation, and test sets.
+        parameter (Parameter): The SVGD parameter object, containing settings such as optimizer, number of particles, and iterations.
+        output_size (int): The size of the output layer of the neural network.
+        network_structure (tuple): The structure of the neural network, defined by the number of units in each hidden layer.
+        comparisson_random_forrest (bool): If you want to compare the results of the BNN with SVGD to Random Forest
+    """
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
@@ -42,12 +55,25 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
                    network_structure=network_structure)
     plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
-                   network_structure=network_structure)
-    print_summary_over_particles(predictions_test)
+                                       network_structure=network_structure)
+    print_summary_over_particles_regression(predictions_test)
+    if comparisson_random_forrest:
+        metrics = random_forest(dataset,"regression")
+        print(f"Test MSE Random Forest: {metrics['Test MSE']:.4f}")
+        print(f"Test Precision Random Forest: {metrics['Test Precision']:.4f}")
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure, analys_classification = False):
-    # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure,comparisson_random_forrest = False):
+    """
+    Run the Stein Variational Gradient Descent (SVGD) algorithm on a multiclass classification dataset.
+
+    Args:
+        dataset (tuple): The dataset containing training, validation, and test sets.
+        parameter (Parameter): The SVGD parameter object, containing settings such as optimizer, number of particles, and iterations.
+        output_size (int): The size of the output layer of the neural network.
+        network_structure (tuple): The structure of the neural network, defined by the number of units in each hidden layer.
+        comparisson_random_forrest (bool): If you want to compare the results of the BNN with SVGD to Random Forest
+    """
     key = jax.random.PRNGKey(1)
     z_train, y_train, z_val, y_val, z_test, y_test = dataset
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
@@ -62,13 +88,20 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    #print_summary_over_particles(predictions_test)
-    
-    if analys_classification:
-        view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
+    view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
+    print_summary_over_particles_multiclass(predictions_test)
+    if comparisson_random_forrest:
+        metrics = random_forest(dataset,"classification")
+        print(f"Test Accuracy Random Forest: {metrics['Test Accuracy']:.4f}")
 
 
 def run_MNIST(info=False):
+    """
+    Run SVGD on the MNIST dataset for classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
@@ -83,11 +116,17 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300,num_iterations=2 ,particle_batch_size=0, num_particles = 10, regression=False)
-    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10, analys_classification=True)
+    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=30,regression=False)
+    run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_MNIST_minibatched_particles(info=False):
+    """
+    Run SVGD on the MNIST dataset with minibatched particles.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_mnist_dataset_info()
     mnist = tf.keras.datasets.mnist
@@ -102,11 +141,17 @@ def run_MNIST_minibatched_particles(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles = 4, regression=False)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
 def run_FashionMNIST(info=False):
+    """
+    Run SVGD on the Fashion MNIST dataset for classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_fashion_mnist_dataset_info()
 
@@ -127,6 +172,12 @@ def run_FashionMNIST(info=False):
 
 
 def run_CIFAR10(info=True):
+    """
+    Run SVGD on the CIFAR-10 dataset for classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to True.
+    """  
     if info:
         datasets_info.print_cifar10_dataset_info()
     cifar10 = tf.keras.datasets.cifar10
@@ -146,6 +197,12 @@ def run_CIFAR10(info=True):
 
 
 def run_20_newsgroups(info=True):
+    """
+    Run SVGD on the 20 Newsgroups text classification dataset.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to True.
+    """
     if info:
         datasets_info.print_20_newsgroups_dataset_info()
     dataset = newsgroup_datahandling()
@@ -165,6 +222,12 @@ def run_20_newsgroups(info=True):
 
 
 def run_adult_income(info=False):
+    """
+    Run SVGD on the Adult Income dataset for binary classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_adult_income_dataset_info()
     dataset = adult_income_datahandling()
@@ -175,7 +238,7 @@ def run_adult_income(info=False):
             init_value=0.001,
             transition_steps=1000,
             decay_rate=0.95,
-            staircase=True  
+            staircase=True
         )
     )
 
@@ -183,8 +246,13 @@ def run_adult_income(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=2)
 
 
-
 def run_iris(info=False):
+    """
+    Run SVGD on the Iris dataset for multiclass classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_iris_dataset_info()
     iris = load_iris()  # Loading the Iris dataset
@@ -204,6 +272,12 @@ def run_iris(info=False):
 
 
 def run_regression_toy_example(info=False):
+    """
+    Run SVGD on a synthetic regression toy example.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     regression_toy_example = get_regression_toy_example(num_points=10000)
 
     optimizer = adam(
@@ -218,10 +292,16 @@ def run_regression_toy_example(info=False):
     parameter = Parameter(optimizer, num_iterations=250, regression=True)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
 def run_california_housing(info=False):
+    """
+    Run SVGD on the California Housing dataset for regression.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_california_housing_dataset_info()
     california_housing = fetch_california_housing()
@@ -236,23 +316,29 @@ def run_california_housing(info=False):
         )
     )
 
-    #optimizer = adam(
+    # optimizer = adam(
     #    exponential_decay(
     #        init_value=0.025,
     #        transition_steps=150,
     #        decay_rate=0.995,
     #        staircase=True
     #    )
-    #)
+    # )
 
     parameter = Parameter(optimizer, regression=True, batch_size=1000, num_iterations=10000)
     parameter.set_early_stopping(10000, 1000, 3)
 
     run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
-def run_diabetes(info=False):
+def run_diabetes(info=False): 
+    """
+    Run SVGD on the Diabetes dataset for regression.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_diabetes_dataset_info()
     diabetes = load_diabetes()
@@ -267,13 +353,19 @@ def run_diabetes(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, regression=True ,num_iterations=1000)
+    parameter = Parameter(optimizer, regression=True, num_iterations=1000)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
 
 
 def run_wine_quality(info=False):
+    """
+    Run SVGD on the Wine Quality dataset for multiclass classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
     if info:
         datasets_info.print_wine_quality_dataset_info()
     wine_quality = load_wine()
@@ -294,4 +386,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST(info=True)
+    run_regression_toy_example(info=True)

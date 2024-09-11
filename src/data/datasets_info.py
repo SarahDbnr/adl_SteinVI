@@ -1,4 +1,7 @@
 def print_iris_dataset_info():
+    """
+    Prints a detailed description of the Iris dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 150")
     print("\t• Number of Features: 4")
@@ -15,6 +18,9 @@ def print_iris_dataset_info():
 
 
 def print_mnist_dataset_info():
+    """
+    Prints a detailed description of the MNIST dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 70,000 (60,000 training, 10,000 test)")
     print("\t• Number of Features: 784 (28x28 pixels)")
@@ -35,6 +41,9 @@ def print_mnist_dataset_info():
 
 
 def print_fashion_mnist_dataset_info():
+    """
+    Prints a detailed description of the Fashion MNIST dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 70,000 (60,000 training, 10,000 test)")
     print("\t• Number of Features: 784 (28x28 pixels)")
@@ -55,6 +64,9 @@ def print_fashion_mnist_dataset_info():
 
 
 def print_cifar10_dataset_info():
+    """
+    Prints a detailed description of the CIFAR10 dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 60,000 (50,000 training, 10,000 test)")
     print("\t• Number of Features: 3,072 (32x32 pixels, 3 color channels)")
@@ -75,6 +87,9 @@ def print_cifar10_dataset_info():
 
 
 def print_20_newsgroups_dataset_info():
+    """
+    Prints a detailed description of the Newsgroup_20 dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 18,846 (11,314 training, 7,532 test)")
     print("\t• Number of Features: Variable (depending on text vectorization, standardly here 2000)")
@@ -105,6 +120,9 @@ def print_20_newsgroups_dataset_info():
 
 
 def print_adult_income_dataset_info():
+    """
+    Prints a detailed description of the Adult Income dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 48,842 (32,561 training, 16,281 test)")
     print("\t• Number of Features: 14")
@@ -128,6 +146,9 @@ def print_adult_income_dataset_info():
 
 
 def print_california_housing_dataset_info():
+    """
+    Prints a detailed description of the California Housing dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 20,640")
     print("\t• Number of Features: 8")
@@ -145,6 +166,9 @@ def print_california_housing_dataset_info():
 
 
 def print_diabetes_dataset_info():
+    """
+    Prints a detailed description of the Diabetes dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 442")
     print("\t• Number of Features: 10")
@@ -164,6 +188,9 @@ def print_diabetes_dataset_info():
 
 
 def print_wine_quality_dataset_info():
+    """
+    Prints a detailed description of the Wine Quality dataset.
+    """
     print("Dataset Description")
     print("\t• Number of Instances: 178")
     print("\t• Number of Features: 13")

@@ -2,14 +2,28 @@ import pandas as pd
 import jax.numpy as jnp
 
 from src.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
-                                                                 calculate_accuracy,
-                                                                 calculate_number_of_different_classified_by_particles,
-                                                                 get_most_common_class_over_particles,
-                                                                 get_most_common_class)
+                                                   calculate_accuracy,
+                                                   calculate_number_of_different_classified_by_particles,
+                                                   get_most_common_class_over_particles,
+                                                   get_most_common_class)
 from src.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
 def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):
+    """
+    Saves evaluation metrics for a regression model into a CSV file. If the file already exists, it appends the data.
+
+    Args:
+        name (str): The name of the model or experiment for identifying the file.
+        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+                            kernel length, and early stopping parameters.
+        true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
+        test_predictions (jax.numpy.ndarray): Predicted values from the SVGD model over particles.
+        test_precision (jax.numpy.ndarray): Predicted precision values from the model over particles.
+
+    Returns:
+        None: The function saves the evaluation to a CSV file.
+    """
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
     else:
@@ -47,12 +61,26 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
 
 
 def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions):
+    """
+    Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.
+
+    Args:
+        name (str): The name of the model or experiment for identifying the file.
+        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+                            kernel length, and early stopping parameters.
+        true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
+        test_predictions (jax.numpy.ndarray): Predicted class probabilities from the SVGD model over particles.
+
+    Returns:
+        None: The function saves the evaluation to a CSV file.
+    """    
     if parameter.batch_size is None:
         batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
     else:
         batch_size = parameter.batch_size
     most_common_prediction_over_particles = jnp.array(get_most_common_class_over_particles(test_predictions))
-    number_of_different_classified_by_particles = jnp.array(calculate_number_of_different_classified_by_particles(test_predictions))
+    number_of_different_classified_by_particles = jnp.array(
+        calculate_number_of_different_classified_by_particles(test_predictions))
     data = {
         "name": name,
         # TODO: if we want to change the optimizer we need to specify something here: "optimizer": parameter.optimizer,

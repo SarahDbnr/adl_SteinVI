@@ -1,4 +1,7 @@
 class Parameter:
+    """
+    A class to define the parameters for training a model using Stein Variational Gradient Descent (SVGD).
+    """
     optimizer: None
     use_for_regression: bool
     num_particles: int
@@ -21,6 +24,14 @@ class Parameter:
         self.stopped_at_iteration= num_iterations
 
     def set_early_stopping(self, warm_up_iterations, patience, min_delta):
+        """
+        Sets the parameters for early stopping during training.
+
+        Args:
+            warm_up_iterations (int): Number of iterations before early stopping can be applied (warm-up period).
+            patience (int): The number of iterations to wait for an improvement before early stopping.
+            min_delta (float): The minimum change in the monitored value to be considered as an improvement.
+        """  
         self.warm_up_iterations_early_stopping = warm_up_iterations
         self.patience_early_stopping = patience
         self.min_delta_early_stopping = min_delta
