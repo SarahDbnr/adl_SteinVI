@@ -37,15 +37,14 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
     z_train, y_train, z_val, y_val, _, _  = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
         state = update_fn(state, z_train, y_train, init_update_fn)  # Full data and full particles
-        current_eval_1, current_eval_2, current_eval_3 = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
         evaluation_metrics_1.append(current_eval_1)
         evaluation_metrics_2.append(current_eval_2)
-        evaluation_metrics_3.append(current_eval_3)
 
         # Check for early stopping
         best_state, best_eval_metric, patience_counter = early_stopping_fn(
@@ -63,7 +62,7 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
     key_loop = key
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
@@ -73,10 +72,9 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             state = update_fn(state, z_batch, y_batch, init_update_fn)
 
-        current_eval_1, current_eval_2, current_eval_3 = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
         evaluation_metrics_1.append(current_eval_1)
         evaluation_metrics_2.append(current_eval_2)
-        evaluation_metrics_3.append(current_eval_3)
         # Check for early stopping
         best_state, best_eval_metric, patience_counter = early_stopping_fn(
             current_eval_1, best_eval_metric, patience_counter, state, best_state, parameter
@@ -93,7 +91,7 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
     z_train, y_train, z_val, y_val, _, _  = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
     key_loop = key
 
@@ -104,10 +102,9 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
         for particle_indices in particle_indices_batches:
             state = update_fn(state, z_train, y_train, init_update_fn, particle_indices)
 
-        current_eval_1, current_eval_2, current_eval_3 = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
         evaluation_metrics_1.append(current_eval_1)
         evaluation_metrics_2.append(current_eval_2)
-        evaluation_metrics_3.append(current_eval_3)
 
         # Check for early stopping
         best_state, best_eval_metric, patience_counter = early_stopping_fn(
@@ -122,10 +119,10 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
 
 # Both data and particle minibatching
 def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
-    z_train, y_train, z_val, y_val = dataset
+    z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
+    evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
     key_loop = key
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
@@ -140,7 +137,6 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
         current_eval_1, current_eval_2, current_eval_3 = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
         evaluation_metrics_1.append(current_eval_1)
         evaluation_metrics_2.append(current_eval_2)
-        evaluation_metrics_3.append(current_eval_3)
 
         # Check for early stopping
         best_state, best_eval_metric, patience_counter = early_stopping_fn(

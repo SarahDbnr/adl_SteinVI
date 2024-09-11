@@ -114,7 +114,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=30,regression=False)
+    parameter = Parameter(optimizer, batch_size=600, particle_batch_size=5, num_particles=15,num_iterations=15,regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -287,7 +287,7 @@ def run_regression_toy_example(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, num_iterations=250, regression=True, num_particles=50, batch_size=1000, particle_batch_size=5)
+    parameter = Parameter(optimizer, num_iterations=35, regression=True, num_particles=50, batch_size=1000, particle_batch_size=5)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
                            output_size=2)
@@ -384,4 +384,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example(info=True)
+    run_MNIST(info=True)
