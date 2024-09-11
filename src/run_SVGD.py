@@ -287,7 +287,7 @@ def run_regression_toy_example(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, num_iterations=250, regression=True, batch_size=300, particle_batch_size=0)
+    parameter = Parameter(optimizer, num_iterations=250, regression=True, num_particles=50, batch_size=1000, particle_batch_size=5)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
                            output_size=2)

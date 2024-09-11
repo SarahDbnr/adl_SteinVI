@@ -65,9 +65,10 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
     patience_counter = 0
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
-
+    key_loop = key
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
-        z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key)
+        key_loop, _ = jax.random.split(key_loop)
+        z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key_loop)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             state = update_fn(state, z_batch, y_batch, init_update_fn)
@@ -94,9 +95,11 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
     patience_counter = 0
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
+    key_loop = key
 
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
-        particle_indices_batches = create_particle_minibatch_indices(key, state.particles.shape[0], parameter.particle_batch_size)
+        key_loop, _ = jax.random.split(key_loop)
+        particle_indices_batches = create_particle_minibatch_indices(key_loop, state.particles.shape[0], parameter.particle_batch_size)
 
         for particle_indices in particle_indices_batches:
             state = update_fn(state, z_train, y_train, init_update_fn, particle_indices)
@@ -124,10 +127,11 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
     patience_counter = 0
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
-
+    key_loop = key
     for _ in tqdm(range(parameter.num_iterations), desc="Training"):
-        z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key)
-        particle_indices_batches = create_particle_minibatch_indices(key, state.particles.shape[0], parameter.particle_batch_size)
+        key_loop, _ = jax.random.split(key_loop)
+        z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key_loop)
+        particle_indices_batches = create_particle_minibatch_indices(key_loop, state.particles.shape[0], parameter.particle_batch_size)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             for particle_indices in particle_indices_batches:
@@ -151,13 +155,20 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
 
 # Utility function to create minibatches
 def create_minibatches(batch_size, input_data, output_data, key):
-    if batch_size == 0:
-        return [(input_data, output_data)]
+    if batch_size != 0:
+        if batch_size is None:
+            num_batches = DEFAULT_NUM_BATCHES
+        elif len(input_data) < batch_size:
+            num_batches = DEFAULT_NUM_BATCHES
+            print("\n WARNING: Batch size to large default batch size will be used!")
+        else:
+            num_batches = len(input_data) // batch_size
 
     num_batches = len(input_data) // batch_size
     input_data, output_data = shuffle_data(key, input_data, output_data)
-    return list(zip(jnp.array_split(input_data, num_batches), jnp.array_split(output_data, num_batches)))
-
+    input_data = jnp.array_split(input_data, num_batches)
+    output_data = jnp.array_split(output_data, num_batches)
+    return input_data, output_data
 
 # Utility function to create particle minibatch indices
 def create_particle_minibatch_indices(key, num_particles, batch_size):
