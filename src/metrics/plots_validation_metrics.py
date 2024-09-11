@@ -3,6 +3,7 @@ import datetime
 import jax
 import matplotlib.pyplot as plt
 from src.algorithm.get_posteriori import link_function
+from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 import jax.numpy as jnp
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
                                     kernel_length=None, adam_learning_rate=None,
@@ -161,12 +162,7 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
         Path to the saved plot file.
     """
     # Calculate predictions
-    prediction_location, prediction_var_score = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
-    prediction_location = prediction_location.mean(0)  # Averaging over particles
-    prediction_location = prediction_location.squeeze()
-    prediction_var_score = prediction_var_score.mean(0)  # Averaging over particles
-    prediction_var_score = prediction_var_score.squeeze()
-    predicted_scale = jax.vmap(lambda p: link_function(p))(prediction_var_score)
+    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, z_test)
     # set maximal standard deviation
 
     # Create the output folder in the current directory if it doesn't exist

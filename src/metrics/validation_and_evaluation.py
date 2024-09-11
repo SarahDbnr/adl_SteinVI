@@ -2,7 +2,6 @@ import jax
 import jax.numpy as jnp
 
 from src.algorithm.get_posteriori import link_function
-
 ALPHA = 0.05
 
 
@@ -152,3 +151,24 @@ def get_most_common_class(column):
     unique_vals, col_counts = jnp.unique(column, return_counts=True)
     max_index = jnp.argmax(col_counts)
     return unique_vals[max_index]
+
+
+def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
+    """This function computes the normal distribution p(y|x) for the test data based on the paper:
+    A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro and Daniel Saromo Mori.
+    Based on the equations (1), (2) and (3).
+    """
+
+    predictions, precision = jax.vmap(lambda p: nnet_model.predict(tree_def(p), dz))(out.particles)
+    predictions = predictions.squeeze()
+    precision = precision.squeeze()
+    mean_star = predictions.mean(0)  # Averaging over particles
+    # Step 1: Compute the squared means of individual predictions
+    squared_means_i = jnp.square(predictions)
+
+    # Step 2: Compute the variance of individual predictions
+    variance_i = jax.vmap(lambda p: link_function(p))(precision.squeeze())
+
+    # Step 3: Compute the variance according to equation (3)
+    variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(mean_star)
+    return(mean_star, variance_star)
