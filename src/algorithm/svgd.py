@@ -25,24 +25,24 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     # Define the kernel function
     kernel_fn = rbf_kernel
     
-    svgd_state = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
+    svgd_state, init_update_fn = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
 
     # SVGD-specific update function
-    def svgd_update_fn(state, z_batch, y_batch, particle_indices=None):
-        return update_svgd(state, logp_model, z_batch, y_batch, particle_indices, kernel_fn, parameter)
+    def svgd_update_fn(state, z_batch, y_batch, step_fn, particle_indices=None):
+        return update_svgd(state, z_batch, y_batch, step_fn, particle_indices)
 
     # Run the training loop
     best_state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
         dataset=dataset,
         nnet_model=nnet_model,
         tree_def=tree_def,
-        param_vec=param_vec,
         parameter=parameter,
         key=key,
         state=svgd_state,
         update_fn=svgd_update_fn,
         evaluate_fn=evaluate_model_fn,
-        early_stopping_fn=early_stopping_fn
+        early_stopping_fn=early_stopping_fn,
+        init_update_fn=init_update_fn,
     )
 
     return best_state, eval_metrics_1, eval_metrics_2
@@ -54,17 +54,14 @@ def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, param
     grad_log_posterior = jax.grad(logp_model)
     svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
     initial_kernel_params = {"length_scale": parameter.kernel_length}
-    return svgd.init(initial_particles_vector, initial_kernel_params)
+    init_update_fn = jax.jit(svgd.step)
+    return svgd.init(initial_particles_vector, initial_kernel_params), init_update_fn
 
-
-def update_svgd(state, logp_model, z_batch, y_batch, particle_indices, kernel_fn, parameter):
+def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
     """
     Performs an update step for SVGD. Supports both particle and data minibatching.
     """
-    grad_log_posterior = jax.grad(logp_model)
-    svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
-    step_fn = jax.jit(svgd.step)
-    
+
     if particle_indices is not None:
         # Minibatch update for particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
