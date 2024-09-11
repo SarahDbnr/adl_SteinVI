@@ -88,7 +88,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     print("For Test Data: Accuracy ", accuracy_test)
     plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                     network_structure=network_structure, eval_metric="Accuracy")
-    view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, output_size=output_size)
+    view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, key=key, image_data= parameter.image_data)
     print_summary_over_particles_multiclass(predictions_test)
     if comparisson_random_forrest:
         metrics = random_forest(dataset,"classification")
@@ -116,7 +116,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=30,regression=False)
+    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=3,regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -141,7 +141,7 @@ def run_MNIST_minibatched_particles(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -167,7 +167,7 @@ def run_FashionMNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=0, num_particles = 10, regression=False)
+    parameter = Parameter(optimizer, batch_size=300,num_iterations=50, particle_batch_size=0, num_particles = 5, regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -185,14 +185,14 @@ def run_CIFAR10(info=True):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
+            init_value=0.01,
             transition_steps=100,
             decay_rate=0.95,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=3000, particle_batch_size=0, num_particles = 5, regression=False)
+    parameter = Parameter(optimizer, batch_size=3000, particle_batch_size=0, num_particles = 5, regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -210,14 +210,14 @@ def run_20_newsgroups(info=True):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
+            init_value=0.001,
             transition_steps=100,
             decay_rate=0.95,
             staircase=True
         )
     )
 
-    parameter = Parameter(optimizer, regression=False, batch_size=100)
+    parameter = Parameter(optimizer, regression=False, batch_size=3000)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 200, 75, 40), output_size=20)
 
 
@@ -386,4 +386,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example(info=True)
+    run_20_newsgroups(info=True)
