@@ -7,7 +7,7 @@ from tqdm import tqdm
 from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 from src.algorithm.get_posteriori import get_posteriori
 from src.Parameter_Class import Parameter
-from src.algorithm.training_loop import train_general_algorithm
+from algorithm.model_training import train_general_algorithm
 
 
 def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
@@ -25,6 +25,7 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     # Define the kernel function
     kernel_fn = rbf_kernel
     
+    #SVGD-specific initialization and update / step function
     svgd_state, init_update_fn = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
 
     # SVGD-specific update function

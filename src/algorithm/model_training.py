@@ -40,7 +40,7 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
 
-    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
+    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
         state = update_fn(state, z_train, y_train, init_update_fn)  # Full data and full particles
         current_eval_1, current_eval_2, current_eval_3 = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
         evaluation_metrics_1.append(current_eval_1)
@@ -66,7 +66,7 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
 
-    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
+    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
         z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
@@ -95,7 +95,7 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
 
-    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
+    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
         particle_indices_batches = create_particle_minibatch_indices(key, state.particles.shape[0], parameter.particle_batch_size)
 
         for particle_indices in particle_indices_batches:
@@ -125,7 +125,7 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
     evaluation_metrics_1, evaluation_metrics_2, evaluation_metrics_3 = [], [], []
     best_state = None
 
-    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
+    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
         z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key)
         particle_indices_batches = create_particle_minibatch_indices(key, state.particles.shape[0], parameter.particle_batch_size)
 
