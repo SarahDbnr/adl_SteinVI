@@ -15,7 +15,7 @@ from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine,
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from src.Parameter_Class import Parameter
 import src.data.datasets_info as datasets_info
-from algorithm.random_forest import random_forest
+from src.algorithm.random_forest import random_forest
 
 
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
@@ -289,7 +289,7 @@ def run_regression_toy_example(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, num_iterations=250, regression=True)
+    parameter = Parameter(optimizer, num_iterations=100, regression=True, num_particles=50, batch_size=1000)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
                            output_size=2)
@@ -386,4 +386,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_20_newsgroups(info=True)
+    run_MNIST(info=True)
