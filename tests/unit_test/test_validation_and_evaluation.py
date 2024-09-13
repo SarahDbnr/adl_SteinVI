@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 
 from src.metrics.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
-                                                   get_most_common_class_over_particles)
+                                                   get_most_common_class_over_particles, compute_confidence_intervals_with_2_neurons)
 
 
 def test_calculate_number_of_different_classified_by_particles():
@@ -30,3 +30,5 @@ def test_get_most_common_class_over_particles():
     unique_vals, col_counts = jnp.unique(predictions[:, 0], return_counts=True)
     max_index = jnp.argmax(col_counts)
     assert most_common_class_over_particles[0] == unique_vals[max_index]
+
+

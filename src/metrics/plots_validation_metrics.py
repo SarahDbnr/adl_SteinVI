@@ -3,6 +3,7 @@ import datetime
 import jax
 import matplotlib.pyplot as plt
 from src.algorithm.get_posteriori import link_function
+from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 import jax.numpy as jnp
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
                                     kernel_length=None, adam_learning_rate=None,
@@ -143,6 +144,8 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
                    output_folder="svgd_plots"):
     """
     Plots and saves the relationship between predicted location values and scale values for a neural network model.
+    Based on the paper: A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro
+    and Daniel Saromo Mori.
 
     Args:
         nnet_model (object): The neural network model used for predictions.
@@ -161,12 +164,7 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
         Path to the saved plot file.
     """
     # Calculate predictions
-    prediction_location, prediction_var_score = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
-    prediction_location = prediction_location.mean(0)  # Averaging over particles
-    prediction_location = prediction_location.squeeze()
-    prediction_var_score = prediction_var_score.mean(0)  # Averaging over particles
-    prediction_var_score = prediction_var_score.squeeze()
-    predicted_scale = jax.vmap(lambda p: link_function(p))(prediction_var_score)
+    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, z_test)
     # set maximal standard deviation
 
     # Create the output folder in the current directory if it doesn't exist
@@ -180,7 +178,7 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
     plt.axhline(0, color='red', linestyle='--', linewidth=1)
     plt.title("Location in relation to Scale Prediction")
     plt.xlabel("Predicted Location values")
-    plt.ylabel("Predicted Scale Values")
+    plt.ylabel("Predicted Variance Values")
 
     # Add metadata text
     info_text = (
@@ -210,3 +208,44 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
     plt.close()
 
     print(f"Location Scale plot saved as: {filepath}")
+
+
+
+
+
+def view_probabilities_classification(averaged_precision, predicted_class,true_class):
+    """
+    This function creates a plot to visualize the probabilities for each class, allowing you to see whether
+    the classification decision was clear or if the probabilities were close to each other.
+
+    Args:
+        averaged_precision (array): Array of shape (num_samples, num_classes) containing the probabilities for each class.
+        predicted_classes (int): Index of the predicted class.
+        true_class (int): Index of the true class.
+    """
+    num_classes = len(averaged_precision)
+    y_pos = jnp.arange(num_classes)
+
+    plt.figure(figsize=(8, 6))
+    
+    # Plotting the bars
+    bars = plt.barh(y_pos, averaged_precision, color='skyblue', edgecolor='black')
+    
+    # Highlight the predicted class
+    bars[predicted_class].set_color('orange')
+    bars[predicted_class].set_edgecolor('red')
+    
+    # Mark the true class with a dot
+    plt.plot(averaged_precision[true_class], y_pos[true_class], 'ko')
+    
+    # Add text annotations for each bar
+    for i in range(num_classes):
+        plt.text(averaged_precision[i] + 0.01, y_pos[i], f'{averaged_precision[i]:.2f}', va='center')
+
+    plt.yticks(y_pos, [f'Class {i}' for i in range(num_classes)])
+    plt.xlabel('Probability')
+    plt.title(f'Predicted Class: {predicted_class} (True Class: {true_class})')
+    
+    plt.show()
+    
+    

@@ -4,6 +4,7 @@ class Parameter:
     """
     optimizer: None
     use_for_regression: bool
+    image_data: bool
     num_particles: int
     batch_size: int
     particle_batch_size: int
@@ -14,7 +15,7 @@ class Parameter:
     patience_early_stopping: int = 15
     min_delta_early_stopping: float = 0.005
 
-    def __init__(self, optimizer, regression, batch_size=0, particle_batch_size=0, num_particles=10, num_iterations=100):
+    def __init__(self, optimizer, regression, image_data=False, batch_size=0, particle_batch_size=0, num_particles=10, num_iterations=100):
         self.optimizer = optimizer
         self.use_for_regression = regression
         self.batch_size = batch_size
@@ -22,6 +23,7 @@ class Parameter:
         self.num_particles = num_particles
         self.num_iterations = num_iterations
         self.stopped_at_iteration= num_iterations
+        self.image_data = image_data
 
     def set_early_stopping(self, warm_up_iterations, patience, min_delta):
         """
