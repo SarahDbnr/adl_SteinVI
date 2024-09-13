@@ -114,7 +114,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=0, num_particles=50, num_iterations=30,regression=False)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=0, num_particles=10, num_iterations=30,regression=False)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 

@@ -7,33 +7,37 @@ from tqdm import tqdm
 from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 from src.algorithm.get_posteriori import get_posteriori
 from src.Parameter_Class import Parameter
-from algorithm.model_training import train_general_algorithm
+from src.algorithm.model_training import train_general_algorithm
 
 
 def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     """
     Trains a neural network using the Stein Variational Gradient Descent (SVGD) algorithm.
-    Args are similar to the original function with Parameter objects and key.
+
+    Args:
+        dataset (tuple): A tuple containing the training data (features and labels).
+        nnet_model (object): The neural network model used for making predictions.
+        tree_def (object): Tree structure used for parameter transformation in JAX.
+        param_vec (jax.numpy.ndarray): Initial parameter vector for the neural network.
+        parameter (Parameter): A Parameter object containing hyperparameters such as number of particles and optimizer settings.
+        key (jax.random.PRNGKey): JAX random key for initializing particles and managing randomness.
+
+    Returns:
+        tuple: The state of the model after training, and two evaluation metric values.
     """
-    # Initialize particles for SVGD
-    rng_key_observed, rng_key_init = jax.random.split(key, 2)
+    _, rng_key_init = jax.random.split(key, 2)
     initial_particles_vector = initialize_particles(param_vec, rng_key_init, parameter.num_particles)
     
-    # Define posterior function
     logp_model = get_posteriori(nnet_model, tree_def, parameter.use_for_regression)
     
-    # Define the kernel function
     kernel_fn = rbf_kernel
     
-    #SVGD-specific initialization and update / step function
     svgd_state, init_update_fn = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
 
-    # SVGD-specific update function
     def svgd_update_fn(state, z_batch, y_batch, step_fn, particle_indices=None):
         return update_svgd(state, z_batch, y_batch, step_fn, particle_indices)
 
-    # Run the training loop
-    best_state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
+    state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
         dataset=dataset,
         nnet_model=nnet_model,
         tree_def=tree_def,
@@ -46,11 +50,20 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
         init_update_fn=init_update_fn,
     )
 
-    return best_state, eval_metrics_1, eval_metrics_2
+    return state, eval_metrics_1, eval_metrics_2
 
 def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter):
     """
-    Initializes the SVGD state with the log posterior, particles, and kernel function.
+    Initializes the state for SVGD including the log posterior function, particles, and kernel function.
+
+    Args:
+        logp_model (callable): A function representing the log posterior of the model given the data.
+        initial_particles_vector (jax.numpy.ndarray): Initial particle vectors for SVGD.
+        kernel_fn (callable): The kernel function used in SVGD to measure distances between particles.
+        parameter (Parameter): A Parameter object containing the SVGD hyperparameters like kernel length scale and optimizer.
+
+    Returns:
+        tuple: The initialized SVGD state and the JIT-compiled update function for SVGD.
     """
     grad_log_posterior = jax.grad(logp_model)
     svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
@@ -60,10 +73,20 @@ def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, param
 
 def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
     """
-    Performs an update step for SVGD. Supports both particle and data minibatching.
+    Updates the SVGD particles and optimizer state, with support for minibatching.
+
+    Args:
+        state (object): The current SVGD state containing particles and optimizer state.
+        z_batch (jax.numpy.ndarray): The current batch of input data for training.
+        y_batch (jax.numpy.ndarray): The corresponding true output labels for the current batch.
+        step_fn (callable): The update function that performs the SVGD step.
+        particle_indices (jax.numpy.ndarray or None): Indices of the particles to be updated (if minibatching particles).
+
+    Returns:
+        object: The updated SVGD state after the current step.
     """
 
-    if particle_indices is not None:
+    if particle_indices is not None and particle_indices != 0:
         # Minibatch update for particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
         batch_optimizer_state = get_batched_optimizer_state(state.opt_state, particle_indices)
@@ -84,21 +107,49 @@ def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
 
 def initialize_particles(param_vec, rng_key_init, num_particles):
     """
-    Initializes particles for SVGD.
+    Initializes particles for the SVGD algorithm using a normal distribution.
+
+    Args:
+        param_vec (jax.numpy.ndarray): The initial parameter vector for the model.
+        rng_key_init (jax.random.PRNGKey): JAX random key for initializing particles.
+        num_particles (int): The number of particles to initialize.
+
+    Returns:
+        jax.numpy.ndarray: A set of initialized particles.
     """
     return jax.random.normal(rng_key_init, shape=(num_particles,) + param_vec.shape)
 
 
 def evaluate_model_fn(state, nnet_model, tree_def, z_val, y_val, parameter):
     """
-    Evaluates the model on validation data, returning the metrics.
+    Evaluates the model using the current SVGD state on validation data.
+
+    Args:
+        state (object): The current SVGD state containing particles and optimizer state.
+        nnet_model (object): The neural network model used for making predictions.
+        tree_def (object): Tree structure used for parameter transformation in JAX.
+        z_val (jax.numpy.ndarray): Validation input features.
+        y_val (jax.numpy.ndarray): True output labels for the validation set.
+        parameter (Parameter): A Parameter object that defines if the task is regression or classification.
+
+    Returns:
+        tuple: Evaluation metrics such as MSE or accuracy, depending on the task.
     """
     return get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, parameter.use_for_regression)
 
 
 def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
     """
-    Implements early stopping based on validation metrics.
+    Implements early stopping by comparing validation metrics over training iterations.
+
+    Args:
+        current_metrics (float): The evaluation metric for the current iteration.
+        best_metrics (float): The best evaluation metric seen so far.
+        patience_counter (int): A counter tracking how many iterations the model has been non-improving.
+        parameter (Parameter): A Parameter object defining early stopping criteria like minimum delta.
+
+    Returns:
+        tuple: Updated patience counter and best metric value.
     """
     if current_metrics < best_metrics + parameter.min_delta_early_stopping:
         patience_counter = patience_counter + 1
@@ -110,7 +161,14 @@ def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter
 
 def get_batched_optimizer_state(optimizer_state, indices):
     """
-    Extracts the optimizer state for a minibatch of particles.
+    Extracts a minibatch of the optimizer state for the selected particles.
+
+    Args:
+        optimizer_state (object): The full optimizer state across all particles.
+        indices (jax.numpy.ndarray): Indices of the particles to extract optimizer states for.
+
+    Returns:
+        object: The optimizer state for the selected particles.
     """
     def batch_fn(x):
         if hasattr(x, 'ndim') and x.ndim > 0:
@@ -122,7 +180,15 @@ def get_batched_optimizer_state(optimizer_state, indices):
 
 def update_optimizer_state(optimizer_state, batched_state, indices):
     """
-    Updates the global optimizer state with the minibatched state.
+    Updates the global optimizer state with the minibatched state after an update step.
+
+    Args:
+        optimizer_state (object): The full optimizer state across all particles.
+        batched_state (object): The optimizer state after a minibatch update.
+        indices (jax.numpy.ndarray): Indices of the particles that were updated.
+
+    Returns:
+        object: The updated optimizer state.
     """
     def update_fn(orig, batched):
         if hasattr(orig, 'ndim') and orig.ndim > 0:
