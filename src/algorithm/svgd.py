@@ -96,13 +96,16 @@ def evaluate_model_fn(state, nnet_model, tree_def, z_val, y_val, parameter):
     return get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, parameter.use_for_regression)
 
 
-def early_stopping_fn(current_metrics, best_metrics, patience_counter, state, best_state, parameter):
+def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
     """
     Implements early stopping based on validation metrics.
     """
-    if current_metrics > best_metrics + parameter.min_delta_early_stopping:
-        return state, current_metrics, 0
-    return best_state, best_metrics, patience_counter + 1
+    if current_metrics < best_metrics + parameter.min_delta_early_stopping:
+        patience_counter = patience_counter + 1
+    else:
+        patience_counter = 0
+        best_metrics = current_metrics
+    return patience_counter, best_metrics
 
 
 def get_batched_optimizer_state(optimizer_state, indices):
