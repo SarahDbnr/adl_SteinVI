@@ -1,10 +1,10 @@
 import os
 import datetime
 import jax
-import matplotlib.pyplot as plt
-from src.algorithm.get_posteriori import link_function
-from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
+from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
+
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
                                     kernel_length=None, adam_learning_rate=None,
                                     warm_up_iterations=None, output_folder="svgd_plots"):
@@ -209,43 +209,82 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
 
     print(f"Location Scale plot saved as: {filepath}")
 
-
-
-
-
-def view_probabilities_classification(averaged_precision, predicted_class,true_class):
+def view_probabilities_classification(precisions_sample, predicted_class, true_class, ax=None):
     """
-    This function creates a plot to visualize the probabilities for each class, allowing you to see whether
-    the classification decision was clear or if the probabilities were close to each other.
+    Plots the probabilities for each class with error bars based on 5% and 95% quantiles.
+    Additionally, shows the 25% to 75% quantile range in light blue with alpha=0.5.
+    The predicted class is highlighted in green, and the true class is highlighted in dark blue.
 
-    Args:
-        averaged_precision (array): Array of shape (num_samples, num_classes) containing the probabilities for each class.
-        predicted_classes (int): Index of the predicted class.
-        true_class (int): Index of the true class.
+    Parameters:
+    - precisions_sample: Array of shape (num_particles, num_classes) containing the predicted probabilities
+      from different particles for a single sample.
+    - predicted_class: The class predicted by the model.
+    - true_class: The true class label of the sample.
+    - ax: The axis on which to plot. If None, a new figure and axis will be created.
     """
-    num_classes = len(averaged_precision)
-    y_pos = jnp.arange(num_classes)
+    # Calculate mean of probabilities across particles
+    means = precisions_sample.mean(axis=0)
+    
+    # Calculate the 2.5% and 97.5% quantiles for the error bars
+    lower_quantiles_25_975 = jnp.quantile(precisions_sample, 0.025, axis=0)
+    upper_quantiles_25_975 = jnp.quantile(precisions_sample, 0.975, axis=0)
+    
+    # Calculate the 25% and 75% quantiles
+    lower_quantiles_25_75 = jnp.quantile(precisions_sample, 0.25, axis=0)
+    upper_quantiles_25_75 = jnp.quantile(precisions_sample, 0.75, axis=0)
+    
+    # Calculate the error bars as the absolute difference between the quantiles and the mean
+    lower_errors_25_975 = jnp.abs(means - lower_quantiles_25_975)
+    upper_errors_25_975 = jnp.abs(upper_quantiles_25_975 - means)
+    error_bars_25_975 = [lower_errors_25_975, upper_errors_25_975]
 
-    plt.figure(figsize=(8, 6))
-    
-    # Plotting the bars
-    bars = plt.barh(y_pos, averaged_precision, color='skyblue', edgecolor='black')
-    
-    # Highlight the predicted class
-    bars[predicted_class].set_color('orange')
-    bars[predicted_class].set_edgecolor('red')
-    
-    # Mark the true class with a dot
-    plt.plot(averaged_precision[true_class], y_pos[true_class], 'ko')
-    
-    # Add text annotations for each bar
-    for i in range(num_classes):
-        plt.text(averaged_precision[i] + 0.01, y_pos[i], f'{averaged_precision[i]:.2f}', va='center')
+    # Calculate the error bars for the 25%-75% range
+    lower_errors_25_75 = jnp.abs(means - lower_quantiles_25_75)
+    upper_errors_25_75 = jnp.abs(upper_quantiles_25_75 - means)
+    error_bars_25_75 = [lower_errors_25_75, upper_errors_25_75]
 
-    plt.yticks(y_pos, [f'Class {i}' for i in range(num_classes)])
-    plt.xlabel('Probability')
-    plt.title(f'Predicted Class: {predicted_class} (True Class: {true_class})')
+    # Define the positions for the bars
+    x_pos = jnp.arange(len(means))
+
+    # Define the colors for the bars
+    colors = ['gray'] * len(means)
+    colors[predicted_class] = 'green'
+    colors[true_class] = 'darkblue'
+
+    # If no axis is provided, create one
+    plot = False
+    if ax is None:
+        plot = True
+        fig, ax = plt.subplots()
+
+    # Plot the 2.5%-97.5% quantile range as the main error bars
+    bars = ax.bar(x_pos, means, yerr=error_bars_25_975, align='center', alpha=0.7, ecolor='black', capsize=10, color=colors)
     
-    plt.show()
-    
-    
+    # Plot the 25%-75% quantile range as a filled area (light blue with alpha=0.5)
+    ax.bar(x_pos, means, yerr=error_bars_25_75, align='center', alpha=0.5, ecolor='lightblue', capsize=10, color=colors)
+
+    # Add labels and title
+    ax.set_ylabel('Probability')
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels([f'Class {i}' for i in range(len(means))])
+    ax.set_title(f'Predicted Class: {predicted_class}, True Class: {true_class}', pad=20)
+    ax.yaxis.grid(True)
+
+    # Highlight predicted and true classes
+    bars[predicted_class].set_color('green')
+    bars[true_class].set_color('darkblue')
+
+    # Add a legend to describe the colors
+    legend_elements = [
+        plt.Line2D([0], [0], color='gray', lw=4, label='Other Classes'),
+        plt.Line2D([0], [0], color='green', lw=4, label='Predicted Class'),
+        plt.Line2D([0], [0], color='darkblue', lw=4, label='True Class'),
+        plt.Line2D([0], [0], color='lightblue', lw=4, label='25%-75% Quantile Range'),
+        plt.Line2D([0], [0], color='black', lw=4, label='2.5%-97.5% Quantile Range')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right')
+
+    # If a figure was created within this function, display it
+    if plot:
+        plt.tight_layout()
+        plt.show()

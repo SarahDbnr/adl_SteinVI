@@ -38,32 +38,36 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
         misclassified_random_indices = jnp.array([])  # or handle it according to your logic
     else:
         misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices, shape=(5,), replace=False)
-
-    correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices, shape=(5,), replace=False)
+    if correctly_classified_indices.size == 0:
+        print("No correctly classified samples.")
+        correctly_classified_random_indices = jnp.array([])  # or handle it according to your logic
+    else:
+        correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices, shape=(5,), replace=False)
 
     # Combine the selected indices
     indices = jnp.concatenate([misclassified_random_indices, correctly_classified_random_indices])
     for idx in indices:
         if image_data:
             # Get the actual image and label
-            # Determine the shape of the image
             image_shape = z_test[idx].shape
-
-            # If the image has only two dimensions (grayscale), keep it as is. 
-            # If it has three dimensions (colored), use the full shape.
-            if len(image_shape) == 2:
-                image = z_test[idx].reshape(image_shape)
-            else:
-                image = z_test[idx].reshape(image_shape)  # Automatically handles colored images (e.g., 28x28x3)
-
-            
+            image = z_test[idx].reshape(image_shape)
             true_label = y_test[idx]
             predicted_label = predicted_classes[idx]
-        
-        
-            # Display the image and the prediction details
-            # Display the image using the appropriate color map
-            plt.imshow(image, cmap='gray' if image_shape[-1] == 1 or len(image_shape) == 2 else None)
-            plt.title(f"True Label: {true_label}, Predicted: {predicted_label}\n")
+
+            # Create a figure with two subplots: one for the image and one for the probability distribution
+            fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+
+            # Display the image in the first subplot
+            ax[0].imshow(image, cmap='gray' if image_shape[-1] == 1 or len(image_shape) == 2 else None)
+            ax[0].set_title(f"True Label: {true_label}, Predicted: {predicted_label}")
+            ax[0].axis('off')
+
+            # Plot the probability distribution in the second subplot
+            view_probabilities_classification(precisions[:, int(idx), :], predicted_classes[int(idx)], y_test[int(idx)], ax=ax[1])
+
+            plt.tight_layout()
             plt.show()
-        view_probabilities_classification(averaged_precision[int(idx),:],predicted_classes[int(idx)],y_test[int(idx)])
+
+        else:
+            # If not image data, simply show the probability distribution
+            view_probabilities_classification(precisions_sample=precisions[:, int(idx), :],predicted_class= predicted_classes[int(idx)], true_class=y_test[int(idx)])

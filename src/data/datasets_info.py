@@ -210,3 +210,33 @@ def print_wine_quality_dataset_info():
     print("\t\t• Proline: Proline content. Continuous. Range: [278.0, 1680.0]")
     print("\t• Target:")
     print("\t\t• Wine Class: Classification of wine into one of three categories (0, 1, 2). Discrete.")
+
+
+
+def print_bike_sharing_dataset_info():
+    """
+    Prints a detailed description of the Bike Sharing dataset.
+    """
+    print("Dataset Description")
+    print("\t• Name: Bike Sharing Dataset")
+    print("\t• Number of Instances: 17,379")
+    print("\t• Number of Features: 16")
+    print("\t• Features:")
+    print("\t\t• season: Season (1:springer, 2:summer, 3:fall, 4:winter). Categorical.")
+    print("\t\t• yr: Year (0: 2011, 1:2012). Categorical.")
+    print("\t\t• mnth: Month (1 to 12). Categorical.")
+    print("\t\t• hr: Hour (0 to 23). Categorical.")
+    print("\t\t• holiday: Whether the day is a holiday or not. Binary.")
+    print("\t\t• weekday: Day of the week (0 to 6). Categorical.")
+    print("\t\t• workingday: Whether the day is a working day or not. Binary.")
+    print("\t\t• weathersit: Weather situation (1: Clear, 2: Mist, 3: Light Snow, 4: Heavy Rain). Categorical.")
+    print("\t\t• temp: Normalized temperature in Celsius. Continuous.")
+    print("\t\t• atemp: Normalized feeling temperature in Celsius. Continuous.")
+    print("\t\t• hum: Normalized humidity. Continuous.")
+    print("\t\t• windspeed: Normalized wind speed. Continuous.")
+    print("\t\t• casual: Number of casual users. Continuous.")
+    print("\t\t• registered: Number of registered users. Continuous.")
+    print("\t\t• cnt: Total number of rentals (casual + registered). Continuous.")
+    
+    print("\t• Target:")
+    print("\t\t• cnt: Total number of bike rentals for a given hour.")

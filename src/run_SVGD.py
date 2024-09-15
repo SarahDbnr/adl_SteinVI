@@ -9,7 +9,7 @@ from src.metrics.validation_and_evaluation import (get_evaluation_metrics_over_p
                                                    print_summary_over_particles_regression,
                                                    print_summary_over_particles_multiclass)
 from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
-    adult_income_datahandling
+    adult_income_datahandling, bike_sharing_datahandling
 from src.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
@@ -384,6 +384,22 @@ def run_wine_quality(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
                                 output_size=3)
 
+def run_bike_sharing(info=False):
+    if info:
+        datasets_info.print_bike_sharing_dataset_info()
+    bike_sharing_dataset = bike_sharing_datahandling()
+    dataset = apply_data_settings_sklearn(bike_sharing_dataset)
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.5,
+            transition_steps=10,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
 
+    parameter = Parameter(optimizer,batch_size=300, regression=True)
+    run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
+                                output_size=2)
 if __name__ == "__main__":
     run_MNIST(info=True)

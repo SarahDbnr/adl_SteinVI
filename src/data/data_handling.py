@@ -7,6 +7,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from scipy.sparse import issparse
+
 VAL_SPLIT = 0.1
 
 
@@ -56,9 +57,9 @@ def apply_data_settings_sklearn(new_dataset, fraction=1):
     x = new_dataset.data
     y = new_dataset.target
 
-    key, subkey = jax.random.split(key)
-    perm = jax.random.permutation(subkey, x.shape[0])
-    x, y = x[perm], y[perm]
+    #key, subkey = jax.random.split(key)
+    #perm = jax.random.permutation(subkey, x.shape[0])
+    #x, y = x[perm], y[perm]
 
     num_train = int(0.8 * x.shape[0])
     num_val = int(VAL_SPLIT * num_train)
@@ -153,6 +154,51 @@ def adult_income_datahandling():
 
     X = adult_income.data
     y = (adult_income.target == '>50K').astype(int)  # Binary classification: '>50K' is class 1, otherwise 0
+    
+    # Define preprocessing for numerical and categorical data
+    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
+    categorical_features = X.select_dtypes(include=['object']).columns
+    
+    # Create a preprocessing pipeline
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), numeric_features),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+        ]
+    )
+    
+    # Apply preprocessing
+    X_processed = preprocessor.fit_transform(X)
+
+    # Convert the processed features to a dense array if necessary
+    if issparse(X_processed):
+        X_processed = X_processed.toarray()
+
+    # Convert y to a numpy array
+    y = y.to_numpy()
+
+    # Create a new dataset object as expected by `apply_data_settings_sklearn`
+    class CustomDataset:
+        def __init__(self, data, target):
+            self.data = data
+            self.target = target
+
+    dataset = CustomDataset(X_processed, y)
+    return dataset
+
+
+
+def bike_sharing_datahandling():
+    """
+    Fetches and preprocesses the Bike Sharing dataset for regression. Features are scaled and encoded appropriately.
+
+    Returns:
+        CustomDataset: A dataset object containing the processed features and targets.
+    """
+    bike_sharing = fetch_openml(data_id=42731, as_frame=True)
+    
+    X = bike_sharing.data
+    y = bike_sharing.target
     
     # Define preprocessing for numerical and categorical data
     numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
