@@ -2,7 +2,6 @@ from src.Parameter_Class import Parameter
 import src.metrics.plots_validation_metrics as plots
 from src.Handler_Class import Handler
 
-from blackjax.vi.svgd import SVGDState
 import flax.linen
 import jax.numpy as jnp
 import jax
@@ -36,6 +35,13 @@ class SteinVI_BNN:
 
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size, num_particles, num_iterations)
         self.use_for_regression = use_for_regression
+
+    def set_training_fns(self, kernel_fn, update_fn, evaluate_model_fn, early_stopping_fn, init_update_fn):
+        self.kernel_fn = kernel_fn
+        self.update_fn = update_fn
+        self.evaluate_model_fn = evaluate_model_fn
+        self.early_stopping_fn = early_stopping_fn
+        self.init_update_fn = init_update_fn
 
     def predict(self, weights, x_input):
         if self.use_for_regression:

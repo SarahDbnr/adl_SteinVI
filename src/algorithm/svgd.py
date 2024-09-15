@@ -7,9 +7,10 @@ from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_pr
 from src.algorithm.get_posteriori import get_posteriori
 from src.Parameter_Class import Parameter
 from src.algorithm.model_training import train_general_algorithm
+from src.SteinVI_BNN import SteinVI_BNN
 
 
-def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
+def train_with_svgd(SteinVI_BNN_SVGD, dataset, key):
     """
     Trains a neural network using the Stein Variational Gradient Descent (SVGD) algorithm.
 
@@ -25,31 +26,26 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
         tuple: The state of the model after training, and two evaluation metric values.
     """
     _, rng_key_init = jax.random.split(key, 2)
-    initial_particles_vector = initialize_particles(param_vec, rng_key_init, parameter.num_particles)
+    initial_particles_vector = initialize_particles(SteinVI_BNN_SVGD.param_vec, rng_key_init, SteinVI_BNN_SVGD.parameter.num_particles)
     
-    logp_model = get_posteriori(nnet_model, tree_def, parameter.use_for_regression)
+    SteinVI_BNN_SVGD.log_posterior = get_posteriori(SteinVI_BNN_SVGD.nnet_model, SteinVI_BNN_SVGD.tree_def, SteinVI_BNN_SVGD.use_for_regression)
     
-    kernel_fn = rbf_kernel
+    SteinVI_BNN_SVGD.kernel_fn = rbf_kernel
     
-    svgd_state, init_update_fn = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
+    SteinVI_BNN_SVGD.state, SteinVI_BNN_SVGD.init_update_fn = initialize_svgd_state(SteinVI_BNN_SVGD.log_posterior, initial_particles_vector, SteinVI_BNN_SVGD.kernel_fn, SteinVI_BNN_SVGD.parameter)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn, particle_indices=None):
         return update_svgd(state, z_batch, y_batch, step_fn, particle_indices)
+    
+    SteinVI_BNN_SVGD.update_fn = svgd_update_fn
 
-    state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
+    SteinVI_BNN_SVGD = train_general_algorithm(
+        SteinVI_BNN_object = SteinVI_BNN_SVGD,
         dataset=dataset,
-        nnet_model=nnet_model,
-        tree_def=tree_def,
-        parameter=parameter,
-        key=key,
-        state=svgd_state,
-        update_fn=svgd_update_fn,
-        evaluate_fn=evaluate_model_fn,
-        early_stopping_fn=early_stopping_fn,
-        init_update_fn=init_update_fn,
+        key=key
     )
 
-    return state, eval_metrics_1, eval_metrics_2
+    return SteinVI_BNN_SVGD
 
 def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter):
     """
