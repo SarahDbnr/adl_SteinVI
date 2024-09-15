@@ -4,6 +4,7 @@ from tqdm import tqdm
 
 DEFAULT_NUM_BATCHES = 10
 
+
 def train_general_algorithm(SteinVI_BNN_object, dataset, key):
     """
     General training function for neural networks that supports different mini-batching modes for both data and particles.
@@ -38,7 +39,7 @@ def train_general_algorithm(SteinVI_BNN_object, dataset, key):
 
     return training_loop_fn(SteinVI_BNN_object, dataset, key)
 
-     
+
 
 def no_minibatch_training_loop(SteinVI_BNN_object, dataset):
     """
@@ -102,7 +103,7 @@ def data_minibatch_training_loop(SteinVI_BNN_object, dataset, key):
         SteinVI_BNN_object.eval_metrics_1, SteinVI_BNN_object.eval_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(SteinVI_BNN_object, dataset, patience_counter, best_eval_metric, iteration)
         if patience_counter >= SteinVI_BNN_object.parameter.patience_early_stopping:
             break
-        
+
     return SteinVI_BNN_object
 
 
@@ -215,6 +216,7 @@ def create_minibatches(batch_size, input_data, output_data, key):
     input_data = jnp.array_split(input_data, num_batches)
     output_data = jnp.array_split(output_data, num_batches)
     return input_data, output_data
+
 
 # Utility function to create particle minibatch indices
 def create_particle_minibatch_indices(key, num_particles, batch_size):

@@ -2,7 +2,9 @@ import jax
 import matplotlib.pyplot as plt
 import jax.numpy as jnp
 from src.metrics.plots_validation_metrics import view_probabilities_classification
-def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_data):
+
+
+def view_misclassified(out, nnet_model, tree_def, z_test, y_test, image_data):
     """
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
     5 random misclassified and 5 random right classified data examples.
@@ -23,15 +25,16 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
 
     # Take the mean prediction across all particles
     averaged_precision = precisions.mean(0)
-    
+
     # Convert the averaged predictions to predicted classes
     predicted_classes = jnp.argmax(averaged_precision, axis=-1)
-    
+
     # Find the indices where the predicted classes do or do not match the true labels
     misclassified_indices = jnp.where(predicted_classes != y_test)[0]
     correctly_classified_indices = jnp.where(predicted_classes == y_test)[0]
 
     # Shuffle and select 5 random indices from each
+    key = jax.random.PRNGKey(1)
     key, subkey1, subkey2 = jax.random.split(key, 3)
 
     # Handle misclassified indices
@@ -41,7 +44,8 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
     else:
         # Use all samples if fewer than 5, otherwise randomly select 5
         num_misclassified_samples = min(5, misclassified_indices.size)
-        misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices, shape=(num_misclassified_samples,), replace=False)
+        misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices,
+                                                         shape=(num_misclassified_samples,), replace=False)
 
     # Handle correctly classified indices
     if correctly_classified_indices.size == 0:
@@ -50,7 +54,9 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
     else:
         # Use all samples if fewer than 5, otherwise randomly select 5
         num_correctly_classified_samples = min(5, correctly_classified_indices.size)
-        correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices, shape=(num_correctly_classified_samples,), replace=False)
+        correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices,
+                                                                shape=(num_correctly_classified_samples,),
+                                                                replace=False)
 
     # Combine the selected indices
     indices = jnp.concatenate([misclassified_random_indices, correctly_classified_random_indices])
@@ -71,11 +77,13 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
             ax[0].axis('off')
 
             # Plot the probability distribution in the second subplot
-            view_probabilities_classification(precisions[:, int(idx), :], predicted_classes[int(idx)], y_test[int(idx)], ax=ax[1])
+            view_probabilities_classification(precisions[:, int(idx), :], predicted_classes[int(idx)], y_test[int(idx)],
+                                              ax=ax[1])
 
             plt.tight_layout()
             plt.show()
 
         else:
             # If not image data, simply show the probability distribution
-            view_probabilities_classification(precisions_sample=precisions[:, int(idx), :],predicted_class= predicted_classes[int(idx)], true_class=y_test[int(idx)])
+            view_probabilities_classification(precisions_sample=precisions[:, int(idx), :],
+                                              predicted_class=predicted_classes[int(idx)], true_class=y_test[int(idx)])

@@ -27,16 +27,18 @@ def train_with_svgd(SteinVI_BNN_SVGD, dataset, key):
     """
     _, rng_key_init = jax.random.split(key, 2)
     initial_particles_vector = initialize_particles(SteinVI_BNN_SVGD.param_vec, rng_key_init, SteinVI_BNN_SVGD.parameter.num_particles)
-    
+    #initial_particles_vector = steinvi_bnn.initial_particles_vector(key, dataset, SteinVI_BNN_SVGD.parameter.num_particles)
+    #change
+
     SteinVI_BNN_SVGD.log_posterior = get_posteriori(SteinVI_BNN_SVGD.nnet_model, SteinVI_BNN_SVGD.tree_def, SteinVI_BNN_SVGD.use_for_regression)
-    
+
     SteinVI_BNN_SVGD.kernel_fn = rbf_kernel
-    
+
     SteinVI_BNN_SVGD.state, SteinVI_BNN_SVGD.init_update_fn = initialize_svgd_state(SteinVI_BNN_SVGD.log_posterior, initial_particles_vector, SteinVI_BNN_SVGD.kernel_fn, SteinVI_BNN_SVGD.parameter)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn, particle_indices=None):
         return update_svgd(state, z_batch, y_batch, step_fn, particle_indices)
-    
+
     SteinVI_BNN_SVGD.update_fn = svgd_update_fn
 
     SteinVI_BNN_SVGD = train_general_algorithm(
@@ -46,6 +48,7 @@ def train_with_svgd(SteinVI_BNN_SVGD, dataset, key):
     )
 
     return SteinVI_BNN_SVGD
+
 
 def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter):
     """
@@ -66,6 +69,7 @@ def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, param
     init_update_fn = jax.jit(svgd.step)
     return svgd.init(initial_particles_vector, initial_kernel_params), init_update_fn
 
+
 def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
     """
     Updates the SVGD particles and optimizer state, with support for minibatching.
@@ -85,13 +89,13 @@ def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
         # Minibatch update for particles
         batch_particles = jnp.take(state.particles, particle_indices, axis=0)
         batch_optimizer_state = get_batched_optimizer_state(state.opt_state, particle_indices)
-        
+
         batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
         updated_batch_state = step_fn(batch_state, dz=z_batch, dy=y_batch)
-        
+
         new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
         new_optimizer_state = update_optimizer_state(state.opt_state, updated_batch_state, particle_indices)
-        
+
         state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
     else:
         # Full update
@@ -116,6 +120,7 @@ def initialize_particles(param_vec, rng_key_init, num_particles):
 
 
 def evaluate_model_fn(state, nnet_model, tree_def, z_val, y_val, parameter):
+    # change parameter
     """
     Evaluates the model using the current SVGD state on validation data.
 
@@ -130,7 +135,8 @@ def evaluate_model_fn(state, nnet_model, tree_def, z_val, y_val, parameter):
     Returns:
         tuple: Evaluation metrics such as MSE or accuracy, depending on the task.
     """
-    return get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, parameter.use_for_regression)
+    return get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val,
+                                                   parameter.use_for_regression)
 
 
 def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
@@ -165,6 +171,7 @@ def get_batched_optimizer_state(optimizer_state, indices):
     Returns:
         object: The optimizer state for the selected particles.
     """
+
     def batch_fn(x):
         if hasattr(x, 'ndim') and x.ndim > 0:
             return jnp.take(x, indices, axis=0)
@@ -185,10 +192,10 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
     Returns:
         object: The updated optimizer state.
     """
+
     def update_fn(orig, batched):
         if hasattr(orig, 'ndim') and orig.ndim > 0:
             return orig.at[indices].set(batched)
         return orig
-    
-    return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
 
+    return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)

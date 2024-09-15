@@ -22,7 +22,6 @@ class FlexibleSimpleNN(nn.Module):
     activation: callable = nn.relu
     kernel_init: callable = nn.initializers.glorot_uniform()  # nn.initializers.lecun_normal()
     bias_init: callable = nn.initializers.zeros
-    use_for_regression: bool = False
 
     @nn.compact
     def __call__(self, *inputs):
@@ -45,8 +44,7 @@ class FlexibleSimpleNN(nn.Module):
         return x.squeeze(-1) if self.output_size == 1 else x
 
 
-
-def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
+def build_model(hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
                 bias_init=nn.initializers.zeros, use_for_regression=False):
     """
@@ -65,10 +63,7 @@ def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn
     Returns:
         tuple: The initialized model, the tree definition for parameter transformation, and a flattened parameter vector.
     """
-    
-    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
-                                      use_for_regression)
 
-    init_param = nnet_model.init(key, x_train)
-    param_vec, tree_def = ravel_pytree(init_param)
-    return nnet_model, tree_def, param_vec
+    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
+                                  use_for_regression)
+    return nnet_model

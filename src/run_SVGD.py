@@ -12,7 +12,8 @@ from src.data.data_handling import apply_data_settings_sklearn, apply_data_setti
     adult_income_datahandling, bike_sharing_datahandling
 from src.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
+from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, \
+    plot_location_in_relation_to_scale
 from src.Parameter_Class import Parameter
 from src.Handler_Class import Handler
 import src.data.datasets_info as datasets_info
@@ -33,35 +34,35 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
-    nnet_model, tree_def, param_vec_ini = build_model(key, z_train, output_size=output_size,
-                                                      hidden_layers=network_structure,
-                                                      use_for_regression=parameter.use_for_regression)
+    nnet_model = build_model(output_size=output_size,
+                             hidden_layers=network_structure,
+                             use_for_regression=parameter.use_for_regression)
 
-    out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def,
-                                                           param_vec_ini, parameter, key)
+    out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def, parameter, key)
     mse_test, averaged_precision_test, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model,
-                                                                                                    tree_def,
-                                                                                                    z_test,
-                                                                                                    y_test,
-                                                                                                    model_regression=True)
+                                                                                                  tree_def,
+                                                                                                  z_test,
+                                                                                                  y_test,
+                                                                                                  model_regression=True)
     print("For Test Data: MSE ", mse_test, " Averaged Precision ", averaged_precision_test)
 
     if parameter.handler.plot_val_metric_over_iter:
         plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
                                         network_structure=network_structure, eval_metric="MSE")
     if parameter.handler.plot_val_aver_prec_over_iter:
-        plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=parameter.num_particles,
+        plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val,
+                                        num_particles=parameter.num_particles,
                                         network_structure=network_structure, eval_metric="averaged_precision")
     if parameter.handler.plot_residual:
         plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
-                    network_structure=network_structure)
+                       network_structure=network_structure)
     if parameter.handler.plot_loc_relation_scale:
         plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
-                                        network_structure=network_structure)
+                                           network_structure=network_structure)
     if parameter.handler.summary_over_part:
         print_summary_over_particles_regression(predictions_test)
     if parameter.handler.rf_comparison:
-        metrics = random_forest(dataset,"regression")
+        metrics = random_forest(dataset, "regression")
         print(f"Test MSE Random Forest: {metrics['Test MSE']:.4f}")
         print(f"Test Precision Random Forest: {metrics['Test Precision']:.4f}")
 
@@ -79,11 +80,11 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
     """
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
-    nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
-                                                  hidden_layers=network_structure,
-                                                  use_for_regression=parameter.use_for_regression)
+    nnet_model = build_model(output_size=output_size,
+                             hidden_layers=network_structure,
+                             use_for_regression=parameter.use_for_regression)
 
-    out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key)
+    out, accuracy_val, _ = train_with_svgd(dataset, nnet_model, tree_def, parameter, key)
 
     accuracy_test, _, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, z_test,
                                                                                  y_test,
@@ -93,11 +94,12 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
         plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
                                         network_structure=network_structure, eval_metric="Accuracy")
     if parameter.handler.plot_classification_detail:
-        view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, key=key, image_data= parameter.image_data)
+        view_misclassified(nnet_model=nnet_model, tree_def=tree_def, out=out, z_test=z_test, y_test=y_test, key=key,
+                           image_data=parameter.image_data)
     if parameter.handler.summary_over_part:
         print_summary_over_particles_multiclass(predictions_test)
     if parameter.handler.rf_comparison:
-        metrics = random_forest(dataset,"classification")
+        metrics = random_forest(dataset, "classification")
         print(f"Test Accuracy Random Forest: {metrics['Test Accuracy']:.4f}")
 
 
@@ -122,7 +124,8 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=5, regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=5,
+                          regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -147,7 +150,8 @@ def run_MNIST_minibatched_particles(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=300, particle_batch_size=2, num_particles=4, regression=False,
+                          image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -173,7 +177,8 @@ def run_FashionMNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300,num_iterations=50, particle_batch_size=0, num_particles = 5, regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=300, num_iterations=50, particle_batch_size=0, num_particles=5,
+                          regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -183,7 +188,7 @@ def run_CIFAR10(info=True):
 
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to True.
-    """  
+    """
     if info:
         datasets_info.print_cifar10_dataset_info()
     cifar10 = tf.keras.datasets.cifar10
@@ -198,7 +203,8 @@ def run_CIFAR10(info=True):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=3000, particle_batch_size=0, num_particles = 5, regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=3000, particle_batch_size=0, num_particles=5, regression=False,
+                          image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -338,7 +344,7 @@ def run_california_housing(info=False):
                            output_size=2)
 
 
-def run_diabetes(info=False): 
+def run_diabetes(info=False):
     """
     Run SVGD on the Diabetes dataset for regression.
 
@@ -390,6 +396,7 @@ def run_wine_quality(info=False):
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40),
                                 output_size=3)
 
+
 def run_bike_sharing(info=False):
     if info:
         datasets_info.print_bike_sharing_dataset_info()
@@ -404,8 +411,10 @@ def run_bike_sharing(info=False):
         )
     )
 
-    parameter = Parameter(optimizer,batch_size=300, regression=True)
+    parameter = Parameter(optimizer, batch_size=300, regression=True)
     run_svgd_on_regression(dataset, parameter=parameter, network_structure=(200, 75, 40),
-                                output_size=2)
+                           output_size=2)
+
+
 if __name__ == "__main__":
-    run_MNIST(info=True)
+    run_regression_toy_example(info=False)

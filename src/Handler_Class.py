@@ -41,4 +41,8 @@ class Handler:
         else:
             raise ValueError("Invalid mode. Choose from 'full', or 'minimal'.")
 
+    @property
+    def minimal_evaluation(self):
+        return self._minimal_evaluation
+
 
