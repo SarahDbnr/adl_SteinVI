@@ -69,33 +69,9 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
         state = update_fn(state, z_train, y_train, init_update_fn)  # Full data and full particles
-        if parameter.handler._full_training_print:
-            current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-            evaluation_metrics_1.append(current_eval_1)
-            evaluation_metrics_2.append(current_eval_2)
-
-            if parameter.early_stopping:
-                patience_counter, best_eval_metric = early_stopping_fn(
-                    current_eval_1, best_eval_metric, patience_counter, parameter
-                )
-
-                if patience_counter >= parameter.patience_early_stopping:
-                    break
-                
-        elif parameter.handler._reduced_training_print:
-            if iteration % (parameter.num_iterations // 10) == 0:
-                current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-                evaluation_metrics_1.append(current_eval_1)
-                evaluation_metrics_2.append(current_eval_2)
-
-                if parameter.early_stopping:
-                    patience_counter, best_eval_metric = early_stopping_fn(
-                        current_eval_1, best_eval_metric, patience_counter, parameter
-                    )
-
-                    if patience_counter >= parameter.patience_early_stopping:
-                        break
-
+        evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
+        if patience_counter >= parameter.patience_early_stopping:
+            break
     return state, evaluation_metrics_1, evaluation_metrics_2
 
 def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
@@ -122,24 +98,17 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
     patience_counter = 0
     evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
-    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
+    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
         key_loop, _ = jax.random.split(key_loop)
         z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key_loop)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             state = update_fn(state, z_batch, y_batch, init_update_fn)
 
-        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-        evaluation_metrics_1.append(current_eval_1)
-        evaluation_metrics_2.append(current_eval_2)
-        # Check for early stopping
-        patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, parameter
-        )
-
+        evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
             break
-
+        
     return state, evaluation_metrics_1, evaluation_metrics_2
 
 
@@ -169,22 +138,14 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
     evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
 
-    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
+    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
         key_loop, _ = jax.random.split(key_loop)
         particle_indices_batches = create_particle_minibatch_indices(key_loop, state.particles.shape[0], parameter.particle_batch_size)
 
         for particle_indices in particle_indices_batches:
             state = update_fn(state, z_train, y_train, init_update_fn, particle_indices)
 
-        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-        evaluation_metrics_1.append(current_eval_1)
-        evaluation_metrics_2.append(current_eval_2)
-
-        # Check for early stopping
-        patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, parameter
-        )
-
+        evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
             break
 
@@ -217,7 +178,7 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
     evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
 
-    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
+    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
         key_loop, _ = jax.random.split(key_loop)
         z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key_loop)
         particle_indices_batches = create_particle_minibatch_indices(key_loop, state.particles.shape[0], parameter.particle_batch_size)
@@ -226,15 +187,7 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
             for particle_indices in particle_indices_batches:
                 state = update_fn(state, z_batch, y_batch, init_update_fn, particle_indices)
 
-        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-        evaluation_metrics_1.append(current_eval_1)
-        evaluation_metrics_2.append(current_eval_2)
-
-        # Check for early stopping
-        patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, parameter
-        )
-
+        evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
             break
 
@@ -305,3 +258,49 @@ def shuffle_data(key, input_data, output_data):
     """
     permutation = jax.random.permutation(key, input_data.shape[0])
     return jnp.take(input_data, permutation, axis=0), jnp.take(output_data, permutation, axis=0)
+
+def handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn):
+    """
+    Handles the printing and evaluation during training based on the training print mode.
+
+    Args:
+        state (object): The current state of the model.
+        nnet_model (object): The neural network model for predictions.
+        tree_def (object): Tree structure for parameter transformations in JAX.
+        z_val (ndarray): Validation data inputs.
+        y_val (ndarray): Validation data targets.
+        parameter (Parameter): A Parameter object containing training hyperparameters.
+        iteration (int): Current training iteration.
+        evaluation_metrics_1 (list): List to store evaluation metric 1.
+        evaluation_metrics_2 (list): List to store evaluation metric 2.
+        early_stopping_fn (callable): Function to apply early stopping criteria.
+        best_eval_metric (float): Current best evaluation metric.
+        patience_counter (int): Counter for early stopping patience.
+
+    Returns:
+        tuple: Updated evaluation metrics, best_eval_metric, and patience_counter.
+    """
+    if parameter.handler._full_training_print:
+        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+        evaluation_metrics_1.append(current_eval_1)
+        evaluation_metrics_2.append(current_eval_2)
+
+        if parameter.early_stopping:
+            patience_counter, best_eval_metric = early_stopping_fn(
+                current_eval_1, best_eval_metric, patience_counter, parameter
+            )
+
+    elif parameter.handler._reduced_training_print:
+        if parameter.num_iterations >= 10:
+            if iteration % (parameter.num_iterations // 10) == 0:
+                current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+                evaluation_metrics_1.append(current_eval_1)
+                evaluation_metrics_2.append(current_eval_2)
+
+            if parameter.early_stopping:
+                patience_counter, best_eval_metric = early_stopping_fn(
+                    current_eval_1, best_eval_metric, patience_counter, parameter
+                )
+
+    
+    return evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter

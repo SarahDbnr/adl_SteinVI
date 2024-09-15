@@ -19,7 +19,7 @@ import src.data.datasets_info as datasets_info
 from src.algorithm.random_forest import random_forest
 
 
-def run_svgd_on_regression(dataset, parameter, output_size, network_structure, comparisson_random_forrest = True):
+def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     """
     Run the Stein Variational Gradient Descent (SVGD) algorithm on a regression dataset.
 
@@ -39,32 +39,34 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure, c
 
     out, mse_val, averaged_precision_val = train_with_svgd(dataset, nnet_model, tree_def,
                                                            param_vec_ini, parameter, key)
-
     mse_test, averaged_precision_test, predictions_test = get_evaluation_metrics_over_predictions(out, nnet_model,
-                                                                                                  tree_def,
-                                                                                                  z_test,
-                                                                                                  y_test,
-                                                                                                  model_regression=True)
+                                                                                                    tree_def,
+                                                                                                    z_test,
+                                                                                                    y_test,
+                                                                                                    model_regression=True)
     print("For Test Data: MSE ", mse_test, " Averaged Precision ", averaged_precision_test)
 
-    # plot_mse(averaged_precision)
-    plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="MSE")
-    plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="averaged_precision")
-    # Call the plot_residuals function
-    plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
-                   network_structure=network_structure)
-    plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
-                                       network_structure=network_structure)
-    print_summary_over_particles_regression(predictions_test)
-    if comparisson_random_forrest:
+    if parameter.handler.plot_val_mse_over_iter:
+        plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
+                                        network_structure=network_structure, eval_metric="MSE")
+    if parameter.handler.plot_val_aver_prec_over_iter:
+        plot_and_save_evaluation_metric(evaluation_metric_val=averaged_precision_val, num_particles=parameter.num_particles,
+                                        network_structure=network_structure, eval_metric="averaged_precision")
+    if parameter.handler.plot_residual:
+        plot_residuals(nnet_model, tree_def, out, z_test, y_test, num_particles=parameter.num_particles,
+                    network_structure=network_structure)
+    if parameter.handler.plot_loc_relation_scale:
+        plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=parameter.num_particles,
+                                        network_structure=network_structure)
+    if parameter.handler.summary_over_part:
+        print_summary_over_particles_regression(predictions_test)
+    if parameter.handler.rf_comparison:
         metrics = random_forest(dataset,"regression")
         print(f"Test MSE Random Forest: {metrics['Test MSE']:.4f}")
         print(f"Test Precision Random Forest: {metrics['Test Precision']:.4f}")
 
 
-def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure,comparisson_random_forrest = False):
+def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structure):
     """
     Run the Stein Variational Gradient Descent (SVGD) algorithm on a multiclass classification dataset.
 
@@ -87,11 +89,14 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
                                                                                  y_test,
                                                                                  model_regression=False)
     print("For Test Data: Accuracy ", accuracy_test)
-    plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
-                                    network_structure=network_structure, eval_metric="Accuracy")
-    view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, key=key, image_data= parameter.image_data)
-    print_summary_over_particles_multiclass(predictions_test)
-    if comparisson_random_forrest:
+    if parameter.handler.plot_val_metric_over_iter:
+        plot_and_save_evaluation_metric(evaluation_metric_val=accuracy_val, num_particles=parameter.num_particles,
+                                        network_structure=network_structure, eval_metric="Accuracy")
+    if parameter.handler.plot_classification_detail:
+        view_misclassified(nnet_model=nnet_model,tree_def=tree_def,out=out,z_test=z_test,y_test=y_test, key=key, image_data= parameter.image_data)
+    if parameter.handler.summary_over_part:
+        print_summary_over_particles_multiclass(predictions_test)
+    if parameter.handler.rf_comparison:
         metrics = random_forest(dataset,"classification")
         print(f"Test Accuracy Random Forest: {metrics['Test Accuracy']:.4f}")
 
@@ -117,8 +122,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=20, regression=False, image_data=True)
-    parameter.handler = Handler()
+    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=100, regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -388,4 +392,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST(info=True)
+    run_regression_toy_example(info=True)
