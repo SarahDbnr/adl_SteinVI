@@ -19,7 +19,7 @@ def generate_data(x):
     x1 = x[:, 0]
     x2 = x[:, 1]
     function_outputs = x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
-    noise = jax.random.normal(key, shape=function_outputs.shape)*x1
+    noise = jax.random.normal(key, shape=function_outputs.shape)
     return function_outputs + noise
 
 
