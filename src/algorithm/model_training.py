@@ -67,18 +67,34 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
     patience_counter = 0
     evaluation_metrics_1, evaluation_metrics_2 = [], []
 
-    for _ in tqdm(range(parameter.num_iterations), desc="Training"):
+    for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
         state = update_fn(state, z_train, y_train, init_update_fn)  # Full data and full particles
-        current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
-        evaluation_metrics_1.append(current_eval_1)
-        evaluation_metrics_2.append(current_eval_2)
+        if parameter.handler._full_training_print:
+            current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+            evaluation_metrics_1.append(current_eval_1)
+            evaluation_metrics_2.append(current_eval_2)
 
-        patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, parameter
-        )
+            if parameter.early_stopping:
+                patience_counter, best_eval_metric = early_stopping_fn(
+                    current_eval_1, best_eval_metric, patience_counter, parameter
+                )
 
-        if patience_counter >= parameter.patience_early_stopping:
-            break
+                if patience_counter >= parameter.patience_early_stopping:
+                    break
+                
+        elif parameter.handler._reduced_training_print:
+            if iteration % (parameter.num_iterations // 10) == 0:
+                current_eval_1, current_eval_2, _ = evaluate_fn(state, nnet_model, tree_def, z_val, y_val, parameter)
+                evaluation_metrics_1.append(current_eval_1)
+                evaluation_metrics_2.append(current_eval_2)
+
+                if parameter.early_stopping:
+                    patience_counter, best_eval_metric = early_stopping_fn(
+                        current_eval_1, best_eval_metric, patience_counter, parameter
+                    )
+
+                    if patience_counter >= parameter.patience_early_stopping:
+                        break
 
     return state, evaluation_metrics_1, evaluation_metrics_2
 

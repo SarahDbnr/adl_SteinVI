@@ -14,6 +14,7 @@ from src.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
 from src.Parameter_Class import Parameter
+from src.Handler_Class import Handler
 import src.data.datasets_info as datasets_info
 from src.algorithm.random_forest import random_forest
 
@@ -31,7 +32,7 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure, c
     """
     # for batch_size: default is 10 minibatches, 0 will induce no batching, else batch_size int will be used
     key = jax.random.PRNGKey(1)
-    z_train, y_train, z_val, y_val, z_test, y_test = dataset
+    z_train, _, _, _, z_test, y_test = dataset
     nnet_model, tree_def, param_vec_ini = build_model(key, z_train, output_size=output_size,
                                                       hidden_layers=network_structure,
                                                       use_for_regression=parameter.use_for_regression)
@@ -75,7 +76,7 @@ def run_svgd_on_multiclass_data(dataset, parameter, output_size, network_structu
         comparisson_random_forrest (bool): If you want to compare the results of the BNN with SVGD to Random Forest
     """
     key = jax.random.PRNGKey(1)
-    z_train, y_train, z_val, y_val, z_test, y_test = dataset
+    z_train, _, _, _, z_test, y_test = dataset
     nnet_model, tree_def, param_vec = build_model(key, z_train, output_size=output_size,
                                                   hidden_layers=network_structure,
                                                   use_for_regression=parameter.use_for_regression)
@@ -116,7 +117,8 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=300, num_particles=5,num_iterations=3,regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=20, regression=False, image_data=True)
+    parameter.handler = Handler()
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -282,8 +284,8 @@ def run_regression_toy_example(info=False):
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
+            init_value=0.1,
+            transition_steps=20,
             decay_rate=0.95,
             staircase=True
         )
