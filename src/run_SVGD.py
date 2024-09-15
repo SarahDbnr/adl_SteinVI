@@ -46,7 +46,7 @@ def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
                                                                                                     model_regression=True)
     print("For Test Data: MSE ", mse_test, " Averaged Precision ", averaged_precision_test)
 
-    if parameter.handler.plot_val_mse_over_iter:
+    if parameter.handler.plot_val_metric_over_iter:
         plot_and_save_evaluation_metric(evaluation_metric_val=mse_val, num_particles=parameter.num_particles,
                                         network_structure=network_structure, eval_metric="MSE")
     if parameter.handler.plot_val_aver_prec_over_iter:
@@ -122,7 +122,7 @@ def run_MNIST(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=100, regression=False, image_data=True)
+    parameter = Parameter(optimizer, batch_size=0, particle_batch_size=0, num_particles=5, num_iterations=5, regression=False, image_data=True)
     run_svgd_on_multiclass_data(dataset, parameter=parameter, network_structure=(200, 75, 40), output_size=10)
 
 
@@ -295,7 +295,7 @@ def run_regression_toy_example(info=False):
         )
     )
 
-    parameter = Parameter(optimizer, num_iterations=100, regression=True, num_particles=50, batch_size=1000)
+    parameter = Parameter(optimizer, num_iterations=3, regression=True, num_particles=50, batch_size=1000)
     parameter.set_early_stopping(10000, 1000, 3)
     run_svgd_on_regression(regression_toy_example, parameter=parameter, network_structure=(200, 75, 40),
                            output_size=2)
@@ -392,4 +392,4 @@ def run_wine_quality(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example(info=True)
+    run_MNIST(info=True)
