@@ -57,9 +57,9 @@ def apply_data_settings_sklearn(new_dataset, fraction=1):
     x = new_dataset.data
     y = new_dataset.target
 
-    #key, subkey = jax.random.split(key)
-    #perm = jax.random.permutation(subkey, x.shape[0])
-    #x, y = x[perm], y[perm]
+    key, subkey = jax.random.split(key)
+    perm = jax.random.permutation(subkey, x.shape[0])
+    x, y = x[perm], y[perm]
 
     num_train = int(0.8 * x.shape[0])
     num_val = int(VAL_SPLIT * num_train)

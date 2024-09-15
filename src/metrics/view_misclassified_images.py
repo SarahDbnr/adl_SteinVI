@@ -33,16 +33,24 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, key, image_dat
 
     # Shuffle and select 5 random indices from each
     key, subkey1, subkey2 = jax.random.split(key, 3)
+
+    # Handle misclassified indices
     if misclassified_indices.size == 0:
         print("No misclassified samples.")
         misclassified_random_indices = jnp.array([])  # or handle it according to your logic
     else:
-        misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices, shape=(5,), replace=False)
+        # Use all samples if fewer than 5, otherwise randomly select 5
+        num_misclassified_samples = min(5, misclassified_indices.size)
+        misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices, shape=(num_misclassified_samples,), replace=False)
+
+    # Handle correctly classified indices
     if correctly_classified_indices.size == 0:
         print("No correctly classified samples.")
         correctly_classified_random_indices = jnp.array([])  # or handle it according to your logic
     else:
-        correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices, shape=(5,), replace=False)
+        # Use all samples if fewer than 5, otherwise randomly select 5
+        num_correctly_classified_samples = min(5, correctly_classified_indices.size)
+        correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices, shape=(num_correctly_classified_samples,), replace=False)
 
     # Combine the selected indices
     indices = jnp.concatenate([misclassified_random_indices, correctly_classified_random_indices])
