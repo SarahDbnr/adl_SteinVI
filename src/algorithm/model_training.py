@@ -24,7 +24,7 @@ def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state
         tuple: Best model state and two lists of evaluation metrics (e.g., accuracy or MSE) during training.
     """
 
-    evaluation_metrics_1, evaluation_metrics_2 = [], []
+    # evaluation_metrics_1, evaluation_metrics_2 = [], []
     best_state = None
 
     if parameter.batch_size == 0 and parameter.particle_batch_size == 0:
@@ -41,7 +41,6 @@ def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state
     )
 
     return best_state, evaluation_metrics_1, evaluation_metrics_2
-
 
 def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
     """
