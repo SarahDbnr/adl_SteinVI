@@ -44,16 +44,6 @@ class FlexibleSimpleNN(nn.Module):
                      bias_init=self.bias_init)(x)
         return x.squeeze(-1) if self.output_size == 1 else x
 
-    def predict(self, weights, x_input):
-        if self.use_for_regression:
-            output = self.apply(weights, x_input)
-            prediction, precision = jnp.split(output, 2, axis=-1)
-        else:
-            predictions = self.apply(weights, x_input)
-            precision = jax.nn.softmax(predictions, axis=-1)
-            prediction = jnp.argmax(precision, axis=-1)
-        return prediction, precision
-
 
 
 def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
