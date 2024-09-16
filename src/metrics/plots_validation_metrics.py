@@ -5,9 +5,8 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 
-def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None, network_structure=None,
-                                    kernel_length=None, adam_learning_rate=None,
-                                    warm_up_iterations=None, output_folder="svgd_plots"):
+
+def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None):
     """
     Plots and saves a graph of evaluation metrics over iterations for a neural network model.
 
@@ -15,19 +14,8 @@ def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_part
         evaluation_metric_val (list or array): Values of the evaluation metric over iterations.
         eval_metric (str): Name of the evaluation metric, e.g., 'accuracy', 'loss'.
         num_particles (int, optional): Number of particles used in SVGD.
-        network_structure (str, optional): Description of the network's architecture.
-        kernel_length (float, optional): Length parameter for the kernel used in SVGD.
-        adam_learning_rate (float, optional): Learning rate for the Adam optimizer.
-        warm_up_iterations (int, optional): Number of warm-up iterations before actual training starts.
-        output_folder (str, optional): The directory where the plot will be saved. Defaults to 'svgd_plots'.
 
-    Prints:
-        Path to the saved plot file.
     """
-    # Create the output folder in the current directory if it doesn't exist
-    current_dir = os.getcwd()
-    output_path = os.path.join(current_dir, output_folder)
-    os.makedirs(output_path, exist_ok=True)
 
     actual_iterations = len(evaluation_metric_val)
     plt.figure(figsize=(10, 6))
@@ -39,31 +27,16 @@ def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_part
 
     info_text = (
         f"Particles: {num_particles}\n"
-        f"Network: {network_structure}\n"
-        f"Kernel length: {kernel_length}\n"
-        f"Adam learning rate: {adam_learning_rate}\n"
-        f"Actual iterations: {actual_iterations}\n"
-        f"Warm-up iterations: {warm_up_iterations}"
     )
     plt.text(0.02, 0.02, info_text, transform=plt.gca().transAxes,
              verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     plt.tight_layout()
-
-    # Generate a timestamp for the filename
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{eval_metric}_{timestamp}.png"
-
-    # Save the plot in the specified folder
-    filepath = os.path.join(output_path, filename)
-    plt.savefig(filepath, dpi=300)
 
     # Show the plot
     plt.show()
 
     # Close the plot
     plt.close()
-
-    print(f"Plot saved as: {filepath}")
 
 
 def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None, network_structure=None,
@@ -138,10 +111,10 @@ def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None
     print(f"Residual plot saved as: {filepath}")
 
 
-
 def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=None, network_structure=None,
-                   kernel_length=None, adam_learning_rate=None, actual_iterations=None, warm_up_iterations=None,
-                   output_folder="svgd_plots"):
+                                       kernel_length=None, adam_learning_rate=None, actual_iterations=None,
+                                       warm_up_iterations=None,
+                                       output_folder="svgd_plots"):
     """
     Plots and saves the relationship between predicted location values and scale values for a neural network model.
     Based on the paper: A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro
@@ -164,7 +137,8 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
         Path to the saved plot file.
     """
     # Calculate predictions
-    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, z_test)
+    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out,
+                                                                                       z_test)
     # set maximal standard deviation
 
     # Create the output folder in the current directory if it doesn't exist
@@ -209,6 +183,7 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
 
     print(f"Location Scale plot saved as: {filepath}")
 
+
 def view_probabilities_classification(precisions_sample, predicted_class, true_class, ax=None):
     """
     Plots the probabilities for each class with error bars based on 5% and 95% quantiles.
@@ -224,15 +199,15 @@ def view_probabilities_classification(precisions_sample, predicted_class, true_c
     """
     # Calculate mean of probabilities across particles
     means = precisions_sample.mean(axis=0)
-    
+
     # Calculate the 2.5% and 97.5% quantiles for the error bars
     lower_quantiles_25_975 = jnp.quantile(precisions_sample, 0.025, axis=0)
     upper_quantiles_25_975 = jnp.quantile(precisions_sample, 0.975, axis=0)
-    
+
     # Calculate the 25% and 75% quantiles
     lower_quantiles_25_75 = jnp.quantile(precisions_sample, 0.25, axis=0)
     upper_quantiles_25_75 = jnp.quantile(precisions_sample, 0.75, axis=0)
-    
+
     # Calculate the error bars as the absolute difference between the quantiles and the mean
     lower_errors_25_975 = jnp.abs(means - lower_quantiles_25_975)
     upper_errors_25_975 = jnp.abs(upper_quantiles_25_975 - means)
@@ -258,8 +233,9 @@ def view_probabilities_classification(precisions_sample, predicted_class, true_c
         fig, ax = plt.subplots()
 
     # Plot the 2.5%-97.5% quantile range as the main error bars
-    bars = ax.bar(x_pos, means, yerr=error_bars_25_975, align='center', alpha=0.7, ecolor='black', capsize=10, color=colors)
-    
+    bars = ax.bar(x_pos, means, yerr=error_bars_25_975, align='center', alpha=0.7, ecolor='black', capsize=10,
+                  color=colors)
+
     # Plot the 25%-75% quantile range as a filled area (light blue with alpha=0.5)
     ax.bar(x_pos, means, yerr=error_bars_25_75, align='center', alpha=0.5, ecolor='lightblue', capsize=10, color=colors)
 
