@@ -10,7 +10,7 @@ from stein_vi.stein_vi import train_with_stein_vi
 import data.datasets_info as datasets_info
 from data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling, bike_sharing_datahandling
-
+from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
 
 def run_regression_toy_example():
     """
@@ -216,6 +216,185 @@ def run_20_newsgroups(info=False):
 
 
 
+def run_adult_income(info=False):
+    """
+    Run SVGD on the Adult Income dataset for binary classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
+    if info:
+        datasets_info.print_adult_income_dataset_info()
+
+    key = jax.random.PRNGKey(1)
+    adult_income_dataset = adult_income_datahandling()
+    adult_income_dataset = apply_data_settings_sklearn(adult_income_dataset)
+    z_train, _, _, _, z_test, y_test = adult_income_dataset
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.001,
+            transition_steps=1000,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    nnet_model = build_model(output_size=2,hidden_layers=(200,70,40))
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=300,optimizer=optimizer,num_iterations=40, num_particles=3)
+
+    steinvi_svdg = train_with_stein_vi(steinvi_svdg, adult_income_dataset, key, algorithm="svgd")
+    print(stein_vi.algorithm.random_forest.random_forest(dataset=adult_income_dataset))
+
+
+def run_iris(info=False):
+    """
+    Run SVGD on the Iris dataset for multiclass classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
+    if info:
+        datasets_info.print_iris_dataset_info()
+    iris = load_iris()  # Loading the Iris dataset
+    dataset = apply_data_settings_sklearn(iris)
+
+    key = jax.random.PRNGKey(1)
+    iris_dataset = load_iris()
+    iris_dataset = apply_data_settings_sklearn(iris_dataset)
+    z_train, _, _, _, _, _ = iris_dataset
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.05,
+            transition_steps=100,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    nnet_model = build_model(output_size=3,hidden_layers=(20,30,20,10))
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=30,optimizer=optimizer,num_iterations=40, num_particles=10)
+
+    steinvi_svdg = train_with_stein_vi(steinvi_svdg, iris_dataset, key, algorithm="svgd")
+    print(stein_vi.algorithm.random_forest.random_forest(dataset=iris_dataset))
+
+#Sollte raus funktioniert nicht gut 
+# def run_california_housing(info=False):
+#     """
+#     Run SVGD on the California Housing dataset for regression.
+
+#     Args:
+#         info (bool, optional): If True, prints dataset information. Defaults to False.
+#     """
+#     if info:
+#         datasets_info.print_california_housing_dataset_info()
+#     california_housing = fetch_california_housing()
+#     california_housing_dataset = apply_data_settings_sklearn(california_housing)
+#     z_train, _, _, _, _, _ = california_housing_dataset 
+
+#     key = jax.random.PRNGKey(1)
+
+#     optimizer = adam(
+#         exponential_decay(
+#             init_value=0.075,
+#             transition_steps=150,
+#             decay_rate=0.975,
+#             staircase=True
+#         )
+#     )
+#     nnet_model = build_model(output_size=2,hidden_layers=(200,70,40))
+
+#     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, batch_size=300,optimizer=optimizer,num_iterations=100, num_particles=10)
+#     steinvi_svdg = train_with_stein_vi(steinvi_svdg, california_housing_dataset, key, algorithm="svgd")
+#     print(stein_vi.algorithm.random_forest.random_forest(dataset=california_housing_dataset,task_type='regression'))
+
+
+
+
+def run_diabetes(info=False): 
+    """
+    Run SVGD on the Diabetes dataset for regression.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
+    if info:
+        datasets_info.print_diabetes_dataset_info()
+    diabetes = load_diabetes()
+    dataset = apply_data_settings_sklearn(diabetes)
+    z_train, _, _, _, _, _ = dataset
+    
+    key = jax.random.PRNGKey(1)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.01,
+            transition_steps=50,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    nnet_model = build_model(output_size=2,hidden_layers=(200,70,40))
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, batch_size=30,optimizer=optimizer,num_iterations=100, num_particles=10)
+    steinvi_svdg = train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
+    print(stein_vi.algorithm.random_forest.random_forest(dataset=dataset,task_type='regression'))
+
+#auch sehr schlecht
+def run_wine_quality(info=False):
+    """
+    Run SVGD on the Wine Quality dataset for multiclass classification.
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
+    if info:
+        datasets_info.print_wine_quality_dataset_info()
+    wine_quality = load_wine()
+    dataset = apply_data_settings_sklearn(wine_quality)
+    z_train, _, _, _, _, _ = dataset
+    
+    key = jax.random.PRNGKey(1)
+
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.005,
+            transition_steps=10,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    nnet_model = build_model(output_size=2,hidden_layers=(200,70,40))
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, batch_size=30,optimizer=optimizer,num_iterations=100, num_particles=10)
+    steinvi_svdg = train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
+    print(stein_vi.algorithm.random_forest.random_forest(dataset=dataset,task_type='regression'))
+
+#TODO: Schauen ob der datensatz richtig geladen wird sehr schlecht bei Random forrest aber fur uns ganz ok
+def run_bike_sharing(info=False):
+    if info:
+        datasets_info.print_bike_sharing_dataset_info()
+    bike_sharing_dataset = bike_sharing_datahandling()
+    dataset = apply_data_settings_sklearn(bike_sharing_dataset)
+    z_train, _, _, _, _, _ = dataset
+    
+    key = jax.random.PRNGKey(1
+                             )
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.5,
+            transition_steps=10,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    nnet_model = build_model(output_size=2,hidden_layers=(200,70,40))
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, batch_size=300,optimizer=optimizer,num_iterations=100, num_particles=10)
+    steinvi_svdg = train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
+    print(stein_vi.algorithm.random_forest.random_forest(dataset=dataset,task_type='regression'))
+
 
 if __name__ == "__main__":
-    run_20_newsgroups(info=True)
+    run_MNIST(info=True)
