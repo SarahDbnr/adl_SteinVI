@@ -7,7 +7,7 @@ ALPHA = 0.05
 
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
-def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, true_output, model_regression):
+def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, true_output, model_regression, print_eva):
     """
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
@@ -27,11 +27,13 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         mse = calculate_mse(predictions.squeeze(), true_output)
         scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
         averaged_var = jnp.sqrt(scale).mean()
-        print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
+        if print_eva:
+            print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        print(f"\nAccuracy: {accuracy} ")
+        if print_eva:
+            print(f"\nAccuracy: {accuracy} ")
         return accuracy, None, predictions
 
 

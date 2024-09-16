@@ -1,6 +1,7 @@
 from stein_vi.algorithm.model_training import train_general_algorithm
 from stein_vi.algorithm.svgd import set_up_svgd
-
+from stein_vi.metrics.validation_and_evaluation import (print_summary_over_particles_regression,
+                                                        print_summary_over_particles_multiclass)
 
 def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
 
@@ -14,12 +15,13 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     )
 
     _, _, _, _, z_test, y_test = dataset
+    print("\nFor Test Data:")
     if steinvi.use_for_regression:
-        mse_test, averaged_precision_test, predictions_test = steinvi.evaluate_fn(steinvi.state,z_test,y_test)
-        print("For Test Data: MSE ", mse_test, ", Averaged Variance ", averaged_precision_test,
-              "with mean prediction of ", predictions_test.mean())
+        mse_test, averaged_precision_test, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test,
+                                                                                  print=True)
+        print_summary_over_particles_regression(predictions_test)
     else:
-        accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test)
-        print("For Test Data: Accuracy ", accuracy_test)
+        accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print=True)
+        print_summary_over_particles_multiclass(predictions_test)
 
     return steinvi

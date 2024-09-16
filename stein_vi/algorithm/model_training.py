@@ -51,8 +51,9 @@ def no_minibatch_training_loop(steinvi, dataset, key):
 
         steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train)  # Full data and full particles
 
-        stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
+        if steinvi.handler._full_evaluation:
+            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -83,8 +84,9 @@ def data_minibatch_training_loop(steinvi, dataset, key):
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch)
 
-            stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
+            if steinvi.handler._full_evaluation:
+                steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+                    steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -120,8 +122,9 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
             steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train, particle_indices=particle_indices)
 
         # TODO: is evaluation ut of loop by choice?
-        stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
+        if steinvi.handler._full_evaluation:
+            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -158,8 +161,9 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
             for particle_indices in particle_indices_batches:
                 steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch, particle_indices=particle_indices)
 
-        stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
+        if steinvi.handler._full_evaluation:
+            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -182,6 +186,7 @@ def create_minibatches(batch_size, input_data, output_data, key):
     Returns:
         tuple: Minibatched input and output data.
     """
+    # TODO: this is unused, can we delete it
     if batch_size != 0:
         if batch_size is None:
             num_batches = DEFAULT_NUM_BATCHES
@@ -234,7 +239,8 @@ def shuffle_data(key, input_data, output_data):
     return jnp.take(input_data, permutation, axis=0), jnp.take(output_data, permutation, axis=0)
 
 
-def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, best_eval_metric, patience_counter):
+def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iteration, best_eval_metric,
+                                                  patience_counter):
     """
     Handles the printing and evaluation during training based on the training print mode.
 
@@ -250,27 +256,19 @@ def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, best_eval_
         tuple: Updated evaluation metrics, best_eval_metric, and patience_counter.
     """
     if stein_vi.handler._full_training_print:
-        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val)
-        stein_vi.evaluation_metrics_1.append(current_eval_1)
-        stein_vi.evaluation_metrics_2.append(current_eval_2)
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=True)
+    # TODO: reduced prints every 10th iteration is 10 the right choice?
+    elif stein_vi.handler._reduced_training_print and iteration % 10 == 0:
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=True)
+    else:
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=False)
+    stein_vi.evaluation_metrics_1.append(current_eval_1)
+    stein_vi.evaluation_metrics_2.append(current_eval_2)
 
-        if stein_vi.parameter.early_stopping:
-            patience_counter, best_eval_metric = early_stopping_fn(
-                current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
-            )
-
-    elif stein_vi.handler._reduced_training_print:
-        if stein_vi.parameter.num_iterations >= 10:
-            if iteration % (stein_vi.parameter.num_iterations // 10) == 0:
-                current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val)
-                stein_vi.evaluation_metrics_1.append(current_eval_1)
-                stein_vi.evaluation_metrics_2.append(current_eval_2)
-
-            if stein_vi.parameter.early_stopping:
-                # TODO: current_eval_1 might be referenced before assigning
-                patience_counter, best_eval_metric = early_stopping_fn(
-                    current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
-                )
+    if stein_vi.parameter.early_stopping:
+        patience_counter, best_eval_metric = early_stopping_fn(
+            current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
+        )
 
     return stein_vi, best_eval_metric, patience_counter
 
