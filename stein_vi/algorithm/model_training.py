@@ -121,7 +121,6 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
         for particle_indices in particle_indices_batches:
             steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train, particle_indices=particle_indices)
 
-        # TODO: is evaluation ut of loop by choice?
         if steinvi.handler._full_evaluation:
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
