@@ -83,6 +83,9 @@ class SteinVI_BNN:
                                                             eval_metric="Accuracy")
 
     def plot_residuals(self, z_test, y_test):
+        # TODO: check
+        if not self.use_for_regression:
+            ValueError("This plot is only available for regression problems.")
         plots.plot_residuals(self.nnet, self.tree_def, self.state, z_test, y_test,
                              num_particles=self.parameter.num_particles)
 

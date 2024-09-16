@@ -1,9 +1,6 @@
 import flax.linen as nn
 from typing import Sequence
-from jax.flatten_util import ravel_pytree
 import jax
-import jax.numpy as jnp
-
 
 class FlexibleSimpleNN(nn.Module):
     """
