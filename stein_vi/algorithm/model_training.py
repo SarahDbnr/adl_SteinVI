@@ -12,14 +12,10 @@ def train_general_algorithm(steinvi, dataset, key):
     Args:
         dataset (tuple): A tuple containing training and validation datasets (z_train, y_train, z_val, y_val, etc.).
         key (jax.random.PRNGKey): JAX random key for managing randomness.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
 
     Returns:
         tuple: Best model state and two lists of evaluation metrics (e.g., accuracy or MSE) during training.
     """
-
-    # evaluation_metrics_1, evaluation_metrics_2 = [], []
-    best_state = None
 
     if steinvi.parameter.batch_size == 0 and steinvi.parameter.particle_batch_size == 0:
         training_loop_fn = no_minibatch_training_loop
@@ -30,9 +26,9 @@ def train_general_algorithm(steinvi, dataset, key):
     else:
         training_loop_fn = data_and_particle_minibatch_training_loop
 
-    best_state, evaluation_metrics_1, evaluation_metrics_2 = training_loop_fn(steinvi, dataset, key)
+    steinvi = training_loop_fn(steinvi, dataset, key)
 
-    return best_state, evaluation_metrics_1, evaluation_metrics_2
+    return steinvi
 
 
 def no_minibatch_training_loop(steinvi, dataset, key):
@@ -50,7 +46,6 @@ def no_minibatch_training_loop(steinvi, dataset, key):
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = [], []
 
     for iteration in tqdm(range(steinvi.parameter.num_iterations), desc="Training"):
 
@@ -61,7 +56,7 @@ def no_minibatch_training_loop(steinvi, dataset, key):
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
-    return steinvi.state, evaluation_metrics_1, evaluation_metrics_2
+    return steinvi
 
 
 def data_minibatch_training_loop(steinvi, dataset, key):
@@ -80,7 +75,6 @@ def data_minibatch_training_loop(steinvi, dataset, key):
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
     for iteration in tqdm(range(steinvi.parameter.num_iterations), desc="Training"):
         key_loop, _ = jax.random.split(key_loop)
@@ -95,7 +89,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
 
-    return steinvi.state, evaluation_metrics_1, evaluation_metrics_2
+    return steinvi
 
 
 # Particle minibatching: Use the full dataset but split particles into minibatches
@@ -115,7 +109,6 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
 
     for iteration in tqdm(range(steinvi.parameter.num_iterations), desc="Training"):
@@ -133,7 +126,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
 
-    return steinvi.state, evaluation_metrics_1, evaluation_metrics_2
+    return steinvi
 
 
 # Both data and particle minibatching
@@ -153,7 +146,6 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
-    evaluation_metrics_1, evaluation_metrics_2 = [], []
     key_loop = key
 
     for iteration in tqdm(range(steinvi.parameter.num_iterations), desc="Training"):
@@ -172,7 +164,7 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
 
-    return steinvi.state, evaluation_metrics_1, evaluation_metrics_2
+    return steinvi
 
 
 # Utility function to create minibatches
@@ -247,16 +239,10 @@ def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, best_eval_
     Handles the printing and evaluation during training based on the training print mode.
 
     Args:
-        state (object): The current state of the model.
-        nnet_model (object): The neural network model for predictions.
-        tree_def (object): Tree structure for parameter transformations in JAX.
+        steinvi : ...
         z_val (ndarray): Validation data inputs.
         y_val (ndarray): Validation data targets.
-        parameter (Parameter): A Parameter object containing training hyperparameters.
         iteration (int): Current training iteration.
-        evaluation_metrics_1 (list): List to store evaluation metric 1.
-        evaluation_metrics_2 (list): List to store evaluation metric 2.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
         best_eval_metric (float): Current best evaluation metric.
         patience_counter (int): Counter for early stopping patience.
 
@@ -281,6 +267,7 @@ def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, best_eval_
                 stein_vi.evaluation_metrics_2.append(current_eval_2)
 
             if stein_vi.parameter.early_stopping:
+                # TODO: current_eval_1 might be referenced before assigning
                 patience_counter, best_eval_metric = early_stopping_fn(
                     current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
                 )

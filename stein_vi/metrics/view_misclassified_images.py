@@ -1,7 +1,7 @@
 import jax
 import matplotlib.pyplot as plt
 import jax.numpy as jnp
-from src.metrics.plots_validation_metrics import view_probabilities_classification
+from stein_vi.metrics.plots_validation_metrics import view_probabilities_classification
 
 
 def view_misclassified(out, nnet_model, tree_def, z_test, y_test, image_data):

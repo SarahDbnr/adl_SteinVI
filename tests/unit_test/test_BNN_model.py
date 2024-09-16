@@ -3,8 +3,7 @@ import jax.numpy as jnp
 from flax import linen as nn
 from jax import random
 import jax
-from jax.flatten_util import ravel_pytree
-from src.model.BNN_Model import FlexibleSimpleNN, build_model
+from run_stein_vi.model.BNN_Model import FlexibleSimpleNN, build_model
 
 def test_flexible_simple_nn_classification():
     # Set up the model for classification

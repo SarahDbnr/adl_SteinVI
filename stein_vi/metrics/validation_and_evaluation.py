@@ -1,10 +1,8 @@
 import jax
 import jax.numpy as jnp
-import matplotlib.pyplot as plt
 
+from stein_vi.algorithm.get_posteriori import link_function
 
-
-from src.algorithm.get_posteriori import link_function
 ALPHA = 0.05
 
 
@@ -119,7 +117,7 @@ def calculate_number_of_different_classified_by_particles(predictions):
     difference_classified_by_particles = []
     for i in range(num_input_values):
         unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
-        difference_classified_by_particles.append(col_counts.sum()-col_counts.max())
+        difference_classified_by_particles.append(col_counts.sum() - col_counts.max())
     return difference_classified_by_particles
 
 
@@ -179,5 +177,4 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
 
     # Step 3: Compute the variance according to equation (3)
     variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(mean_star)
-    return(mean_star, variance_star)
-
+    return (mean_star, variance_star)

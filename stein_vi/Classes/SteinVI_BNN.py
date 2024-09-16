@@ -1,8 +1,8 @@
-from src.Parameter_Class import Parameter
-import src.metrics.plots_validation_metrics as plots
-from src.metrics.view_misclassified_images import view_misclassified
-from src.Handler_Class import Handler
-from src.algorithm.get_posteriori import get_posteriori
+from stein_vi.Classes.Parameter_Class import Parameter
+import stein_vi.metrics.plots_validation_metrics as plots
+from stein_vi.metrics.view_misclassified_images import view_misclassified
+from stein_vi.Classes.Handler_Class import Handler
+from stein_vi.algorithm.get_posteriori import get_posteriori
 
 import flax.linen
 import jax.numpy as jnp

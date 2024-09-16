@@ -3,7 +3,7 @@ import datetime
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from src.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
+from stein_vi.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 
 
 def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None):

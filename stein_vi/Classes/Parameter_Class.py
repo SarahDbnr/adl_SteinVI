@@ -1,6 +1,3 @@
-from src.Handler_Class import Handler
-
-
 class Parameter:
     """
     A class to define the parameters for training a model using Stein Variational Gradient Descent (SVGD).

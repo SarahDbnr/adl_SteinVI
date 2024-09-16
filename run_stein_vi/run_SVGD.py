@@ -2,23 +2,22 @@ import jax
 import tensorflow as tf
 from optax import adam, exponential_decay
 
-from src.data.regression_toy_example import get_regression_toy_example
-from src.algorithm.svgd import train_with_svgd
-from src.model.BNN_Model import build_model
-from src.metrics.validation_and_evaluation import (get_evaluation_metrics_over_predictions,
+from data.regression_toy_example import get_regression_toy_example
+from stein_vi.algorithm.svgd import train_with_svgd
+from model.BNN_Model import build_model
+from stein_vi.metrics.validation_and_evaluation import (get_evaluation_metrics_over_predictions,
                                                    print_summary_over_particles_regression,
                                                    print_summary_over_particles_multiclass)
-from src.data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
+from data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling, \
     adult_income_datahandling, bike_sharing_datahandling
-from src.metrics.view_misclassified_images import view_misclassified
+from stein_vi.metrics.view_misclassified_images import view_misclassified
 from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine, load_iris
-from src.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
-from src.Parameter_Class import Parameter
-from src.Handler_Class import Handler
-import src.data.datasets_info as datasets_info
-from src.algorithm.random_forest import random_forest
+from stein_vi.metrics.plots_validation_metrics import plot_and_save_evaluation_metric, plot_residuals, plot_location_in_relation_to_scale
+from stein_vi.Classes.Parameter_Class import Parameter
+import data.datasets_info as datasets_info
+from stein_vi.algorithm.random_forest import random_forest
 
-
+# TODO VERY IMPORTANT: correct this function like in Example Run
 def run_svgd_on_regression(dataset, parameter, output_size, network_structure):
     """
     Run the Stein Variational Gradient Descent (SVGD) algorithm on a regression dataset.

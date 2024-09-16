@@ -3,34 +3,11 @@ import jax.numpy as jnp
 import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 
-from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
-from src.Parameter_Class import Parameter
-from src.algorithm.model_training import train_general_algorithm
-from src.SteinVI_BNN import SteinVI_BNN
-from src.model.BNN_Model import build_model
-from src.data.regression_toy_example import get_regression_toy_example
+from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 
 
-def train_with_svgd(dataset, nnet_model, regression):
-    """
-    Trains a neural network using the Stein Variational Gradient Descent (SVGD) algorithm.
+def set_up_svgd(steinvi_svdg):
 
-    Args:
-        dataset (tuple): A tuple containing the training data (features and labels).
-        nnet_model (object): The neural network model used for making predictions.
-
-    Returns:
-        tuple: The state of the model after training, and two evaluation metric values.
-    """
-    z_train, y_train, z_val, y_val, _, _ = dataset
-    key = jax.random.PRNGKey(1)
-
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, regression, )
-
-    # TODO: why do we split this
-    # _, rng_key_init = jax.random.split(key, 2)
-
-    # only this is svgd specific
     steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):
@@ -48,13 +25,7 @@ def train_with_svgd(dataset, nnet_model, regression):
 
     steinvi_svdg.evaluate_fn = evaluate_model_fn
 
-    state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
-        steinvi=steinvi_svdg,
-        dataset=dataset,
-        key=key
-    )
-
-    return state, eval_metrics_1, eval_metrics_2
+    return steinvi_svdg
 
 
 def initialize_svgd_state(svi):
@@ -145,10 +116,3 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
         return orig
 
     return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
-
-
-if __name__ == "__main__":
-    regression_toy_example = get_regression_toy_example(num_points=10000)
-
-    nnet_model = build_model(output_size=2)
-    train_with_svgd(dataset=regression_toy_example, nnet_model=nnet_model, regression=True)

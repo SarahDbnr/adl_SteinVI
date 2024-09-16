@@ -8,12 +8,12 @@
 import os
 import sys
 
-# Add the src and its subdirectories to sys.path
-sys.path.insert(0, os.path.abspath('../src'))
-sys.path.insert(0, os.path.abspath('../src/parameter_search'))
-sys.path.insert(0, os.path.abspath('../src/metrics'))
-sys.path.insert(0, os.path.abspath('../src/algorithm'))
-sys.path.insert(0, os.path.abspath('../src/data'))
+# Add the stein_vi and its subdirectories to sys.path
+sys.path.insert(0, os.path.abspath('../stein_vi'))
+sys.path.insert(0, os.path.abspath('../stein_vi/parameter_search'))
+sys.path.insert(0, os.path.abspath('../stein_vi/metrics'))
+sys.path.insert(0, os.path.abspath('../stein_vi/algorithm'))
+sys.path.insert(0, os.path.abspath('../stein_vi/data'))
 
 project = 'Bayesian Neural Networks through Stein VI in JAX'
 copyright = '2024, Sarah Deubner, Kilian Runnwerth and Luke-Liam Bergmeier'
