@@ -32,10 +32,14 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     
     kernel_fn = rbf_kernel
     
-    svgd_state, init_update_fn = initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
+    svgd_state, svgd= initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
 
-    def svgd_update_fn(state, z_batch, y_batch, step_fn, particle_indices=None):
-        return update_svgd(state, z_batch, y_batch, step_fn, particle_indices)
+    def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):
+        if particle_indices is not None:
+            # TODO: why is this necessary: and particle_indices != 0
+            return particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices)
+        else:
+            return step_fn(state, dz=z_batch, dy=y_batch)
 
     state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
         dataset=dataset,
@@ -47,7 +51,6 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
         update_fn=svgd_update_fn,
         evaluate_fn=evaluate_model_fn,
         early_stopping_fn=early_stopping_fn,
-        init_update_fn=init_update_fn,
     )
 
     return state, eval_metrics_1, eval_metrics_2
@@ -68,10 +71,9 @@ def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, param
     grad_log_posterior = jax.grad(logp_model)
     svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
     initial_kernel_params = {"length_scale": parameter.kernel_length}
-    init_update_fn = jax.jit(svgd.step)
-    return svgd.init(initial_particles_vector, initial_kernel_params), init_update_fn
+    return svgd.init(initial_particles_vector, initial_kernel_params), svgd
 
-def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
+def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     """
     Updates the SVGD particles and optimizer state, with support for minibatching.
 
@@ -86,21 +88,17 @@ def update_svgd(state, z_batch, y_batch, step_fn, particle_indices):
         object: The updated SVGD state after the current step.
     """
 
-    if particle_indices is not None and particle_indices != 0:
-        # Minibatch update for particles
-        batch_particles = jnp.take(state.particles, particle_indices, axis=0)
-        batch_optimizer_state = get_batched_optimizer_state(state.opt_state, particle_indices)
-        
-        batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
-        updated_batch_state = step_fn(batch_state, dz=z_batch, dy=y_batch)
-        
-        new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
-        new_optimizer_state = update_optimizer_state(state.opt_state, updated_batch_state, particle_indices)
-        
-        state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
-    else:
-        # Full update
-        state = step_fn(state, dz=z_batch, dy=y_batch)
+    # Minibatch update for particles
+    batch_particles = jnp.take(state.particles, particle_indices, axis=0)
+    batch_optimizer_state = get_batched_optimizer_state(state.opt_state, particle_indices)
+
+    batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
+    updated_batch_state = step_fn(batch_state, dz=z_batch, dy=y_batch)
+
+    new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
+    new_optimizer_state = update_optimizer_state(state.opt_state, updated_batch_state, particle_indices)
+
+    state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
 
     return state
 

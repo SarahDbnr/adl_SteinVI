@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 DEFAULT_NUM_BATCHES = 10
 
-def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
+def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state, update_fn, evaluate_fn, early_stopping_fn):
     """
     General training function for neural networks that supports different mini-batching modes for both data and particles.
 
@@ -18,7 +18,6 @@ def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state
         update_fn (callable): Function to update the model parameters during training.
         evaluate_fn (callable): Function to evaluate the model during training.
         early_stopping_fn (callable): Function to apply early stopping criteria.
-        init_update_fn (callable): The function to initialize updates during training.
 
     Returns:
         tuple: Best model state and two lists of evaluation metrics (e.g., accuracy or MSE) during training.
@@ -37,12 +36,12 @@ def train_general_algorithm(dataset, nnet_model, tree_def, parameter, key, state
         training_loop_fn = data_and_particle_minibatch_training_loop
 
     best_state, evaluation_metrics_1, evaluation_metrics_2 = training_loop_fn(
-        state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn
+        state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn
     )
 
     return best_state, evaluation_metrics_1, evaluation_metrics_2
 
-def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
+def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn):
     """
     Training loop without mini-batching, using full data and particles.
 
@@ -67,13 +66,13 @@ def no_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, 
     evaluation_metrics_1, evaluation_metrics_2 = [], []
 
     for iteration in tqdm(range(parameter.num_iterations), desc="Training"):
-        state = update_fn(state, z_train, y_train, init_update_fn)  # Full data and full particles
+        state = update_fn(state, z_train, y_train)  # Full data and full particles
         evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
             break
     return state, evaluation_metrics_1, evaluation_metrics_2
 
-def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
+def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn):
     """
     Training loop with mini-batching on the data while using the full particle set.
 
@@ -102,7 +101,7 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
         z_train_batched, y_train_batched = create_minibatches(parameter.batch_size, z_train, y_train, key_loop)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
-            state = update_fn(state, z_batch, y_batch, init_update_fn)
+            state = update_fn(state, z_batch, y_batch)
 
         evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
@@ -112,7 +111,7 @@ def data_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter
 
 
 # Particle minibatching: Use the full dataset but split particles into minibatches
-def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
+def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn):
     """
     Training loop with mini-batching on the particles while using the full dataset.
 
@@ -142,7 +141,7 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
         particle_indices_batches = create_particle_minibatch_indices(key_loop, state.particles.shape[0], parameter.particle_batch_size)
 
         for particle_indices in particle_indices_batches:
-            state = update_fn(state, z_train, y_train, init_update_fn, particle_indices)
+            state = update_fn(state, z_train, y_train, particle_indices=particle_indices)
 
         evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
@@ -152,7 +151,7 @@ def particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, param
 
 
 # Both data and particle minibatching
-def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn, init_update_fn):
+def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_def, parameter, key, update_fn, evaluate_fn, early_stopping_fn):
     """
     Training loop with mini-batching on both data and particles.
 
@@ -184,7 +183,7 @@ def data_and_particle_minibatch_training_loop(state, dataset, nnet_model, tree_d
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             for particle_indices in particle_indices_batches:
-                state = update_fn(state, z_batch, y_batch, init_update_fn, particle_indices)
+                state = update_fn(state, z_batch, y_batch, particle_indices=particle_indices)
 
         evaluation_metrics_1, evaluation_metrics_2, best_eval_metric, patience_counter = handle_printing_and_evaluation(state, nnet_model, tree_def, z_val, y_val, parameter, iteration, evaluation_metrics_1, evaluation_metrics_2, early_stopping_fn, best_eval_metric, patience_counter, evaluate_fn)
         if patience_counter >= parameter.patience_early_stopping:
