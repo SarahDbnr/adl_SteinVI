@@ -21,11 +21,9 @@ class SteinVI_BNN:
     nnet: flax.linen.Module
     tree_def: None
 
-    kernel_fn: object
     update_fn: object
     evaluate_model_fn: object
     early_stopping_fn: object
-    init_update_fn: object
 
     eval_metrics_1: float = []
     eval_metrics_2: float = []
