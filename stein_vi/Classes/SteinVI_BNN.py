@@ -71,14 +71,14 @@ class SteinVI_BNN:
                 "Error: Minimal evaluation mode does not gather information while training for efficiency reasons.")
         else:
             if self.use_for_regression:
-                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.eval_metrics_1,
+                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
                                                       num_particles=self.parameter.num_particles,
                                                       eval_metric="MSE")
-                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.eval_metrics_2,
+                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_2,
                                                       num_particles=self.parameter.num_particles,
                                                       eval_metric="averaged_precision")
             else:
-                plots.plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.eval_metrics_1,
+                plots.plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
                                                             num_particles=self.parameter.num_particles,
                                                             eval_metric="Accuracy")
 
