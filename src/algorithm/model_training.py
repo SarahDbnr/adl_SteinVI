@@ -5,7 +5,7 @@ from tqdm import tqdm
 DEFAULT_NUM_BATCHES = 10
 
 
-def train_general_algorithm(steinvi, dataset, key, early_stopping_fn):
+def train_general_algorithm(steinvi, dataset, key):
     """
     General training function for neural networks that supports different mini-batching modes for both data and particles.
 
@@ -30,14 +30,12 @@ def train_general_algorithm(steinvi, dataset, key, early_stopping_fn):
     else:
         training_loop_fn = data_and_particle_minibatch_training_loop
 
-    best_state, evaluation_metrics_1, evaluation_metrics_2 = training_loop_fn(
-        steinvi, dataset, key, early_stopping_fn
-    )
+    best_state, evaluation_metrics_1, evaluation_metrics_2 = training_loop_fn(steinvi, dataset, key)
 
     return best_state, evaluation_metrics_1, evaluation_metrics_2
 
 
-def no_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
+def no_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop without mini-batching, using full data and particles.
 
@@ -45,7 +43,6 @@ def no_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
         steinvi : ...
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
 
     Returns:
         tuple: Updated model state and two lists of evaluation metrics (e.g., accuracy or MSE).
@@ -60,14 +57,14 @@ def no_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
         steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train)  # Full data and full particles
 
         stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration,  early_stopping_fn, best_eval_metric, patience_counter)
+            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
     return steinvi.state, evaluation_metrics_1, evaluation_metrics_2
 
 
-def data_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
+def data_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on the data while using the full particle set.
 
@@ -90,11 +87,10 @@ def data_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
         z_train_batched, y_train_batched = create_minibatches(steinvi.parameter.batch_size, z_train, y_train, key_loop)
 
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
-
             steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch)
 
             stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-                steinvi, z_val, y_val, iteration, early_stopping_fn, best_eval_metric, patience_counter)
+                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -103,7 +99,7 @@ def data_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
 
 
 # Particle minibatching: Use the full dataset but split particles into minibatches
-def particle_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
+def particle_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on the particles while using the full dataset.
 
@@ -132,7 +128,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
 
         # TODO: is evaluation ut of loop by choice?
         stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration, early_stopping_fn, best_eval_metric, patience_counter)
+            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -141,7 +137,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
 
 
 # Both data and particle minibatching
-def data_and_particle_minibatch_training_loop(steinvi, dataset, key, early_stopping_fn):
+def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on both data and particles.
 
@@ -171,7 +167,7 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key, early_stopp
                 steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch, particle_indices=particle_indices)
 
         stein_vi, best_eval_metric, patience_counter = handle_printing_and_evaluation(
-            steinvi, z_val, y_val, iteration, early_stopping_fn, best_eval_metric, patience_counter)
+            steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
@@ -246,8 +242,7 @@ def shuffle_data(key, input_data, output_data):
     return jnp.take(input_data, permutation, axis=0), jnp.take(output_data, permutation, axis=0)
 
 
-def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, early_stopping_fn, best_eval_metric,
-                                   patience_counter):
+def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, best_eval_metric, patience_counter):
     """
     Handles the printing and evaluation during training based on the training print mode.
 
@@ -291,3 +286,24 @@ def handle_printing_and_evaluation(stein_vi, z_val, y_val, iteration, early_stop
                 )
 
     return stein_vi, best_eval_metric, patience_counter
+
+
+def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
+    """
+    Implements early stopping by comparing validation metrics over training iterations.
+
+    Args:
+        current_metrics (float): The evaluation metric for the current iteration.
+        best_metrics (float): The best evaluation metric seen so far.
+        patience_counter (int): A counter tracking how many iterations the model has been non-improving.
+        parameter (Parameter): A Parameter object defining early stopping criteria like minimum delta.
+
+    Returns:
+        tuple: Updated patience counter and best metric value.
+    """
+    if current_metrics < best_metrics + parameter.min_delta_early_stopping:
+        patience_counter = patience_counter + 1
+    else:
+        patience_counter = 0
+        best_metrics = current_metrics
+    return patience_counter, best_metrics

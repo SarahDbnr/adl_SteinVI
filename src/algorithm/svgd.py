@@ -18,10 +18,6 @@ def train_with_svgd(dataset, nnet_model, regression):
     Args:
         dataset (tuple): A tuple containing the training data (features and labels).
         nnet_model (object): The neural network model used for making predictions.
-        tree_def (object): Tree structure used for parameter transformation in JAX.
-        param_vec (jax.numpy.ndarray): Initial parameter vector for the neural network.
-        parameter (Parameter): A Parameter object containing hyperparameters such as number of particles and optimizer settings.
-        key (jax.random.PRNGKey): JAX random key for initializing particles and managing randomness.
 
     Returns:
         tuple: The state of the model after training, and two evaluation metric values.
@@ -55,8 +51,7 @@ def train_with_svgd(dataset, nnet_model, regression):
     state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
         steinvi=steinvi_svdg,
         dataset=dataset,
-        key=key,
-        early_stopping_fn=early_stopping_fn,
+        key=key
     )
 
     return state, eval_metrics_1, eval_metrics_2
@@ -109,27 +104,6 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
 
     return state
-
-
-def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
-    """
-    Implements early stopping by comparing validation metrics over training iterations.
-
-    Args:
-        current_metrics (float): The evaluation metric for the current iteration.
-        best_metrics (float): The best evaluation metric seen so far.
-        patience_counter (int): A counter tracking how many iterations the model has been non-improving.
-        parameter (Parameter): A Parameter object defining early stopping criteria like minimum delta.
-
-    Returns:
-        tuple: Updated patience counter and best metric value.
-    """
-    if current_metrics < best_metrics + parameter.min_delta_early_stopping:
-        patience_counter = patience_counter + 1
-    else:
-        patience_counter = 0
-        best_metrics = current_metrics
-    return patience_counter, best_metrics
 
 
 def get_batched_optimizer_state(optimizer_state, indices):
