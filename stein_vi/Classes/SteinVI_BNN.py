@@ -78,7 +78,7 @@ class SteinVI_BNN:
                                                       num_particles=self.parameter.num_particles,
                                                       eval_metric="averaged_precision")
             else:
-                plots.plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
+                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
                                                             num_particles=self.parameter.num_particles,
                                                             eval_metric="Accuracy")
 
