@@ -2,6 +2,7 @@ from src.Parameter_Class import Parameter
 import src.metrics.plots_validation_metrics as plots
 from src.metrics.view_misclassified_images import view_misclassified
 from src.Handler_Class import Handler
+from src.algorithm.get_posteriori import get_posteriori
 
 import flax.linen
 import jax.numpy as jnp
@@ -17,22 +18,22 @@ class SteinVI_BNN:
 
     use_for_regression: bool
 
-    log_posterior: object
+    log_posteriori: object
     nnet: flax.linen.Module
     tree_def: None
+    initial_particle_vector: jnp.array
 
     update_fn: object
-    evaluate_model_fn: object
-    early_stopping_fn: object
+    evaluate_fn: object
 
-    eval_metrics_1: float = []
-    eval_metrics_2: float = []
+    evaluation_metrics_1: list = []
+    evaluation_metrics_2: list = []
 
-    def __init__(self, mode_training_print='none', mode_evaluation='minimal', use_for_regression=None,
-                 optimizer=adam(0.01), early_stopping=False, image_data=False, batch_size=0, particle_batch_size=0,
+    def __init__(self, key, x_train, nnet, use_for_regression,
+                 optimizer=adam(0.01), mode_training_print='full', mode_evaluation='full', early_stopping=False,
+                 image_data=False, batch_size=0, particle_batch_size=0,
                  num_particles=10, num_iterations=100, rf_comparison=False):
-        if use_for_regression == None:
-            ValueError("The variable use_for_regression needs to be defined.")
+
         self.handler = Handler(rf_comparison)
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
@@ -40,18 +41,19 @@ class SteinVI_BNN:
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size,
                                    num_particles, num_iterations)
         self.use_for_regression = use_for_regression
+        self.nnet = nnet
+        self.nnet.predict = self.predict
 
-    def initial_particles_vector(self, key, x_train, num_particles):
-        init_param = self.nnet_model.init(key, x_train)
+        self.initial_particles_and_kernel(key, x_train, num_particles)
+
+        # default posteriori
+        self.log_posteriori = get_posteriori(self.nnet, self.tree_def, self.use_for_regression)
+
+    def initial_particles_and_kernel(self, key, x_train, num_particles):
+        init_param = self.nnet.init(key, x_train)
         param_vec, self.tree_def = ravel_pytree(init_param)
-        return jax.random.normal(key, shape=(num_particles,) + param_vec.shape)
-
-    def set_training_fns(self, kernel_fn, update_fn, evaluate_model_fn, early_stopping_fn, init_update_fn):
-        self.kernel_fn = kernel_fn
-        self.update_fn = update_fn
-        self.evaluate_model_fn = evaluate_model_fn
-        self.early_stopping_fn = early_stopping_fn
-        self.init_update_fn = init_update_fn
+        # TODO: should this allow different distibutions in the future
+        self.initial_particle_vector = jax.random.normal(key, shape=(num_particles,) + param_vec.shape)
 
     def predict(self, weights, x_input):
         if self.use_for_regression:

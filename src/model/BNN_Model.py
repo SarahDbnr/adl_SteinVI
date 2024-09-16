@@ -46,7 +46,7 @@ class FlexibleSimpleNN(nn.Module):
 
 def build_model(hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
-                bias_init=nn.initializers.zeros, use_for_regression=False):
+                bias_init=nn.initializers.zeros):
     """
     Builds and initializes a neural network model based on specified configurations.
 
@@ -64,6 +64,5 @@ def build_model(hidden_layers=(50,), output_size=10, activation=nn.relu,
         tuple: The initialized model, the tree definition for parameter transformation, and a flattened parameter vector.
     """
 
-    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
-                                  use_for_regression)
+    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init)
     return nnet_model

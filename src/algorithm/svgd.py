@@ -4,12 +4,14 @@ import blackjax
 from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 
 from src.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
-from src.algorithm.get_posteriori import get_posteriori
 from src.Parameter_Class import Parameter
 from src.algorithm.model_training import train_general_algorithm
+from src.SteinVI_BNN import SteinVI_BNN
+from src.model.BNN_Model import build_model
+from src.data.regression_toy_example import get_regression_toy_example
 
 
-def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
+def train_with_svgd(dataset, nnet_model, regression):
     """
     Trains a neural network using the Stein Variational Gradient Descent (SVGD) algorithm.
 
@@ -24,14 +26,16 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
     Returns:
         tuple: The state of the model after training, and two evaluation metric values.
     """
-    _, rng_key_init = jax.random.split(key, 2)
-    initial_particles_vector = initialize_particles(param_vec, rng_key_init, parameter.num_particles)
-    
-    logp_model = get_posteriori(nnet_model, tree_def, parameter.use_for_regression)
-    
-    kernel_fn = rbf_kernel
-    
-    svgd_state, svgd= initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter)
+    z_train, y_train, z_val, y_val, _, _ = dataset
+    key = jax.random.PRNGKey(1)
+
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, regression, )
+
+    # TODO: why do we split this
+    # _, rng_key_init = jax.random.split(key, 2)
+
+    # only this is svgd specific
+    steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):
         if particle_indices is not None:
@@ -40,21 +44,25 @@ def train_with_svgd(dataset, nnet_model, tree_def, param_vec, parameter, key):
         else:
             return step_fn(state, dz=z_batch, dy=y_batch)
 
+    steinvi_svdg.update_fn = svgd_update_fn
+
+    def evaluate_model_fn(state, z_val, y_val):
+        return get_evaluation_metrics_over_predictions(state, steinvi_svdg.nnet, steinvi_svdg.tree_def, z_val, y_val,
+                                                       steinvi_svdg.use_for_regression)
+
+    steinvi_svdg.evaluate_fn = evaluate_model_fn
+
     state, eval_metrics_1, eval_metrics_2 = train_general_algorithm(
+        steinvi=steinvi_svdg,
         dataset=dataset,
-        nnet_model=nnet_model,
-        tree_def=tree_def,
-        parameter=parameter,
         key=key,
-        state=svgd_state,
-        update_fn=svgd_update_fn,
-        evaluate_fn=evaluate_model_fn,
         early_stopping_fn=early_stopping_fn,
     )
 
     return state, eval_metrics_1, eval_metrics_2
 
-def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, parameter):
+
+def initialize_svgd_state(svi):
     """
     Initializes the state for SVGD including the log posterior function, particles, and kernel function.
 
@@ -67,10 +75,11 @@ def initialize_svgd_state(logp_model, initial_particles_vector, kernel_fn, param
     Returns:
         tuple: The initialized SVGD state and the JIT-compiled update function for SVGD.
     """
-    grad_log_posterior = jax.grad(logp_model)
-    svgd = blackjax.svgd(grad_log_posterior, parameter.optimizer, kernel_fn, update_median_heuristic)
-    initial_kernel_params = {"length_scale": parameter.kernel_length}
-    return svgd.init(initial_particles_vector, initial_kernel_params), svgd
+    grad_log_posterior = jax.grad(svi.log_posteriori)
+    svgd = blackjax.svgd(grad_log_posterior, svi.parameter.optimizer, rbf_kernel, update_median_heuristic)
+    initial_kernel_params = {"length_scale": svi.parameter.kernel_length}
+    return svgd.init(svi.initial_particle_vector, initial_kernel_params), svgd
+
 
 def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     """
@@ -100,39 +109,6 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
 
     return state
-
-
-def initialize_particles(param_vec, rng_key_init, num_particles):
-    """
-    Initializes particles for the SVGD algorithm using a normal distribution.
-
-    Args:
-        param_vec (jax.numpy.ndarray): The initial parameter vector for the model.
-        rng_key_init (jax.random.PRNGKey): JAX random key for initializing particles.
-        num_particles (int): The number of particles to initialize.
-
-    Returns:
-        jax.numpy.ndarray: A set of initialized particles.
-    """
-    return jax.random.normal(rng_key_init, shape=(num_particles,) + param_vec.shape)
-
-
-def evaluate_model_fn(state, nnet_model, tree_def, z_val, y_val, parameter):
-    """
-    Evaluates the model using the current SVGD state on validation data.
-
-    Args:
-        state (object): The current SVGD state containing particles and optimizer state.
-        nnet_model (object): The neural network model used for making predictions.
-        tree_def (object): Tree structure used for parameter transformation in JAX.
-        z_val (jax.numpy.ndarray): Validation input features.
-        y_val (jax.numpy.ndarray): True output labels for the validation set.
-        parameter (Parameter): A Parameter object that defines if the task is regression or classification.
-
-    Returns:
-        tuple: Evaluation metrics such as MSE or accuracy, depending on the task.
-    """
-    return get_evaluation_metrics_over_predictions(state, nnet_model, tree_def, z_val, y_val, parameter.use_for_regression)
 
 
 def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
@@ -167,6 +143,7 @@ def get_batched_optimizer_state(optimizer_state, indices):
     Returns:
         object: The optimizer state for the selected particles.
     """
+
     def batch_fn(x):
         if hasattr(x, 'ndim') and x.ndim > 0:
             return jnp.take(x, indices, axis=0)
@@ -187,10 +164,17 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
     Returns:
         object: The updated optimizer state.
     """
+
     def update_fn(orig, batched):
         if hasattr(orig, 'ndim') and orig.ndim > 0:
             return orig.at[indices].set(batched)
         return orig
-    
+
     return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
 
+
+if __name__ == "__main__":
+    regression_toy_example = get_regression_toy_example(num_points=10000)
+
+    nnet_model = build_model(output_size=2)
+    train_with_svgd(dataset=regression_toy_example, nnet_model=nnet_model, regression=True)
