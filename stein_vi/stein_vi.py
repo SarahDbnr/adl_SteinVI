@@ -7,7 +7,15 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
 
     if algorithm == "svgd":
         steinvi = set_up_svgd(steinvi)
-
+    elif algorithm == "plain_svgd":
+        pass
+    elif algorithm == "sSVGD":
+        pass
+    elif algorithm == "quasi_SVN":
+        pass
+    else:
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
+    
     steinvi = train_general_algorithm(
         steinvi=steinvi,
         dataset=dataset,
