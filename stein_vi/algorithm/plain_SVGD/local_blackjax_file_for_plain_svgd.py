@@ -27,7 +27,8 @@ def init(
     kernel_parameters: dict[str, Any],
 ) -> SVGDState:
     """
-    Initializes Stein Variational Gradient Descent Algorithm.
+    Initializes Stein Variational Gradient Descent Algorithm. Without the option to initialize a 
+    optax optimizer. This just uses plain gradient decent like in the Algorithm 1 of :cite:p:`liu2016stein`.
 
     Parameters
     ----------

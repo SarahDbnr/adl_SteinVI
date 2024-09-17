@@ -7,7 +7,6 @@ from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_ov
 
 
 def set_up_plain_svgd(steinvi_svdg):
-
     steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):
@@ -75,44 +74,3 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     state = state._replace(particles=new_particles)
 
     return state
-
-
-# def get_batched_optimizer_state(optimizer_state, indices):
-#     """
-#     Extracts a minibatch of the optimizer state for the selected particles.
-
-#     Args:
-#         optimizer_state (object): The full optimizer state across all particles.
-#         indices (jax.numpy.ndarray): Indices of the particles to extract optimizer states for.
-
-#     Returns:
-#         object: The optimizer state for the selected particles.
-#     """
-
-#     def batch_fn(x):
-#         if hasattr(x, 'ndim') and x.ndim > 0:
-#             return jnp.take(x, indices, axis=0)
-#         return x
-
-#     return jax.tree.map(batch_fn, optimizer_state)
-
-
-# def update_optimizer_state(optimizer_state, batched_state, indices):
-#     """
-#     Updates the global optimizer state with the minibatched state after an update step.
-
-#     Args:
-#         optimizer_state (object): The full optimizer state across all particles.
-#         batched_state (object): The optimizer state after a minibatch update.
-#         indices (jax.numpy.ndarray): Indices of the particles that were updated.
-
-#     Returns:
-#         object: The updated optimizer state.
-#     """
-
-#     def update_fn(orig, batched):
-#         if hasattr(orig, 'ndim') and orig.ndim > 0:
-#             return orig.at[indices].set(batched)
-#         return orig
-
-#     return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
