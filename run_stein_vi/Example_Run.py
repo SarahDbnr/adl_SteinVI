@@ -36,7 +36,7 @@ def run_regression_toy_example():
         )
     )
 
-    nnet_model = build_model(output_size=2)
+    nnet_model = build_model(output_size=2, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, optimizer=optimizer)
 

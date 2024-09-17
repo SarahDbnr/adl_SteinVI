@@ -66,8 +66,8 @@ class SteinVI_BNN:
         return prediction, precision
 
     def predict_over_particles(self, input_data):
-        predictions, _ = jax.vmap(lambda p: self.predict(p, input_data))(self.state.particles)
-        return predictions.mean(0).squeeze()
+        predictions, precisions = jax.vmap(lambda p: self.predict(p, input_data))(self.state.particles)
+        return predictions.squeeze(), precisions.squeeze()
 
     def plot_val_metric_over_iter(self):
         if self.handler.minimal_evaluation:
