@@ -19,9 +19,9 @@ def set_up_svgd(steinvi_svdg):
 
     steinvi_svdg.update_fn = svgd_update_fn
 
-    def evaluate_model_fn(state, z_val, y_val, print):
-        return get_evaluation_metrics_over_predictions(state, steinvi_svdg.nnet, steinvi_svdg.tree_def, z_val, y_val,
-                                                       steinvi_svdg.use_for_regression, print)
+    def evaluate_model_fn(state, z_val, y_val, print_out):
+        return get_evaluation_metrics_over_predictions(state, steinvi_svdg.nnet, z_val, y_val,
+                                                       steinvi_svdg.use_for_regression, print_out)
 
     steinvi_svdg.evaluate_fn = evaluate_model_fn
 

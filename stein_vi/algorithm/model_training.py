@@ -121,7 +121,6 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
         for particle_indices in particle_indices_batches:
             steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train, particle_indices=particle_indices)
 
-        # TODO: is evaluation ut of loop by choice?
         if steinvi.handler._full_evaluation:
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
@@ -256,12 +255,12 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
         tuple: Updated evaluation metrics, best_eval_metric, and patience_counter.
     """
     if stein_vi.handler._full_training_print:
-        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=True)
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
     # TODO: reduced prints every 10th iteration is 10 the right choice?
     elif stein_vi.handler._reduced_training_print and iteration % 10 == 0:
-        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=True)
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
     else:
-        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print=False)
+        current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=False)
     stein_vi.evaluation_metrics_1.append(current_eval_1)
     stein_vi.evaluation_metrics_2.append(current_eval_2)
 

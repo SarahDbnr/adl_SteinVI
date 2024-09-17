@@ -39,17 +39,13 @@ def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_part
     plt.close()
 
 
-def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None, network_structure=None,
+def plot_residuals(y_pred, y_true, num_particles=None, network_structure=None,
                    kernel_length=None, adam_learning_rate=None, actual_iterations=None, warm_up_iterations=None,
                    output_folder="svgd_plots"):
     """
     Calculates and plots the residuals of predictions against true values for a regression model.
 
     Args:
-        nnet_model (object): The neural network model used for predictions.
-        tree_def (object): Tree structure used for parameter transformation in JAX.
-        out (object): Output from the model prediction, containing particles.
-        z_test (array): Test input features.
         y_true (array): True output values for the test set.
         num_particles (int, optional): Number of particles used in SVGD.
         network_structure (str, optional): Description of the network's architecture.
@@ -63,10 +59,7 @@ def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None
         Path to the saved residual plot file.
     """
     # Calculate residuals
-    predictions, _ = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
-    y_pred = predictions.mean(0)  # Averaging over particles
-    y_pred = y_pred.squeeze()
-    residuals = y_pred - y_true
+    residuals = y_pred.mean(0).squeeze() - y_true
 
     # Create the output folder in the current directory if it doesn't exist
     current_dir = os.getcwd()
@@ -94,24 +87,14 @@ def plot_residuals(nnet_model, tree_def, out, z_test, y_true, num_particles=None
              verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     plt.tight_layout()
 
-    # Generate a timestamp for the filename
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"residual_plot_{timestamp}.png"
-
-    # Save the plot in the specified folder
-    filepath = os.path.join(output_path, filename)
-    plt.savefig(filepath, dpi=300)
-
     # Show the plot
     plt.show()
 
     # Close the plot
     plt.close()
 
-    print(f"Residual plot saved as: {filepath}")
 
-
-def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_particles=None, network_structure=None,
+def plot_location_in_relation_to_scale(nnet_model, out, z_test, num_particles=None, network_structure=None,
                                        kernel_length=None, adam_learning_rate=None, actual_iterations=None,
                                        warm_up_iterations=None,
                                        output_folder="svgd_plots"):
@@ -137,8 +120,8 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
         Path to the saved plot file.
     """
     # Calculate predictions
-    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out,
-                                                                                       z_test)
+    prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, out, z_test)
+
     # set maximal standard deviation
 
     # Create the output folder in the current directory if it doesn't exist
@@ -167,21 +150,11 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
              verticalalignment='bottom', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     plt.tight_layout()
 
-    # Generate a timestamp for the filename
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"relationship_scale_location{timestamp}.png"
-
-    # Save the plot in the specified folder
-    filepath = os.path.join(output_path, filename)
-    plt.savefig(filepath, dpi=300)
-
     # Show the plot
     plt.show()
 
     # Close the plot
     plt.close()
-
-    print(f"Location Scale plot saved as: {filepath}")
 
 
 def view_probabilities_classification(precisions_sample, predicted_class, true_class, ax=None):
@@ -196,8 +169,6 @@ def view_probabilities_classification(precisions_sample, predicted_class, true_c
         true_class (int): True class of the sample.
         ax (matplotlib.axes._subplots.AxesSubplot, optional): Is the subplot where the probabilities are plotted. Defaults to None.
     """
-
-
 
     # Calculate mean of probabilities across particles
     means = precisions_sample.mean(axis=0)

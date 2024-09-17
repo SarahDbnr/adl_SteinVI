@@ -4,21 +4,8 @@ import jax.numpy as jnp
 from stein_vi.metrics.plots_validation_metrics import view_probabilities_classification
 
 
-def view_misclassified(out, nnet_model, tree_def, z_test, y_test, image_data):
+def view_misclassified(out, nnet_model, z_test, y_test, image_data):
     """
-    This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
-    5 random misclassified and 5 random right classified data examples.
-    images will be shown.
-
-    Args:
-        out (SVGDState): State of the particels of the Stein VI optimization
-        nnet_model (nn.Module): _description_
-        tree_def (_type_): _description_
-        z_test (_type_): _description_
-        y_test (_type_): _description_
-        image_data (_type_): _description_
-    """
-"""
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
     5 random misclassified and 5 random right classified data examples.
     images will be shown.
@@ -33,7 +20,7 @@ def view_misclassified(out, nnet_model, tree_def, z_test, y_test, image_data):
     - image_data: If the data is image data or not
     """
     # Get predictions and precisions from all particles
-    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), z_test))(out.particles)
+    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_test))(out.particles)
 
     # Take the mean prediction across all particles
     averaged_precision = precisions.mean(0)

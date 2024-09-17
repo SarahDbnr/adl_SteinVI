@@ -1,16 +1,15 @@
 import pandas as pd
 import jax.numpy as jnp
 
-# TODO: IMPORTANT correct this function
 from stein_vi.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
-                                                   calculate_accuracy,
-                                                   calculate_number_of_different_classified_by_particles,
-                                                   get_most_common_class_over_particles,
-                                                   get_most_common_class)
-from stein_vi.algorithm.svgd import DEFAULT_NUM_BATCHES
+                                                        calculate_accuracy,
+                                                        calculate_number_of_different_classified_by_particles,
+                                                        get_most_common_class_over_particles,
+                                                        get_most_common_class)
 
 
-def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):
+def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision, init_value,
+                                       decay_rate):
     """
     Saves evaluation metrics for a regression model into a CSV file. If the file already exists, it appends the data.
 
@@ -25,16 +24,13 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
     Returns:
         None: The function saves the evaluation to a CSV file.
     """
-    if parameter.batch_size is None:
-        batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
-    else:
-        batch_size = parameter.batch_size
     data = {
         # network
         "name": name,
-        # "optimizer": parameter.optimizer,
+        "init_value": init_value,
+        "decay_rate": decay_rate,
         "num_particles": parameter.num_particles,
-        "batch_size": batch_size,
+        "batch_size": parameter.batch_size,
         "num_iterations": parameter.num_iterations,
         "stopped_at_iteration": parameter.stopped_at_iteration,
         "kernel_length": parameter.kernel_length,
@@ -61,7 +57,7 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
         df.to_csv(file_path, index=False)
 
 
-def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions):
+def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions, init_value, decay_rate):
     """
     Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.
 
@@ -74,19 +70,16 @@ def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predic
 
     Returns:
         None: The function saves the evaluation to a CSV file.
-    """    
-    if parameter.batch_size is None:
-        batch_size = len(test_predictions) // DEFAULT_NUM_BATCHES
-    else:
-        batch_size = parameter.batch_size
+    """
     most_common_prediction_over_particles = jnp.array(get_most_common_class_over_particles(test_predictions))
     number_of_different_classified_by_particles = jnp.array(
         calculate_number_of_different_classified_by_particles(test_predictions))
     data = {
         "name": name,
-        # TODO: if we want to change the optimizer we need to specify something here: "optimizer": parameter.optimizer,
+        "init_value": init_value,
+        "decay_rate": decay_rate,
         "num_particles": parameter.num_particles,
-        "batch_size": batch_size,
+        "batch_size": parameter.batch_size,
         "num_iterations": parameter.num_iterations,
         "stopped_at_iteration": parameter.stopped_at_iteration,
         "kernel_length": parameter.kernel_length,

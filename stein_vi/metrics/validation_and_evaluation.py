@@ -7,7 +7,7 @@ ALPHA = 0.05
 
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
-def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, true_output, model_regression, print_eva):
+def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_output, model_regression, print_eva):
     """
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
@@ -22,7 +22,7 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
     Returns:
         tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).
     """
-    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(tree_def(p), x_input))(out.particles)
+    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, x_input))(out.particles)
     if model_regression:
         mse = calculate_mse(predictions.squeeze(), true_output)
         scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
@@ -156,7 +156,7 @@ def get_most_common_class(column):
     return unique_vals[max_index]
 
 
-def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
+def compute_confidence_intervals_with_2_neurons(nnet_model, out, dz):
     """This function computes the normal distribution p(y|x) for the test data based on the paper:
     A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro and Daniel Saromo Mori.
     Based on the equations (1), (2) and (3).
@@ -167,7 +167,7 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
         out (object): Output from the model prediction, containing particles.
         dz (array): dataset of input features.
     """
-    predictions, precision = jax.vmap(lambda p: nnet_model.predict(tree_def(p), dz))(out.particles)
+    predictions, precision = jax.vmap(lambda p: nnet_model.predict(p, dz))(out.particles)
     predictions = predictions.squeeze()
     precision = precision.squeeze()
     mean_star = predictions.mean(0)  # Averaging over particles
@@ -179,4 +179,4 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
 
     # Step 3: Compute the variance according to equation (3)
     variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(mean_star)
-    return (mean_star, variance_star)
+    return mean_star, variance_star
