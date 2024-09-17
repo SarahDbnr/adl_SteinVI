@@ -84,9 +84,9 @@ def data_minibatch_training_loop(steinvi, dataset, key):
         for z_batch, y_batch in zip(z_train_batched, y_train_batched):
             steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch)
 
-            if steinvi.handler._full_evaluation:
-                steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
-                    steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
+        if steinvi.handler._full_evaluation:
+            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+                steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break

@@ -100,5 +100,5 @@ class SteinVI_BNN:
         if self.use_for_regression:
             ValueError("This plot is only available for classification problems.")
         else:
-            view_misclassified(self.nnet, self.tree_def, self.state, z_test, y_test,
+            view_misclassified(self.state,self.nnet, self.tree_def, z_test, y_test,
                                image_data=image_data)
