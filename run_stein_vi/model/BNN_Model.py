@@ -1,9 +1,6 @@
 import flax.linen as nn
 from typing import Sequence
-from jax.flatten_util import ravel_pytree
 import jax
-import jax.numpy as jnp
-
 
 class FlexibleSimpleNN(nn.Module):
     """
@@ -22,7 +19,6 @@ class FlexibleSimpleNN(nn.Module):
     activation: callable = nn.relu
     kernel_init: callable = nn.initializers.glorot_uniform()  # nn.initializers.lecun_normal()
     bias_init: callable = nn.initializers.zeros
-    use_for_regression: bool = False
 
     @nn.compact
     def __call__(self, *inputs):
@@ -44,21 +40,10 @@ class FlexibleSimpleNN(nn.Module):
                      bias_init=self.bias_init)(x)
         return x.squeeze(-1) if self.output_size == 1 else x
 
-    def predict(self, weights, x_input):
-        if self.use_for_regression:
-            output = self.apply(weights, x_input)
-            prediction, precision = jnp.split(output, 2, axis=-1)
-        else:
-            predictions = self.apply(weights, x_input)
-            precision = jax.nn.softmax(predictions, axis=-1)
-            prediction = jnp.argmax(precision, axis=-1)
-        return prediction, precision
 
-
-
-def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn.relu,
+def build_model(hidden_layers=(50,), output_size=10, activation=nn.relu,
                 kernel_init=nn.initializers.lecun_normal(),
-                bias_init=nn.initializers.zeros, use_for_regression=False):
+                bias_init=nn.initializers.zeros):
     """
     Builds and initializes a neural network model based on specified configurations.
 
@@ -75,10 +60,6 @@ def build_model(key, x_train, hidden_layers=(50,), output_size=10, activation=nn
     Returns:
         tuple: The initialized model, the tree definition for parameter transformation, and a flattened parameter vector.
     """
-    
-    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init,
-                                      use_for_regression)
 
-    init_param = nnet_model.init(key, x_train)
-    param_vec, tree_def = ravel_pytree(init_param)
-    return nnet_model, tree_def, param_vec
+    nnet_model = FlexibleSimpleNN(hidden_layers, output_size, activation, kernel_init, bias_init)
+    return nnet_model

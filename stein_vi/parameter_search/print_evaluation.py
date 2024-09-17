@@ -1,12 +1,13 @@
 import pandas as pd
 import jax.numpy as jnp
 
-from src.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
+# TODO: IMPORTANT correct this function
+from stein_vi.metrics.validation_and_evaluation import (calculate_mse, calculate_mean_span_over_particles,
                                                    calculate_accuracy,
                                                    calculate_number_of_different_classified_by_particles,
                                                    get_most_common_class_over_particles,
                                                    get_most_common_class)
-from src.algorithm.svgd import DEFAULT_NUM_BATCHES
+from stein_vi.algorithm.svgd import DEFAULT_NUM_BATCHES
 
 
 def print_evaluation_regression_to_csv(name, parameter, true_output, test_predictions, test_precision):

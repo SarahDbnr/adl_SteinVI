@@ -3,7 +3,7 @@ import jax.numpy as jnp
 from jax import random
 from flax import linen as nn
 from jax.flatten_util import ravel_pytree
-from src.model.BNN_Model import FlexibleSimpleNN
+from run_stein_vi.model.BNN_Model import FlexibleSimpleNN
 from src.algorithm.get_posteriori import link_function
 from src.metrics.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
                                                    get_most_common_class_over_particles,get_most_common_class, compute_confidence_intervals_with_2_neurons)

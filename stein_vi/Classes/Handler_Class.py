@@ -4,28 +4,9 @@ class Handler:
     """
 
     rf_comparison: bool
-    summary_over_part: bool
 
-    plot_val_metric_over_iter: bool
-    plot_classification_detail: int
-    plot_val_aver_prec_over_iter: bool
-    plot_residual: bool
-    plot_loc_relation_scale: bool
-
-
-    def __init__(self, rf_comparison= False, summary_over_part= False, plot_val_metric_over_iter=False, plot_val_aver_prec_over_iter=False, plot_residual=False, plot_loc_relation_scale=False, plot_classification_detail=0):
-        self._full_training_print = False
-        self._reduced_training_print = True
-        self._no_training_print = False
+    def __init__(self, rf_comparison= False):
         self.rf_comparison = rf_comparison
-        self.summary_over_part = summary_over_part
-
-        self.plot_classification_detail = plot_classification_detail
-        self.plot_val_metric_over_iter = plot_val_metric_over_iter
-        self.plot_val_aver_prec_over_iter = plot_val_aver_prec_over_iter
-        self.plot_residual = plot_residual
-        self.plot_loc_relation_scale = plot_loc_relation_scale
-
 
     def set_training_print_mode(self, mode):
         """
@@ -48,4 +29,20 @@ class Handler:
             self._no_training_print = True
         else:
             raise ValueError("Invalid mode. Choose from 'full', 'reduced', or 'none'.")
+        
+    def set_evaluation_mode(self, mode):
+        if mode == 'full':
+            self._full_evaluation = True
+            self._minimal_evaluation = False
+        elif mode == 'minimal':
+            self._full_evaluation = False
+            self._minimal_evaluation = True
+            print("Warning: Minimal evaluation mode does not gather information while training for efficiency reasons.")
+        else:
+            raise ValueError("Invalid mode. Choose from 'full', or 'minimal'.")
+
+    @property
+    def minimal_evaluation(self):
+        return self._minimal_evaluation
+
 

@@ -1,15 +1,13 @@
 import jax
 import jax.numpy as jnp
-import matplotlib.pyplot as plt
 
+from stein_vi.algorithm.get_posteriori import link_function
 
-
-from src.algorithm.get_posteriori import link_function
 ALPHA = 0.05
 
 
 # Evaluate the particles by averaging the predictions and calculating the accuracy
-def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, true_output, model_regression):
+def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, true_output, model_regression, print_eva):
     """
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
@@ -29,11 +27,13 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, tree_def, x_input, 
         mse = calculate_mse(predictions.squeeze(), true_output)
         scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
         averaged_var = jnp.sqrt(scale).mean()
-        print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
+        if print_eva:
+            print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
-        print(f"\nAccuracy: {accuracy} ")
+        if print_eva:
+            print(f"\nAccuracy: {accuracy} ")
         return accuracy, None, predictions
 
 
@@ -119,7 +119,7 @@ def calculate_number_of_different_classified_by_particles(predictions):
     difference_classified_by_particles = []
     for i in range(num_input_values):
         unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
-        difference_classified_by_particles.append(col_counts.sum()-col_counts.max())
+        difference_classified_by_particles.append(col_counts.sum() - col_counts.max())
     return difference_classified_by_particles
 
 
@@ -179,5 +179,4 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, tree_def, out, dz):
 
     # Step 3: Compute the variance according to equation (3)
     variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(mean_star)
-    return(mean_star, variance_star)
-
+    return (mean_star, variance_star)

@@ -1,7 +1,6 @@
 import jax
 import math
-from src.data.data_handling import print_data_information, VAL_SPLIT
-
+from run_stein_vi.data.data_handling import print_data_information, VAL_SPLIT
 
 
 def generate_data(x):
@@ -64,5 +63,3 @@ def get_regression_toy_example(num_points, input_dimension=2):
     print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
 
     return x_train, y_train, x_val, y_val, x_test, y_test
-
-
