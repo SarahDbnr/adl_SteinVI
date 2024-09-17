@@ -24,7 +24,7 @@ def parameter_loop_regression(dataset, model, name):
     early_stopping = False
     batch_size = 0
     particle_batch_size = 0
-    num_iterations = 100
+    num_iterations = 10000
     init_value = 0.1
     decay_rate = 0.95
 

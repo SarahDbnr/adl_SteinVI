@@ -1,2 +1,0 @@
-name,num_particles,batch_size,num_iterations,stopped_at_iteration,kernel_length,warm_up_iterations_early_stopping,patience_early_stopping,min_delta_early_stopping,most_common_true_output,most_common_prediction,number_of_different_classified_by_particles,accuracy
-MNIST,5,0,200,200,0.05,40,15,0.005,1,1,1.8082,0.0
