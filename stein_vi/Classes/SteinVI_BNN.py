@@ -90,7 +90,7 @@ class SteinVI_BNN:
         # TODO: check
         if not self.use_for_regression:
             ValueError("This plot is only available for regression problems.")
-        plots.plot_residuals(self.predict_over_particles(z_test), y_test, num_particles=self.parameter.num_particles)
+        plots.plot_residuals(self.predict_over_particles(z_test)[0], y_test, num_particles=self.parameter.num_particles)
 
     def plot_location_in_relation_to_scale(self, z_test):
         if self.use_for_regression:

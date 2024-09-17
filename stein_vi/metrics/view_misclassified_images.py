@@ -10,19 +10,6 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data):
     5 random misclassified and 5 random right classified data examples.
     images will be shown.
 
-    Args:
-        out (SVGDState): State of the particels of the Stein VI optimization
-        nnet_model (nn.Module): _description_
-        tree_def (_type_): _description_
-        z_test (_type_): _description_
-        y_test (_type_): _description_
-        image_data (_type_): _description_
-    """
-"""
-    This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
-    5 random misclassified and 5 random right classified data examples.
-    images will be shown.
-
     Parameters:
     - out (): The output from the SVGD training, containing particles.
     - nnet_model: The neural network model used for predictions.
