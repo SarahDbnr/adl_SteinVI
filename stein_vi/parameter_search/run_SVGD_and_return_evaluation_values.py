@@ -222,7 +222,7 @@ def run_MNIST():
 
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    parameter_loop(mnist_dataset, use_for_regression=False, model=nnet_model, name="MNIST")
+    parameter_loop_multiclass(mnist_dataset, model=nnet_model, name="MNIST")
 
 
 def run_regression_toy_example():
@@ -233,7 +233,7 @@ def run_regression_toy_example():
 
     nnet_model = build_model(output_size=2, hidden_layers=(200, 70, 40))
 
-    parameter_loop(regression_toy_example, use_for_regression=True, model=nnet_model, name="Regression_toy_example")
+    parameter_loop_regression(regression_toy_example, model=nnet_model, name="Regression_toy_example")
 
 
 if __name__ == "__main__":
