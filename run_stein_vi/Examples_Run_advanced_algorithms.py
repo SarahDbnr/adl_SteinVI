@@ -89,7 +89,7 @@ def run_MNIST_ssvgd(info=False):
 
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.view_misclassified(z_test, y_test, image_data=True)
-
+#TODO: fix paricel batching
 def run_MNIST_quasi_SVN(info=False):
     """
     Run SVGD on the MNIST dataset for classification.
@@ -113,12 +113,11 @@ def run_MNIST_quasi_SVN(info=False):
         )
     nnet_model = build_model(output_size=10,hidden_layers=(200,10))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, optimizer=optimizer, batch_size=30000,num_iterations=30, num_particles=5,mode_training_print="full")
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, optimizer=optimizer, batch_size=30000,num_iterations=30, num_particles=9,mode_training_print="full", particle_batch_size=3)
 
     steinvi_svdg = train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="quasi_svn")
 
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.view_misclassified(z_test, y_test, image_data=True)
 if __name__ == "__main__":
-    #run_MNIST_ssvgd(info=True)
-    run_MNIST_plain_svgd()
+    run_MNIST_quasi_SVN()
