@@ -14,7 +14,7 @@ from sklearn.datasets import fetch_california_housing, load_diabetes, load_wine,
 
 def run_MNIST_GD(info=False):
     """
-    Run SVGD on the MNIST dataset for classification.
+    Run SVGD on the MNIST dataset for classification. With just standard gradient decent from the optax optimizer package.
 
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
@@ -41,7 +41,7 @@ def run_MNIST_GD(info=False):
 
 def run_MNIST_plain_svgd(info=False):
     """
-    Run SVGD on the MNIST dataset for classification.
+    Run SVGD on the MNIST dataset for classification. Without an optimizer from the optax package. Just perform plain gradient decent, based on the given learningrate.
 
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
@@ -67,7 +67,7 @@ def run_MNIST_plain_svgd(info=False):
 #TODO:Problem everything in the noise matrix gets 0
 def run_MNIST_ssvgd(info=False):
     """
-    Run SVGD on the MNIST dataset for classification.
+    Run sSVGD on the MNIST dataset for classification. 
 
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
@@ -92,7 +92,7 @@ def run_MNIST_ssvgd(info=False):
 #TODO: fix paricel batching
 def run_MNIST_quasi_SVN(info=False):
     """
-    Run SVGD on the MNIST dataset for classification.
+    Run quasi SVN on the MNIST dataset for classification. Here for the optax optimizer lbfgs is used.
 
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.

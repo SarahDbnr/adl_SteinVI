@@ -185,18 +185,20 @@ def plot_location_in_relation_to_scale(nnet_model, tree_def, out, z_test, num_pa
 
 
 def view_probabilities_classification(precisions_sample, predicted_class, true_class, ax=None):
-    """
-    Plots the probabilities for each class with error bars based on 5% and 95% quantiles.
+    """Plots or adds the probabilities for each class with the 95% quantile and .
     Additionally, shows the 25% to 75% quantile range in light blue with alpha=0.5.
     The predicted class is highlighted in green, and the true class is highlighted in dark blue.
 
-    Parameters:
-    - precisions_sample: Array of shape (num_particles, num_classes) containing the predicted probabilities
-      from different particles for a single sample.
-    - predicted_class: The class predicted by the model.
-    - true_class: The true class label of the sample.
-    - ax: The axis on which to plot. If None, a new figure and axis will be created.
+
+    Args:
+        precisions_sample (jax.numpy.ndarray): Array of shape (num_particles, num_classes) containing the predicted probabilities
+        predicted_class (jax.numpy.ndarray): Array with one element containing the predicted class
+        true_class (int): True class of the sample.
+        ax (matplotlib.axes._subplots.AxesSubplot, optional): Is the subplot where the probabilities are plotted. Defaults to None.
     """
+
+
+
     # Calculate mean of probabilities across particles
     means = precisions_sample.mean(axis=0)
 

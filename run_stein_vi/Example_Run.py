@@ -262,7 +262,7 @@ def run_iris(info=False):
     key = jax.random.PRNGKey(1)
     iris_dataset = load_iris()
     iris_dataset = apply_data_settings_sklearn(iris_dataset)
-    z_train, _, _, _, _, _ = iris_dataset
+    z_train, _, _, _, z_test, y_test = iris_dataset
 
     optimizer = adam(
         exponential_decay(
@@ -278,6 +278,7 @@ def run_iris(info=False):
 
     steinvi_svdg = train_with_stein_vi(steinvi_svdg, iris_dataset, key, algorithm="svgd")
     print(stein_vi.algorithm.random_forest.random_forest(dataset=iris_dataset))
+    steinvi_svdg.view_misclassified(z_test, y_test, image_data=False)
 
 #Sollte raus funktioniert nicht gut 
 # def run_california_housing(info=False):
@@ -373,6 +374,11 @@ def run_wine_quality(info=False):
 
 #TODO: Schauen ob der datensatz richtig geladen wird sehr schlecht bei Random forrest aber fur uns ganz ok
 def run_bike_sharing(info=False):
+    """Runs stein vi for the bike sharing dataset with specified parameters.
+
+    Args:
+        info (bool, optional): Specifies if a small overview of the dataset should be printed to the consol, includes e.g. the number of observations in the dataset. Defaults to False.
+    """
     if info:
         datasets_info.print_bike_sharing_dataset_info()
     bike_sharing_dataset = bike_sharing_datahandling()
