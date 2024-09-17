@@ -34,31 +34,32 @@ def parameter_loop_regression(dataset, model, name):
     array_init_value = [0.1, 0.2, 0.3, 0.4, 0.5]
     array_decay_rate = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5]
 
+    lowest_mse = jnp.inf
+
+    final_num_particles = 5
     for num_particles in array_num_particles:
-        lowest_mse = jnp.inf
-        final_num_particles = num_particles
         steinvi_svdg = initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
                                           use_for_regression=True)
         mse = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                   decay_rate)
         if mse < lowest_mse:
+            lowest_mse = mse
             final_num_particles = num_particles
     array_particle_batch_size = [0, round(final_num_particles / 2), round(final_num_particles / 3),
                                  round(final_num_particles / 4), round(final_num_particles / 5)]
+    final_batch_size = batch_size
     for batch_size in array_batch_size:
-        lowest_mse = jnp.inf
-        final_batch_size = batch_size
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, batch_size, particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
                                           use_for_regression=True)
         mse = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                   decay_rate)
         if mse < lowest_mse:
+            lowest_mse = mse
             final_batch_size = batch_size
+    final_particle_batch_size = particle_batch_size
     for particle_batch_size in array_particle_batch_size:
-        lowest_mse = jnp.inf
-        final_particle_batch_size = particle_batch_size
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
@@ -66,10 +67,10 @@ def parameter_loop_regression(dataset, model, name):
         mse = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                   decay_rate)
         if mse < lowest_mse:
+            lowest_mse = mse
             final_particle_batch_size = particle_batch_size
+    final_early_stopping = early_stopping
     for early_stopping in array_early_stopping:
-        lowest_mse = jnp.inf
-        final_early_stopping = early_stopping
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           final_particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
@@ -77,10 +78,10 @@ def parameter_loop_regression(dataset, model, name):
         mse = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                   decay_rate)
         if mse < lowest_mse:
+            lowest_mse = mse
             final_early_stopping = early_stopping
+    final_init_value = init_value
     for init_value in array_init_value:
-        lowest_mse = jnp.inf
-        final_init_value = init_value
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           final_particle_batch_size,
                                           num_iterations, final_early_stopping, init_value, decay_rate,
@@ -88,6 +89,7 @@ def parameter_loop_regression(dataset, model, name):
         mse = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                   decay_rate)
         if mse < lowest_mse:
+            lowest_mse = mse
             final_init_value = init_value
     for decay_rate in array_decay_rate:
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
@@ -116,31 +118,32 @@ def parameter_loop_multiclass(dataset, model, name):
     array_init_value = [0.1, 0.2, 0.3, 0.4, 0.5]
     array_decay_rate = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5]
 
+    highest_accuracy = -jnp.inf
+
+    final_num_particles = 5
     for num_particles in array_num_particles:
-        highest_accuracy = -jnp.inf
-        final_num_particles = num_particles
         steinvi_svdg = initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
                                           use_for_regression=False)
         accuracy = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                        decay_rate)
         if accuracy > highest_accuracy:
+            highest_accuracy = accuracy
             final_num_particles = num_particles
     array_particle_batch_size = [0, round(final_num_particles / 2), round(final_num_particles / 3),
                                  round(final_num_particles / 4), round(final_num_particles / 5)]
+    final_batch_size = batch_size
     for batch_size in array_batch_size:
-        highest_accuracy = -jnp.inf
-        final_batch_size = batch_size
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, batch_size, particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
                                           use_for_regression=False)
         accuracy = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                        decay_rate)
         if accuracy > highest_accuracy:
+            highest_accuracy = accuracy
             final_batch_size = batch_size
+    final_particle_batch_size = particle_batch_size
     for particle_batch_size in array_particle_batch_size:
-        highest_accuracy = -jnp.inf
-        final_particle_batch_size = particle_batch_size
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
@@ -148,10 +151,10 @@ def parameter_loop_multiclass(dataset, model, name):
         accuracy = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                        decay_rate)
         if accuracy > highest_accuracy:
+            highest_accuracy = accuracy
             final_particle_batch_size = particle_batch_size
+    final_early_stopping = early_stopping
     for early_stopping in array_early_stopping:
-        highest_accuracy = -jnp.inf
-        final_early_stopping = early_stopping
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           final_particle_batch_size,
                                           num_iterations, early_stopping, init_value, decay_rate,
@@ -159,10 +162,10 @@ def parameter_loop_multiclass(dataset, model, name):
         accuracy = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                        decay_rate)
         if accuracy > highest_accuracy:
+            highest_accuracy = accuracy
             final_early_stopping = early_stopping
+    final_init_value = init_value
     for init_value in array_init_value:
-        highest_accuracy = -jnp.inf
-        final_init_value = init_value
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
                                           final_particle_batch_size,
                                           num_iterations, final_early_stopping, init_value, decay_rate,
@@ -170,6 +173,7 @@ def parameter_loop_multiclass(dataset, model, name):
         accuracy = run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value,
                                                        decay_rate)
         if accuracy > highest_accuracy:
+            highest_accuracy = accuracy
             final_init_value = init_value
     for decay_rate in array_decay_rate:
         steinvi_svdg = initialize_steinvi(key, z_train, model, final_num_particles, final_batch_size,
