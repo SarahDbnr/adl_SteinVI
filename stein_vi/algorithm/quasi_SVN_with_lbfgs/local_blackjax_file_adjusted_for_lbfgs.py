@@ -3,6 +3,7 @@ from typing import Any, Callable, NamedTuple
 
 import jax
 import jax.numpy as jnp
+import optax
 from jax.flatten_util import ravel_pytree
 
 from blackjax.base import SamplingAlgorithm
@@ -20,11 +21,13 @@ __all__ = [
 class SVGDState(NamedTuple):
     particles: ArrayTree
     kernel_parameters: dict[str, ArrayTree]
+    opt_state: Any
 
 
 def init(
     initial_particles: ArrayLikeTree,
     kernel_parameters: dict[str, Any],
+    optimizer: optax.GradientTransformation,
 ) -> SVGDState:
     """
     Initializes Stein Variational Gradient Descent Algorithm.
@@ -35,16 +38,19 @@ def init(
         Initial set of particles to start the optimization
     kernel_paremeters
         Arguments to the kernel function
+    optimizer
+        Optax compatible optimizer, which conforms to the `optax.GradientTransformation` protocol
     """
-    return SVGDState(initial_particles, kernel_parameters)
+    opt_state = optimizer.init(initial_particles)
+    return SVGDState(initial_particles, kernel_parameters, opt_state)
 
 
-def build_kernel():
+def build_kernel(optimizer: optax.GradientTransformation):
     def kernel(
         state: SVGDState,
         grad_logdensity_fn: Callable,
+        logdensity_fn: Callable,
         kernel: Callable,
-        learning_rate:float,
         **grad_params,
     ) -> SVGDState:
         """
@@ -66,9 +72,9 @@ def build_kernel():
 
         Returns
         -------
-        SVGDState containing new particles and kernel parameters.
+        SVGDState containing new particles, optimizer state and kernel parameters.
         """
-        particles, kernel_params = state
+        particles, kernel_params, opt_state = state
         kernel = functools.partial(kernel, **kernel_params)
 
         def phi_star_summand(particle, particle_):
@@ -82,14 +88,17 @@ def build_kernel():
                 jax.vmap(lambda p: phi_star_summand(p, p_))(particles),
             )
         )(particles)
-        # Manual gradient descent update step
-        particles = jax.tree_util.tree_map(
-            lambda p, fg: p + learning_rate * fg,
-            particles,
-            functional_gradient,
-        )
+        #This part is new
+        def value_fn(particles):
+                # Use logdensity_fn to compute log-likelihood for minimization
+                log_likelihood = jnp.sum(jax.vmap(lambda p: logdensity_fn(p, **grad_params))(particles))
+                return log_likelihood  # No negation, since we're minimizing
+        value = value_fn(particles)
+        grad = functional_gradient
+        updates, opt_state = optimizer.update(grad, opt_state, params=particles, value=value, grad=grad, value_fn=value_fn)
+        particles = optax.apply_updates(particles, updates)
 
-        return SVGDState(particles, kernel_params)
+        return SVGDState(particles, kernel_params, opt_state)
 
     return kernel
 
@@ -123,13 +132,14 @@ def update_median_heuristic(state: SVGDState) -> SVGDState:
     This strategy is called the median heuristic.
     """
 
-    position, kernel_parameters = state
-    return SVGDState(position, median_heuristic(kernel_parameters, position))
+    position, kernel_parameters, opt_state = state
+    return SVGDState(position, median_heuristic(kernel_parameters, position), opt_state)
 
 
 def as_top_level_api(
     grad_logdensity_fn: Callable,
-    learning_rate: float,
+    logdensity_fn:Callable,
+    optimizer,
     kernel: Callable = rbf_kernel,
     update_kernel_parameters: Callable = update_median_heuristic,
 ):
@@ -139,6 +149,8 @@ def as_top_level_api(
     ----------
     grad_logdensity_fn
         gradient, or an estimate, of the target log density function to samples approximately from
+    optimizer
+        Optax compatible optimizer, which conforms to the `optax.GradientTransformation` protocol
     kernel
         positive semi definite kernel
     update_kernel_parameters
@@ -149,16 +161,16 @@ def as_top_level_api(
     A ``SamplingAlgorithm``.
     """
 
-    kernel_ = build_kernel()
+    kernel_ = build_kernel(optimizer)
 
     def init_fn(
         initial_position: ArrayLikeTree,
         kernel_parameters: dict[str, Any] = {"length_scale": 1.0},
     ):
-        return init(initial_position, kernel_parameters)
+        return init(initial_position, kernel_parameters, optimizer)
 
     def step_fn(state, **grad_params):
-        state = kernel_(state, grad_logdensity_fn, kernel,learning_rate, **grad_params)
+        state = kernel_(state, grad_logdensity_fn, logdensity_fn, kernel, **grad_params)
         return update_kernel_parameters(state)
 
     return SamplingAlgorithm(init_fn, step_fn)  # type: ignore[arg-type]

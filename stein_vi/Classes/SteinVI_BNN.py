@@ -32,14 +32,14 @@ class SteinVI_BNN:
     def __init__(self, key, x_train, nnet, use_for_regression,
                  optimizer=adam(0.01), mode_training_print='none', mode_evaluation='full', early_stopping=False,
                  image_data=False, batch_size=0, particle_batch_size=0,
-                 num_particles=10, num_iterations=100, rf_comparison=False):
+                 num_particles=10, num_iterations=100, rf_comparison=False, learning_rate=0.0001):
 
         self.handler = Handler(rf_comparison)
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
 
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size,
-                                   num_particles, num_iterations)
+                                   num_particles, num_iterations, learning_rate)
         self.use_for_regression = use_for_regression
         self.nnet = nnet
         self.nnet.predict = self.predict
