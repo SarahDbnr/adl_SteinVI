@@ -30,7 +30,7 @@ class SteinVI_BNN:
     evaluation_metrics_2: list = []
 
     def __init__(self, key, x_train, nnet, use_for_regression,
-                 optimizer=adam(0.01), mode_training_print='full', mode_evaluation='full', early_stopping=False,
+                 optimizer=adam(0.01), mode_training_print='none', mode_evaluation='full', early_stopping=False,
                  image_data=False, batch_size=0, particle_batch_size=0,
                  num_particles=10, num_iterations=100, rf_comparison=False):
 
