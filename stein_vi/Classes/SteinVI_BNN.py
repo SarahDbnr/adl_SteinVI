@@ -57,13 +57,17 @@ class SteinVI_BNN:
 
     def predict(self, weights, x_input):
         if self.use_for_regression:
-            output = self.nnet.apply(weights, x_input)
+            output = self.nnet.apply(self.tree_def(weights), x_input)
             prediction, precision = jnp.split(output, 2, axis=-1)
         else:
-            predictions = self.nnet.apply(weights, x_input)
+            predictions = self.nnet.apply(self.tree_def(weights), x_input)
             precision = jax.nn.softmax(predictions, axis=-1)
             prediction = jnp.argmax(precision, axis=-1)
         return prediction, precision
+
+    def predict_over_particles(self, input_data):
+        predictions, _ = jax.vmap(lambda p: self.predict(p, input_data))(self.state.particles)
+        return predictions.mean(0).squeeze()
 
     def plot_val_metric_over_iter(self):
         if self.handler.minimal_evaluation:
@@ -86,12 +90,11 @@ class SteinVI_BNN:
         # TODO: check
         if not self.use_for_regression:
             ValueError("This plot is only available for regression problems.")
-        plots.plot_residuals(self.nnet, self.tree_def, self.state, z_test, y_test,
-                             num_particles=self.parameter.num_particles)
+        plots.plot_residuals(self.predict_over_particles(z_test), y_test, num_particles=self.parameter.num_particles)
 
     def plot_location_in_relation_to_scale(self, z_test):
         if self.use_for_regression:
-            plots.plot_location_in_relation_to_scale(self.nnet, self.tree_def, self.state, z_test,
+            plots.plot_location_in_relation_to_scale(self.nnet, self.state, z_test,
                                                      num_particles=self.parameter.num_particles)
         else:
             ValueError("This plot is only available for regression problems.")
@@ -100,5 +103,4 @@ class SteinVI_BNN:
         if self.use_for_regression:
             ValueError("This plot is only available for classification problems.")
         else:
-            view_misclassified(self.state,self.nnet, self.tree_def, z_test, y_test,
-                               image_data=image_data)
+            view_misclassified(self.state, self.nnet, z_test, y_test, image_data=image_data)

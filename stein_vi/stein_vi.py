@@ -33,7 +33,7 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
         steinvi = set_up_quasi_SVN(steinvi)
     else:
         raise ValueError(f"Unsupported algorithm: {algorithm}")
-    
+
     steinvi = train_general_algorithm(
         steinvi=steinvi,
         dataset=dataset,
@@ -44,10 +44,10 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     print("\nFor Test Data:")
     if steinvi.use_for_regression:
         mse_test, averaged_precision_test, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test,
-                                                                                  print=True)
+                                                                                  print_out=True)
         print_summary_over_particles_regression(predictions_test)
     else:
-        accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print=True)
+        accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print_out=True)
         print_summary_over_particles_multiclass(predictions_test)
 
     return steinvi
