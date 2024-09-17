@@ -7,7 +7,7 @@ from jax.flatten_util import ravel_pytree
 
 from blackjax.base import SamplingAlgorithm
 from blackjax.types import ArrayLikeTree, ArrayTree
-from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction_old
+from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction
 
 __all__ = [
     "as_top_level_api",
@@ -89,10 +89,16 @@ def build_kernel():
         rng_key, rng_subkey = jax.random.split(rng_key)
         Nd = particles.shape[0] * particle_array.shape[1]
         random_normal_samples = jax.random.normal(rng_subkey, (Nd,))
-        noise = compute_stochastic_correction_old(particle_array, kernel, kernel_params, random_normal_samples)
+        noise = compute_stochastic_correction(particle_array, kernel, kernel_params, random_normal_samples)
         #noise = stochastic_component.compute_stochastic_correction(particle_array, kernel, kernel_params, rng_subkey)
         #noise = stochastic_component.compute_stochastic_correction(particle_array,kernel,kernel_params)  # Ensure noise shape matches particle_array
-
+        # jax.debug.print("v_stc_new:\n {}", noise)
+        # max_value = jnp.max(particles)
+        # min_value = jnp.min(particles)
+        # jax.debug.print("Max value of particles: {}", max_value)
+        # jax.debug.print("Min value of particles: {}", min_value)
+        #Values of the particels are so huge, that noise doesnt change anything, because it is to small
+        #Think if we use a learning rate and a scale factor should be non-problematic scale noise by 10000
         particles = jax.tree_util.tree_map(lambda p, u, n: p + (learning_rate) * u + jnp.sqrt(learning_rate) * n, particles, functional_gradient, noise)
 
         return SVGDState(particles, kernel_params)

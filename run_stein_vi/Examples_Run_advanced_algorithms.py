@@ -120,4 +120,5 @@ def run_MNIST_quasi_SVN(info=False):
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.view_misclassified(z_test, y_test, image_data=True)
 if __name__ == "__main__":
-    run_MNIST_quasi_SVN(info=True)
+    #run_MNIST_ssvgd(info=True)
+    run_MNIST_plain_svgd()

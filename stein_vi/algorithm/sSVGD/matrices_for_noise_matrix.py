@@ -56,18 +56,7 @@ def compute_stochastic_correction(particles, kernel_fn, kernel_params, random_no
 
     # Step 7: Multiply by sqrt(2)
     v_stc = jnp.sqrt(2) * v_stc  # Shape (n_particles, d)
-    # Check if v_stc contains only zeros using JAX operations
-    v_stc_is_zero = jnp.allclose(v_stc, 0)
-    #TODO: Check why everything is 0
-    # Use jax.lax.cond to perform the check functionally
-    result = jax.lax.cond(
-        v_stc_is_zero,
-        lambda _: "v_stc contains only zeros.",
-        lambda _: "v_stc contains non-zero elements.",
-        operand=None
-    )
-
-    print(result)
+    # jax.debug.print("v_stc_new:\n {}", v_stc)
     return v_stc  # Return shape (n_particles, d)
 
 

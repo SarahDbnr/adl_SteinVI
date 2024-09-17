@@ -1,20 +1,11 @@
 import jax
 import jax.numpy as jnp
 from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction, compute_stochastic_correction_old
-def rbf_kernel(x, y, length_scale=1.0):
-    return jnp.exp(-jnp.sum((x - y) ** 2) / (2 * length_scale ** 2))
-
-# def compute_permutation_matrix(N, d):
-#     Nd = N * d
-#     P = jnp.zeros((Nd, Nd))
-#     for i in range(d):
-#         for j in range(N):
-#             P = P.at[i * N + j, j * d + i].set(1)
-#     return P
+from stein_vi.algorithm.sSVGD.local_blackjax_file_with_adjustments_for_sSVGD import rbf_kernel
 
 def test_compute_stochastic_correction():
-    n_particles = 10
-    d = 10
+    n_particles = 5
+    d = 5
     particles = jax.random.normal(jax.random.PRNGKey(42), (n_particles, d))
 
     kernel_params = {'length_scale': 1.0}
