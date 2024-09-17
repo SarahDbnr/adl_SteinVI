@@ -277,7 +277,7 @@ def run_iris(info=False):
             staircase=True
         )
     )
-    nnet_model = build_model(output_size=3, hidden_layers=(20, 30, 20, 10))
+    nnet_model = build_model(output_size=3,hidden_layers=(20,30,20,10))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=30, optimizer=optimizer,
                                num_iterations=40, num_particles=10)
