@@ -31,7 +31,7 @@ def train_general_algorithm(steinvi, dataset, key):
     return steinvi
 
 
-def no_minibatch_training_loop(steinvi, dataset, key):
+def no_minibatch_training_loop(steinvi, dataset, key=None):
     """
     Training loop without mini-batching, using full data and particles.
 
@@ -55,8 +55,8 @@ def no_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
     return steinvi
 
 
@@ -88,8 +88,8 @@ def data_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
 
     return steinvi
 
@@ -125,8 +125,8 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
 
     return steinvi
 

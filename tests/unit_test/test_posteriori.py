@@ -17,7 +17,6 @@ def test_logp_unnormalized_posterior_regression(stein_vi_regression_example):
 
     params = stein_vi_regression_example.initial_particle_vector[0]
     nnet_model = stein_vi_regression_example.nnet
-    treedef = stein_vi_regression_example.tree_def
     # when
     likelihood = logp_unnormalized_posterior_regression(params, z_train, y_train, nnet_model)
     # then
@@ -33,7 +32,6 @@ def test_logp_unnormalized_posterior_multiclass(stein_vi_multiclass_example):
 
     params = stein_vi_multiclass_example.initial_particle_vector[0]
     nnet_model = stein_vi_multiclass_example.nnet
-    treedef = stein_vi_multiclass_example.tree_def
     # when
     likelihood = logp_unnormalized_posterior_mulitnomial(params, z_train, y_train, nnet_model)
     # then
