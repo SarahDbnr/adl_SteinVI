@@ -47,7 +47,7 @@ class SteinVI_BNN:
         self.initial_particles_and_kernel(key, x_train, num_particles)
 
         # default posteriori
-        self.log_posteriori = get_posteriori(self.nnet, self.tree_def, self.use_for_regression)
+        self.log_posteriori = get_posteriori(self.nnet, self.use_for_regression)
 
     def initial_particles_and_kernel(self, key, x_train, num_particles):
         init_param = self.nnet.init(key, x_train)
