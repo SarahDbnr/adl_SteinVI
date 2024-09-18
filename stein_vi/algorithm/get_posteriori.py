@@ -46,7 +46,6 @@ def logp_unnormalized_posterior_regression(kernel, dz, dy, nnet_model):
         dz (jax.numpy.ndarray): Input features.
         dy (jax.numpy.ndarray): Observed target values.
         nnet_model (flax.linen.Module): The neural network model to use for predictions.
-        treedef (jax.tree_util.PyTreeDef): The tree definition for parameter transformation.
 
     Returns:
         float: The log of the unnormalized posterior probability.
@@ -88,7 +87,6 @@ def logp_unnormalized_posterior_mulitnomial(kernel, dz, dy, nnet_model):
         dz (jax.numpy.ndarray): Input features.
         dy (jax.numpy.ndarray): Observed target values (class labels).
         nnet_model (flax.linen.Module): The neural network model to use for predictions.
-        treedef (jax.tree_util.PyTreeDef): The tree definition for parameter transformation.
 
     Returns:
         float: The log of the unnormalized posterior probability.

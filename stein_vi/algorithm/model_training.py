@@ -248,8 +248,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     """
     if stein_vi.handler._full_training_print:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
-    # TODO: reduced prints every 10th iteration is 10 the right choice?
-    elif stein_vi.handler._reduced_training_print and iteration % 10 == 0:
+    elif stein_vi.handler._reduced_training_print and iteration % (stein_vi.parameter.num_iterations/10) == 0:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
     else:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=False)
