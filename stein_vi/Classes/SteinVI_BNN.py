@@ -38,6 +38,10 @@ class SteinVI_BNN:
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
 
+        if len(x_train) < batch_size:
+            raise ValueError("Error: batch_size bigger then input data length")
+        if num_particles < particle_batch_size:
+            raise ValueError("Error: particle_batch_size bigger then number of particles")
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size,
                                    num_particles, num_iterations, learning_rate)
         self.use_for_regression = use_for_regression

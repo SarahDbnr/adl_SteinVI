@@ -185,16 +185,8 @@ def create_minibatches(batch_size, input_data, output_data, key):
     Returns:
         tuple: Minibatched input and output data.
     """
-    # TODO: this is unused, can we delete it
-    if batch_size != 0:
-        if batch_size is None:
-            num_batches = DEFAULT_NUM_BATCHES
-        elif len(input_data) < batch_size:
-            num_batches = DEFAULT_NUM_BATCHES
-            print("\n WARNING: Batch size to large default batch size will be used!")
-        else:
-            num_batches = len(input_data) // batch_size
-
+    if len(input_data) < batch_size:
+        raise ValueError("Error: batch_size bigger then input data length")
     num_batches = len(input_data) // batch_size
     input_data, output_data = shuffle_data(key, input_data, output_data)
     input_data = jnp.array_split(input_data, num_batches)
