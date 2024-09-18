@@ -4,21 +4,22 @@ import jax.numpy as jnp
 from stein_vi.metrics.plots_validation_metrics import view_probabilities_classification
 
 
-def view_misclassified(out, nnet_model, z_test, y_test, image_data):
+
+
+def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
     """
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
     5 random misclassified and 5 random right classified data examples.
-    images will be shown.
 
-    Parameters:
-    - out (): The output from the SVGD training, containing particles.
-    - nnet_model: The neural network model used for predictions.
-    - tree_def: The tree structure used by the JAX model.
-    - z_test: The test dataset input.
-    - y_test: The true labels for the test dataset.
-    - key: JAX random key for initialization.
-    - image_data: If the data is image data or not
+    Args:
+        out (SVGDState???): State of the particles of the Stein VI optimization
+        nnet_model (flax.linen.Module): Underlying neural network of the training process. 
+        z_test (jax.numpy.ndarray): Input features to the model.
+        y_test (jax.numpy.ndarray): True output labels for the given input.
+        image_data (bool): Describes if it is image data or not.If it is image data the image will be shown next to the probabilites.
+        key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
     """
+    
     # Get predictions and precisions from all particles
     predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_test))(out.particles)
 
@@ -32,8 +33,6 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data):
     misclassified_indices = jnp.where(predicted_classes != y_test)[0]
     correctly_classified_indices = jnp.where(predicted_classes == y_test)[0]
 
-    # Shuffle and select 5 random indices from each
-    key = jax.random.PRNGKey(1)
     key, subkey1, subkey2 = jax.random.split(key, 3)
 
     # Handle misclassified indices

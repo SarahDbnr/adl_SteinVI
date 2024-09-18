@@ -98,7 +98,8 @@ def build_kernel():
         # jax.debug.print("Max value of particles: {}", max_value)
         # jax.debug.print("Min value of particles: {}", min_value)
         #Values of the particels are so huge, that noise doesnt change anything, because it is to small
-        #Think if we use a learning rate and a scale factor should be non-problematic scale noise by 10000
+        #Think if we use a learning rate and a scale factor should be non-problematic scale noise by 10000, the elements in the kernel which is used to create the random samples only has values between 0 and 1 so
+        #they are very small dont make a difference
         particles = jax.tree_util.tree_map(lambda p, u, n: p + (learning_rate) * u + jnp.sqrt(learning_rate) * n, particles, functional_gradient, noise)
 
         return SVGDState(particles, kernel_params)

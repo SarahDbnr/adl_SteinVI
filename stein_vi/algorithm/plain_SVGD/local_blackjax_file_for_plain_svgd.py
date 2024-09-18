@@ -50,9 +50,7 @@ def build_kernel():
     ) -> SVGDState:
         """
         Performs one step of Stein Variational Gradient Descent.
-
         See Algorithm 1 of :cite:p:`liu2016stein`.
-
         Parameters
         ----------
         state

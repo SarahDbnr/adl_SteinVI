@@ -94,7 +94,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
     return steinvi
 
 
-# Particle minibatching: Use the full dataset but split particles into minibatches
+#TODO: Particle minibatching: Use the full dataset but split particles into minibatches (do we need this?)
 def particle_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on the particles while using the full dataset.

@@ -12,9 +12,9 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_outpu
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
     Args:
-        out (object): Output object containing particles representing different model parameters.
-        nnet_model (object): The neural network model used for making predictions.
-        tree_def (object): Tree structure used for parameter transformation in JAX.
+        out (SVGD_State???): Output object containing particles representing different model parameters.
+        nnet_model (flax.linen.Module): The neural network model used for making predictions.
+        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
         x_input (jax.numpy.ndarray): Input features to the model.
         true_output (jax.numpy.ndarray): True output labels or values for the given input.
         model_regression (bool): A flag indicating whether the model is used for regression or classification.
@@ -162,10 +162,10 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, out, dz):
     Based on the equations (1), (2) and (3).
 
     Args:
-        nnet_model (object): The neural network model used for predictions.
-        tree_def (object): Tree structure used for parameter transformation in JAX.
-        out (object): Output from the model prediction, containing particles.
-        dz (array): dataset of input features.
+        nnet_model flax.linen.Module): Underlying neural network of the training process. 
+        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
+        out (SVGDState???): Output from the training process, containing the state of the particles.
+        dz (jax.numpy.ndarray???): dataset of input features.
     """
     predictions, precision = jax.vmap(lambda p: nnet_model.predict(p, dz))(out.particles)
     predictions = predictions.squeeze()

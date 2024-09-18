@@ -3,18 +3,19 @@ import math
 from run_stein_vi.data.data_handling import print_data_information, VAL_SPLIT
 
 
-def generate_data(x):
+def generate_data(x, key = jax.random.PRNGKey(1)):
     """
     Generates output data for a given input matrix x using a specific polynomial function with noise.
 
     Args:
         x (jax.numpy.ndarray): An array of shape (n_samples, n_features) where each row represents a sample
                                with features used to compute the output.
+        key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
 
     Returns:
         jax.numpy.ndarray: An array of shape (n_samples,) containing the computed outputs with added noise.
     """
-    key = jax.random.PRNGKey(1)
+    
     x1 = x[:, 0]
     x2 = x[:, 1]
     function_outputs = x1 ** 3 - x2 ** 3 + 0.5 * x1 * x2
@@ -22,7 +23,7 @@ def generate_data(x):
     return function_outputs + noise
 
 
-def get_regression_toy_example(num_points, input_dimension=2):
+def get_regression_toy_example(num_points, input_dimension=2, key = jax.random.PRNGKey(1)):
     """
     Generates a synthetic regression dataset based on a specified polynomial function with added noise,
     and splits it into training, validation, and test sets.
@@ -30,6 +31,7 @@ def get_regression_toy_example(num_points, input_dimension=2):
     Args:
         num_points (int): Total number of data points to generate.
         input_dimension (int, optional): Number of input features for each data point. Defaults to 2.
+        key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
 
     Returns:
         tuple: A tuple containing six elements:
@@ -40,7 +42,7 @@ def get_regression_toy_example(num_points, input_dimension=2):
                - x_test (jax.numpy.ndarray): Test data features.
                - y_test (jax.numpy.ndarray): Test data outputs.
     """
-    key = jax.random.PRNGKey(1)
+    
     # Split the number of points into training and testing
     num_train = math.floor(0.8 * num_points)
     num_test = num_points - num_train
