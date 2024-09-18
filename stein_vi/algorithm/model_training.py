@@ -257,13 +257,14 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
 
     if stein_vi.parameter.early_stopping:
         patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
+            current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter, stein_vi.use_for_regression
         )
 
     return stein_vi, best_eval_metric, patience_counter
 
 
-def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
+def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter, regression):
+    # TODO: add back to svgd and Stein_vi class since depends on evaluation type
     """
     Implements early stopping by comparing validation metrics over training iterations.
 
@@ -276,9 +277,16 @@ def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter
     Returns:
         tuple: Updated patience counter and best metric value.
     """
-    if current_metrics < best_metrics + parameter.min_delta_early_stopping:
-        patience_counter = patience_counter + 1
+    if regression:
+        if current_metrics > best_metrics - parameter.min_delta_early_stopping:
+            patience_counter = patience_counter + 1
+        else:
+            patience_counter = 0
+            best_metrics = current_metrics
     else:
-        patience_counter = 0
-        best_metrics = current_metrics
+        if current_metrics < best_metrics + parameter.min_delta_early_stopping:
+            patience_counter = patience_counter + 1
+        else:
+            patience_counter = 0
+            best_metrics = current_metrics
     return patience_counter, best_metrics
