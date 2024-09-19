@@ -18,18 +18,18 @@ def get_posteriori(nnet_model, regression):
     """
     if regression:
         @jax.jit
-        def logp_model(params, dz, dy):
+        def logp_model(weights, dz, dy):
             return logp_unnormalized_posterior_regression(
-                params,
+                weights,
                 nnet_model=nnet_model,
                 dz=dz,
                 dy=dy,
             )
     else:
         @jax.jit
-        def logp_model(params, dz, dy):
+        def logp_model(weights, dz, dy):
             return logp_unnormalized_posterior_mulitnomial(
-                params,
+                weights,
                 nnet_model=nnet_model,
                 dz=dz,
                 dy=dy,
@@ -37,12 +37,12 @@ def get_posteriori(nnet_model, regression):
     return logp_model
 
 
-def logp_unnormalized_posterior_regression(kernel, dz, dy, nnet_model):
+def logp_unnormalized_posterior_regression(weights, dz, dy, nnet_model):
     """
     Computes the log of the unnormalized posterior probability for a regression problem, using a Gaussian prior and likelihood.
 
     Args:
-        kernel (jax.numpy.ndarray): Neural network parameters.
+        weights (jax.numpy.ndarray): Neural network parameters.
         dz (jax.numpy.ndarray): Input features.
         dy (jax.numpy.ndarray): Observed target values.
         nnet_model (flax.linen.Module): The neural network model to use for predictions.
@@ -50,9 +50,9 @@ def logp_unnormalized_posterior_regression(kernel, dz, dy, nnet_model):
     Returns:
         float: The log of the unnormalized posterior probability.
     """
-    log_prior = jnp.sum(norm.logpdf(kernel, loc=0, scale=1))
+    log_prior = jnp.sum(norm.logpdf(weights, loc=0, scale=1))
 
-    prediction_mean, precision = nnet_model.predict(kernel, dz)
+    prediction_mean, precision = nnet_model.predict(weights, dz)
     location = prediction_mean.squeeze()
     scale = get_scale(precision)
 
@@ -78,12 +78,12 @@ def link_function(x):
     return jnp.log(1 + jnp.abs(x))
 
 
-def logp_unnormalized_posterior_mulitnomial(kernel, dz, dy, nnet_model):
+def logp_unnormalized_posterior_mulitnomial(weigths, dz, dy, nnet_model):
     """
     Computes the log of the unnormalized posterior probability for a multinomial classification problem, using a Gaussian prior and a multinomial likelihood.
 
     Args:
-        kernel (jax.numpy.ndarray): Neural network parameters.
+        weigths (jax.numpy.ndarray): Neural network parameters.
         dz (jax.numpy.ndarray): Input features.
         dy (jax.numpy.ndarray): Observed target values (class labels).
         nnet_model (flax.linen.Module): The neural network model to use for predictions.
@@ -91,9 +91,9 @@ def logp_unnormalized_posterior_mulitnomial(kernel, dz, dy, nnet_model):
     Returns:
         float: The log of the unnormalized posterior probability.
     """
-    log_prior = jnp.sum(stats.norm.logpdf(kernel, loc=0, scale=1))
+    log_prior = jnp.sum(stats.norm.logpdf(weigths, loc=0, scale=1))
 
     dy = dy.ravel()
-    _, log_probs = nnet_model.predict(kernel, dz)
+    _, log_probs = nnet_model.predict(weigths, dz)
     log_likelihood = jnp.sum(log_probs[jnp.arange(dy.shape[0]), dy])
     return log_prior + log_likelihood

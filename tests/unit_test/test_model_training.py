@@ -79,20 +79,20 @@ def test_get_evaluation_and_apply_early_stopping_logic(capsys, stein_vi_regressi
     best_eval_metric = 0
     stein_vi_regression_example.handler.set_training_print_mode(mode_training_print)
 
-    stein_vi_regression_example = set_up_svgd(stein_vi_regression_example)
+    set_up_svgd(stein_vi_regression_example)
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                               z_train, y_train)
     keep_len_1 = len(stein_vi_regression_example.evaluation_metrics_1)
     keep_len_2 = len(stein_vi_regression_example.evaluation_metrics_2)
 
     # when
-    stein_vi_evaluated, best_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+    best_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
         stein_vi_regression_example, z_val, y_val, iteration, best_eval_metric,
         patience_counter)
     # then
     assert best_metric == best_eval_metric
-    assert len(stein_vi_evaluated.evaluation_metrics_1) == keep_len_1 + 1
-    assert len(stein_vi_evaluated.evaluation_metrics_2) == keep_len_2 + 1
+    assert len(stein_vi_regression_example.evaluation_metrics_1) == keep_len_1 + 1
+    assert len(stein_vi_regression_example.evaluation_metrics_2) == keep_len_2 + 1
     assert patience_counter == 0
     capture = capsys.readouterr()
     check_no_print = (capture == no_print)
