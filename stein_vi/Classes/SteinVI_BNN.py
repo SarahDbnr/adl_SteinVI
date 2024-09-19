@@ -106,12 +106,13 @@ class SteinVI_BNN:
         # TODO: should this allow different distibutions in the future
         self.initial_particle_vector = jax.random.normal(key, shape=(num_particles,) + param_vec.shape)
 
-    def predict(self, weights, x_input):
+    def predict(self, weights, x_input, use_softmax=False):
         """Generates predictions using the neural network with the provided weights and input data
 
         Args:
             weights (dict):  A dictionary containing the weights (parameters) of the neural network, where the keys correspond to different parts of the model (e.g., layers).
             x_input (jax.numpy.ndarray): The input data for which predictions are to be made.
+            use_softmax (bool): True is log_softmax should be used for multiclass
 
         Returns:
             tuple: A tuple containing:
@@ -121,6 +122,10 @@ class SteinVI_BNN:
         if self.use_for_regression:
             output = self.nnet.apply(self.tree_def(weights), x_input)
             prediction, precision = jnp.split(output, 2, axis=-1)
+        elif use_softmax:
+            predictions = self.nnet.apply(self.tree_def(weights), x_input)
+            precision = jax.nn.log_softmax(predictions, axis=-1)
+            prediction = jnp.argmax(precision, axis=-1)
         else:
             predictions = self.nnet.apply(self.tree_def(weights), x_input)
             precision = jax.nn.softmax(predictions, axis=-1)

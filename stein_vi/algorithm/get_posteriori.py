@@ -94,6 +94,6 @@ def logp_unnormalized_posterior_mulitnomial(weigths, dz, dy, nnet_model):
     log_prior = jnp.sum(stats.norm.logpdf(weigths, loc=0, scale=1))
 
     dy = dy.ravel()
-    _, log_probs = nnet_model.predict(weigths, dz)
+    _, log_probs = nnet_model.predict(weigths, dz, use_softmax=True)
     log_likelihood = jnp.sum(log_probs[jnp.arange(dy.shape[0]), dy])
     return log_prior + log_likelihood
