@@ -10,11 +10,15 @@ from run_stein_vi.model.BNN_Model import build_model
 from stein_vi.stein_vi import train_with_stein_vi
 from stein_vi.algorithm.random_forest import random_forest
 from run_stein_vi.data.data_handling import apply_data_settings_keras, apply_data_settings_sklearn
-from tests.unit_test.fixtures import mnist_dataset,diabetes_dataset
 
-def test_random_forest_vs_svgd_mnist(mnist_dataset):
-    """Test Random Forest vs SVGD on the MNIST dataset for classification."""
     
+
+@pytest.mark.filterwarnings("ignore::DeprecationWarning:jax")
+def test_random_forest_vs_svgd_mnist():
+    """Test Random Forest vs SVGD on the MNIST dataset for classification."""
+    mnist_data = mnist.load_data()
+    mnist_dataset = apply_data_settings_keras(mnist_data, with_flattening=False)
+
     # Unpack the dataset
     X_train, y_train, X_val, y_val, X_test, y_test = mnist_dataset
 
@@ -56,9 +60,12 @@ def test_random_forest_vs_svgd_mnist(mnist_dataset):
         f"SVGD accuracy ({svgd_accuracy}) should be within 10% of Random Forest accuracy ({rf_accuracy})"
 
 
-def test_random_forest_vs_svgd_diabetes(diabetes_dataset):
+@pytest.mark.filterwarnings("ignore::DeprecationWarning:jax")
+def test_random_forest_vs_svgd_diabetes():
     """Test Random Forest vs SVGD on the Diabetes dataset for regression."""
-    
+    diabetes_data = load_diabetes()
+    diabetes_dataset = apply_data_settings_sklearn(diabetes_data)
+
     # Unpack the dataset
     X_train, y_train, X_val, y_val, X_test, y_test = diabetes_dataset
 

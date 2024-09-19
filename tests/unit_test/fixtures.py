@@ -78,17 +78,3 @@ def synthetic_regression_dataset():
 
     return (jnp.array(X_train), jnp.array(y_train), jnp.array(X_val), jnp.array(y_val), jnp.array(X_test), jnp.array(y_test))
 
-# @pytest.fixture
-# def mnist_dataset():
-#     """Loads and preprocesses the MNIST dataset for classification."""
-#     mnist_data = mnist.load_data()
-#     dataset = apply_data_settings_keras(mnist_data, with_flattening=False)
-#     return dataset
-
-
-# @pytest.fixture
-# def diabetes_dataset():
-#     """Loads and preprocesses the Diabetes dataset for regression."""
-#     diabetes_data = load_diabetes()
-#     dataset = apply_data_settings_sklearn(diabetes_data)
-#     return dataset
