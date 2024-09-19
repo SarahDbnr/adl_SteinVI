@@ -1,20 +1,13 @@
 Bayesian Neural Networks through Stein VI in JAX
-===============================================
-
-Bayesian Neural Networks through Stein VI in JAX
-===============================================
+================================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents
-    :glob:
 
-   stein_vi/index
+   Getting Started <get_started>
+   Source <stein_vi/index>
 
-   Classes <stein_vi/Classes/index>
-   Algorithm <stein_vi/algorithm/index>
-   Metrics <stein_vi/metrics/index>
-   Parameter Search <stein_vi/parameter_search/index>
 
 
 
@@ -32,4 +25,4 @@ The code is organized into modules covering various components of BNN and Stein 
 
 Getting Started
 ---------------
-To begin with this project, see the :doc:`index`.
+To begin with this project, see the :doc:`Getting Started <get_started>`.

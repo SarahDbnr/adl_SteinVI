@@ -1,5 +1,5 @@
 random_forest
-=======================
+=============
 
 .. automodule:: stein_vi.algorithm.random_forest
    :members:
