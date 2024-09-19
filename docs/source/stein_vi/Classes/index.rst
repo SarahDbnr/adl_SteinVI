@@ -6,4 +6,4 @@ Classes
 
    Handler_Class
    Parameter_Class
-   SteinVI_BNN
+   SteinVI_BNN_Class
