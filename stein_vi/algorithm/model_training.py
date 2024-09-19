@@ -10,6 +10,7 @@ def train_general_algorithm(steinvi, dataset, key):
     General training function for neural networks that supports different mini-batching modes for both data and particles.
 
     Args:
+        steinvi: ...
         dataset (tuple): A tuple containing training and validation datasets (z_train, y_train, z_val, y_val, etc.).
         key (jax.random.PRNGKey): JAX random key for managing randomness.
 
@@ -26,9 +27,7 @@ def train_general_algorithm(steinvi, dataset, key):
     else:
         training_loop_fn = data_and_particle_minibatch_training_loop
 
-    steinvi = training_loop_fn(steinvi, dataset, key)
-
-    return steinvi
+    training_loop_fn(steinvi, dataset, key)
 
 
 def no_minibatch_training_loop(steinvi, dataset, key=None):
@@ -52,12 +51,11 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
         steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train)  # Full data and full particles
 
         if steinvi.handler._full_evaluation:
-            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+            best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
                 break
-    return steinvi
 
 
 def data_minibatch_training_loop(steinvi, dataset, key):
@@ -85,13 +83,11 @@ def data_minibatch_training_loop(steinvi, dataset, key):
             steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch)
 
         if steinvi.handler._full_evaluation:
-            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+            best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
                 break
-
-    return steinvi
 
 
 #TODO: Particle minibatching: Use the full dataset but split particles into minibatches (do we need this?)
@@ -103,7 +99,6 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
         steinvi : ...
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
 
     Returns:
         tuple: Updated model state and two lists of evaluation metrics.
@@ -122,13 +117,11 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
             steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train, particle_indices=particle_indices)
 
         if steinvi.handler._full_evaluation:
-            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+            best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
                 break
-
-    return steinvi
 
 
 # Both data and particle minibatching
@@ -140,7 +133,6 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
         steinvi : ...
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
 
     Returns:
         tuple: Updated model state and two lists of evaluation metrics.
@@ -161,13 +153,11 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
                 steinvi.state = steinvi.update_fn(steinvi.state, z_batch, y_batch, particle_indices=particle_indices)
 
         if steinvi.handler._full_evaluation:
-            steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
+            best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
-
-    return steinvi
 
 
 # Utility function to create minibatches
@@ -260,7 +250,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
             current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter, stein_vi.use_for_regression
         )
 
-    return stein_vi, best_eval_metric, patience_counter
+    return best_eval_metric, patience_counter
 
 
 def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter, regression):

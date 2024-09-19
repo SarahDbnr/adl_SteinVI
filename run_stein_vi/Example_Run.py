@@ -40,7 +40,7 @@ def run_regression_toy_example():
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, optimizer=optimizer)
 
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, regression_toy_example, key, algorithm="svgd")
+    train_with_stein_vi(steinvi_svdg, regression_toy_example, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.plot_residuals(z_test, y_test)
@@ -73,15 +73,14 @@ def run_MNIST(info=False):
     )
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model,image_data=True, use_for_regression=False, optimizer=optimizer, batch_size=300,num_iterations=3, num_particles=5)
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
+                               batch_size=300, num_iterations=3, num_particles=5)
 
-
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
+    train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
     print(random_forest(dataset=mnist_dataset))
-    
 
 
 def run_MNIST_minibatched_particles(info=False):
@@ -142,15 +141,16 @@ def run_FashionMNIST(info=False):
     )
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model,image_data=True, use_for_regression=False, optimizer=optimizer, batch_size=300,num_iterations=30, num_particles=5)
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
+                               batch_size=300, num_iterations=30, num_particles=5)
 
-
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, fashion_mnist, key, algorithm="svgd")
+    train_with_stein_vi(steinvi_svdg, fashion_mnist, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test,key=key)
+    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
     print(random_forest(dataset=fashion_mnist))
+
 
 def run_CIFAR10(info=False):
     """
@@ -177,13 +177,15 @@ def run_CIFAR10(info=False):
     )
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False,image_data=True, batch_size=3000,optimizer=optimizer,num_iterations=10, num_particles=3)
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, image_data=True, batch_size=3000,
+                               optimizer=optimizer, num_iterations=10, num_particles=3)
 
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, cifar10, key, algorithm="svgd")
+    train_with_stein_vi(steinvi_svdg, cifar10, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
     print(random_forest(dataset=cifar10))
+
 
 def run_20_newsgroups(info=False):
     """
@@ -212,12 +214,13 @@ def run_20_newsgroups(info=False):
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=3000, optimizer=optimizer,
                                num_iterations=10, num_particles=3)
 
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, newsgroup_dataset, key, algorithm="svgd")
+    train_with_stein_vi(steinvi_svdg, newsgroup_dataset, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test,key=key)
+    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
     print(random_forest(dataset=newsgroup_dataset))
+
 
 def run_adult_income(info=False):
     """
@@ -280,13 +283,13 @@ def run_iris(info=False):
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=30, optimizer=optimizer,
                                num_iterations=40, num_particles=10)
-    
+
     train_with_stein_vi(steinvi_svdg, iris_dataset, key, algorithm="svgd")
     print(random_forest(dataset=iris_dataset))
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-def run_diabetes(info=False): 
+def run_diabetes(info=False):
     """
     Run SVGD on the Diabetes dataset for regression.
 
@@ -316,7 +319,8 @@ def run_diabetes(info=False):
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
     print(random_forest(dataset=dataset, task_type='regression'))
 
-#TODO: auch sehr schlecht
+
+# TODO: auch sehr schlecht
 
 def run_wine_quality(info=False):
     """
@@ -361,7 +365,7 @@ def run_bike_sharing(info=False):
     bike_sharing_dataset = bike_sharing_datahandling()
     dataset = apply_data_settings_sklearn(bike_sharing_dataset)
     z_train, _, _, _, _, _ = dataset
-    
+
     key = jax.random.PRNGKey(1)
 
     optimizer = adam(
@@ -381,4 +385,4 @@ def run_bike_sharing(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST()
+    run_regression_toy_example()

@@ -36,8 +36,6 @@ def set_up_svgd(steinvi_svdg):
 
     steinvi_svdg.evaluate_fn = evaluate_model_fn
 
-    return steinvi_svdg
-
 
 def initialize_svgd_state(svi):
     """
@@ -83,9 +81,7 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     new_particles = state.particles.at[particle_indices].set(updated_batch_state.particles)
     new_optimizer_state = update_optimizer_state(state.opt_state, updated_batch_state, particle_indices)
 
-    state = state._replace(particles=new_particles, opt_state=new_optimizer_state)
-
-    return state
+    state._replace(particles=new_particles, opt_state=new_optimizer_state)
 
 
 def get_batched_optimizer_state(optimizer_state, indices):

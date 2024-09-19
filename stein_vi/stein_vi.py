@@ -34,19 +34,19 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
         Tests scores for a given data test dataset.
     """
     if algorithm == "svgd":
-        steinvi = set_up_svgd(steinvi)
+        set_up_svgd(steinvi)
     elif algorithm == "plain_svgd":
-        steinvi = set_up_plain_svgd(steinvi)
+        set_up_plain_svgd(steinvi)
     elif algorithm == "ssvgd":
-        steinvi = set_up_ssvgd(steinvi)
+        set_up_ssvgd(steinvi)
     elif algorithm == "quasi_svn":
         if steinvi.parameter.particle_batch_size != 0:
             raise ValueError(f"Particle batching is not supported for {algorithm}")
-        steinvi = set_up_quasi_SVN(steinvi)
+        set_up_quasi_SVN(steinvi)
     else:
         raise ValueError(f"Unsupported algorithm: {algorithm}")
 
-    steinvi = train_general_algorithm(
+    train_general_algorithm(
         steinvi=steinvi,
         dataset=dataset,
         key=key
