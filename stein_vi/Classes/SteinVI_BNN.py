@@ -78,6 +78,10 @@ class SteinVI_BNN:
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
 
+        if len(x_train) < batch_size:
+            raise ValueError("Error: batch_size bigger then input data length")
+        if num_particles < particle_batch_size:
+            raise ValueError("Error: particle_batch_size bigger then number of particles")
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size,
                                    num_particles, num_iterations, learning_rate)
         self.use_for_regression = use_for_regression
@@ -87,7 +91,7 @@ class SteinVI_BNN:
         self.initial_particles_and_kernel(key, x_train, num_particles)
 
         # default posteriori
-        self.log_posteriori = get_posteriori(self.nnet, self.tree_def, self.use_for_regression)
+        self.log_posteriori = get_posteriori(self.nnet, self.use_for_regression)
 
     def initial_particles_and_kernel(self, key, x_train, num_particles):
         """"Initializes the particle vectors and kernel structure for the Bayesian Neural Network.

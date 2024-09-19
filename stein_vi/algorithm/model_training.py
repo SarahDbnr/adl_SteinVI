@@ -31,7 +31,7 @@ def train_general_algorithm(steinvi, dataset, key):
     return steinvi
 
 
-def no_minibatch_training_loop(steinvi, dataset, key):
+def no_minibatch_training_loop(steinvi, dataset, key=None):
     """
     Training loop without mini-batching, using full data and particles.
 
@@ -55,8 +55,8 @@ def no_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
     return steinvi
 
 
@@ -88,8 +88,8 @@ def data_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
 
     return steinvi
 
@@ -125,8 +125,8 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
             steinvi, best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
-        if patience_counter >= steinvi.parameter.patience_early_stopping:
-            break
+            if patience_counter >= steinvi.parameter.patience_early_stopping:
+                break
 
     return steinvi
 
@@ -185,16 +185,8 @@ def create_minibatches(batch_size, input_data, output_data, key):
     Returns:
         tuple: Minibatched input and output data.
     """
-    # TODO: this is unused, can we delete it
-    if batch_size != 0:
-        if batch_size is None:
-            num_batches = DEFAULT_NUM_BATCHES
-        elif len(input_data) < batch_size:
-            num_batches = DEFAULT_NUM_BATCHES
-            print("\n WARNING: Batch size to large default batch size will be used!")
-        else:
-            num_batches = len(input_data) // batch_size
-
+    if len(input_data) < batch_size:
+        raise ValueError("Error: batch_size bigger then input data length")
     num_batches = len(input_data) // batch_size
     input_data, output_data = shuffle_data(key, input_data, output_data)
     input_data = jnp.array_split(input_data, num_batches)
@@ -256,8 +248,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     """
     if stein_vi.handler._full_training_print:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
-    # TODO: reduced prints every 10th iteration is 10 the right choice?
-    elif stein_vi.handler._reduced_training_print and iteration % 10 == 0:
+    elif stein_vi.handler._reduced_training_print and iteration % (stein_vi.parameter.num_iterations/10) == 0:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
     else:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=False)
@@ -266,13 +257,14 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
 
     if stein_vi.parameter.early_stopping:
         patience_counter, best_eval_metric = early_stopping_fn(
-            current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter
+            current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter, stein_vi.use_for_regression
         )
 
     return stein_vi, best_eval_metric, patience_counter
 
 
-def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter):
+def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter, regression):
+    # TODO: add back to svgd and Stein_vi class since depends on evaluation type
     """
     Implements early stopping by comparing validation metrics over training iterations.
 
@@ -285,9 +277,16 @@ def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter
     Returns:
         tuple: Updated patience counter and best metric value.
     """
-    if current_metrics < best_metrics + parameter.min_delta_early_stopping:
-        patience_counter = patience_counter + 1
+    if regression:
+        if current_metrics > best_metrics - parameter.min_delta_early_stopping:
+            patience_counter = patience_counter + 1
+        else:
+            patience_counter = 0
+            best_metrics = current_metrics
     else:
-        patience_counter = 0
-        best_metrics = current_metrics
+        if current_metrics < best_metrics + parameter.min_delta_early_stopping:
+            patience_counter = patience_counter + 1
+        else:
+            patience_counter = 0
+            best_metrics = current_metrics
     return patience_counter, best_metrics
