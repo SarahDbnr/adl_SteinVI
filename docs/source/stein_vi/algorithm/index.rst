@@ -6,5 +6,5 @@ Algorithm
 
    get_posteriori
    model_training
-   random_forest
    svgd
+   random_forest

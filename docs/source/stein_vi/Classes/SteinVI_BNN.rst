@@ -1,5 +1,5 @@
 SteinVI_BNN
-=======================
+===========
 
 .. automodule:: stein_vi.Classes.SteinVI_BNN
    :members:

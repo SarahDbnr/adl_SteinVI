@@ -14,10 +14,10 @@ def random_forest(dataset, task_type='classification'):
         
     Returns:
         dict: A dictionary containing the computed performance metrics based on the task type. For classification, this includes:
-              - 'Test Accuracy': Accuracy score on the test set.
+              'Test Accuracy': Accuracy score on the test set.
               For regression, this includes:
-              - 'Test MSE': Mean Squared Error on the test set.
-              - 'Test Precision': Standard deviation of the predicted values.
+              'Test MSE': Mean Squared Error on the test set.
+              'Test Precision': Standard deviation of the predicted values.
     """
 
     # Unpack the dataset directly into 6 variables

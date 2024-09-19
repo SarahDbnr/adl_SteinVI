@@ -1,5 +1,5 @@
 svgd
-=======================
+====
 
 .. automodule:: stein_vi.algorithm.svgd
    :members:
