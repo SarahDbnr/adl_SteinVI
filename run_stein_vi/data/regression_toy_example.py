@@ -1,6 +1,6 @@
 import jax
 import math
-from run_stein_vi.data.data_handling import print_data_information, VAL_SPLIT
+from run_stein_vi.data.data_handling import print_data_information
 
 
 def generate_data(x, key = jax.random.PRNGKey(1)):
@@ -23,7 +23,7 @@ def generate_data(x, key = jax.random.PRNGKey(1)):
     return function_outputs + noise
 
 
-def get_regression_toy_example(num_points, input_dimension=2, key = jax.random.PRNGKey(1)):
+def get_regression_toy_example(num_points, input_dimension=2, key = jax.random.PRNGKey(1), val_split=0.1):
     """
     Generates a synthetic regression dataset based on a specified polynomial function with added noise,
     and splits it into training, validation, and test sets.
@@ -32,6 +32,7 @@ def get_regression_toy_example(num_points, input_dimension=2, key = jax.random.P
         num_points (int): Total number of data points to generate.
         input_dimension (int, optional): Number of input features for each data point. Defaults to 2.
         key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
+        val_split (float): Fraction of the data used for validation during training.
 
     Returns:
         tuple: A tuple containing six elements:
@@ -58,7 +59,7 @@ def get_regression_toy_example(num_points, input_dimension=2, key = jax.random.P
     y_train = generate_data(x_train)
     y_test = generate_data(x_test)
 
-    val_size = math.ceil(len(x_train) * VAL_SPLIT)
+    val_size = math.ceil(len(x_train) * val_split)
     x_val, y_val = x_train[-val_size:], y_train[-val_size:]
     x_train, y_train = x_train[:-val_size], y_train[:-val_size]
 
