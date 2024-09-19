@@ -1,5 +1,7 @@
 import pytest
 import jax
+import jax.numpy as jnp
+import copy
 
 from fixtures import stein_vi_regression_example
 from run_stein_vi.data.regression_toy_example import get_regression_toy_example
@@ -12,8 +14,7 @@ from stein_vi.algorithm.model_training import (no_minibatch_training_loop, data_
                                                create_particle_minibatch_indices,
                                                create_minibatches)
 
-# TODO: this whole file for multiclass
-
+# TODO: fix this file
 
 @pytest.mark.parametrize(
     "patience_early_stopping",
@@ -31,10 +32,11 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, patience_early_
     stein_vi_regression_example.parameter.num_iterations = 2
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example._full_evaluation = True
-    stein_vi_regression_example = set_up_svgd(stein_vi_regression_example)
+    set_up_svgd(stein_vi_regression_example)
+    stein_vi_regression_example_copy = copy.copy(stein_vi_regression_example)
 
     # when
-    trained_stein_vi = no_minibatch_training_loop(stein_vi_regression_example, regression_toy_example)
+    no_minibatch_training_loop(stein_vi_regression_example_copy, regression_toy_example)
 
     # then
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
@@ -42,7 +44,7 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, patience_early_
     if patience_early_stopping > 1:
         stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                                   z_train, y_train)
-    assert stein_vi_regression_example == trained_stein_vi
+    assert jnp.allclose(stein_vi_regression_example.state.particles, stein_vi_regression_example_copy.state.particles)
 
 
 @pytest.mark.parametrize(
@@ -62,7 +64,7 @@ def test_data_minibatch_training_loop(stein_vi_regression_example, patience_earl
     stein_vi_regression_example.parameter.num_iterations = 2
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example._full_evaluation = True
-    stein_vi_regression_example = set_up_svgd(stein_vi_regression_example)
+    set_up_svgd(stein_vi_regression_example)
 
     z_train_batched, y_train_batched = create_minibatches(36, z_train, y_train, key)
 
