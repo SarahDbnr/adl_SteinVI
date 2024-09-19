@@ -74,7 +74,7 @@ def run_MNIST(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=3, num_particles=5)
+                               batch_size=300, num_iterations=30, num_particles=5,mode_evaluation="full", mode_training_print="full")
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -300,7 +300,7 @@ def run_diabetes(info=False):
         datasets_info.print_diabetes_dataset_info()
     diabetes = load_diabetes()
     dataset = apply_data_settings_sklearn(diabetes)
-    z_train, _, _, _, _, _ = dataset
+    z_train, _, _, _, z_test, y_test = dataset
 
     key = jax.random.PRNGKey(1)
 
@@ -318,6 +318,9 @@ def run_diabetes(info=False):
                                num_iterations=100, num_particles=10)
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
     print(random_forest(dataset=dataset, task_type='regression'))
+    steinvi_svdg.plot_val_metric_over_iter()
+    steinvi_svdg.plot_residuals(z_test, y_test)
+    steinvi_svdg.plot_location_in_relation_to_scale(z_test)
 
 
 # TODO: auch sehr schlecht
@@ -385,4 +388,4 @@ def run_bike_sharing(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    run_diabetes()
