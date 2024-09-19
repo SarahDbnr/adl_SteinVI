@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>print_evaluation &mdash; Bayesian Neural Networks through Stein VI in JAX 23.09.2024 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=e83d94da" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2f4b7aac"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Parameter Search" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Bayesian Neural Networks through Stein VI in JAX
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../get_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collaborative-work">Collaborative Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#project-structure">Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#advanced-usage">Advanced Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#mini-batching">Mini-batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#early-stopping">Early Stopping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Source</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../stein_vi.html">SteinVI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stein_vi.html#stein_vi.stein_vi.train_with_stein_vi"><code class="docutils literal notranslate"><span class="pre">train_with_stein_vi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Classes/index.html">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../Classes/Handler_Class.html">Parameter_Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Classes/Parameter_Class.html">Parameter_Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Classes/SteinVI_BNN.html">SteinVI_BNN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithm/index.html">Algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/get_posteriori.html">get_posteriori</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/get_posteriori.html#stein_vi.algorithm.get_posteriori.get_posteriori"><code class="docutils literal notranslate"><span class="pre">get_posteriori()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/get_posteriori.html#stein_vi.algorithm.get_posteriori.get_scale"><code class="docutils literal notranslate"><span class="pre">get_scale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/get_posteriori.html#stein_vi.algorithm.get_posteriori.link_function"><code class="docutils literal notranslate"><span class="pre">link_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/get_posteriori.html#stein_vi.algorithm.get_posteriori.logp_unnormalized_posterior_mulitnomial"><code class="docutils literal notranslate"><span class="pre">logp_unnormalized_posterior_mulitnomial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/get_posteriori.html#stein_vi.algorithm.get_posteriori.logp_unnormalized_posterior_regression"><code class="docutils literal notranslate"><span class="pre">logp_unnormalized_posterior_regression()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/model_training.html">model_training</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.create_minibatches"><code class="docutils literal notranslate"><span class="pre">create_minibatches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.create_particle_minibatch_indices"><code class="docutils literal notranslate"><span class="pre">create_particle_minibatch_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.data_and_particle_minibatch_training_loop"><code class="docutils literal notranslate"><span class="pre">data_and_particle_minibatch_training_loop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.data_minibatch_training_loop"><code class="docutils literal notranslate"><span class="pre">data_minibatch_training_loop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.early_stopping_fn"><code class="docutils literal notranslate"><span class="pre">early_stopping_fn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.get_evaluation_and_apply_early_stopping_logic"><code class="docutils literal notranslate"><span class="pre">get_evaluation_and_apply_early_stopping_logic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.no_minibatch_training_loop"><code class="docutils literal notranslate"><span class="pre">no_minibatch_training_loop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.particle_minibatch_training_loop"><code class="docutils literal notranslate"><span class="pre">particle_minibatch_training_loop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.shuffle_data"><code class="docutils literal notranslate"><span class="pre">shuffle_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/model_training.html#stein_vi.algorithm.model_training.train_general_algorithm"><code class="docutils literal notranslate"><span class="pre">train_general_algorithm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/svgd.html">svgd</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.get_batched_optimizer_state"><code class="docutils literal notranslate"><span class="pre">get_batched_optimizer_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.initialize_svgd_state"><code class="docutils literal notranslate"><span class="pre">initialize_svgd_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.particle_minibatching"><code class="docutils literal notranslate"><span class="pre">particle_minibatching()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.set_up_svgd"><code class="docutils literal notranslate"><span class="pre">set_up_svgd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/plots_validation_metrics.html">plots_validation_metrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_and_save_evaluation_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_location_in_relation_to_scale"><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_residuals"><code class="docutils literal notranslate"><span class="pre">plot_residuals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.view_probabilities_classification"><code class="docutils literal notranslate"><span class="pre">view_probabilities_classification()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/validation_and_evaluation.html">validation_and_evaluation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.calculate_accuracy"><code class="docutils literal notranslate"><span class="pre">calculate_accuracy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.calculate_mean_span_over_particles"><code class="docutils literal notranslate"><span class="pre">calculate_mean_span_over_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.calculate_mse"><code class="docutils literal notranslate"><span class="pre">calculate_mse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.calculate_number_of_different_classified_by_particles"><code class="docutils literal notranslate"><span class="pre">calculate_number_of_different_classified_by_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.compute_confidence_intervals_with_2_neurons"><code class="docutils literal notranslate"><span class="pre">compute_confidence_intervals_with_2_neurons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.get_evaluation_metrics_over_predictions"><code class="docutils literal notranslate"><span class="pre">get_evaluation_metrics_over_predictions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.get_most_common_class"><code class="docutils literal notranslate"><span class="pre">get_most_common_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.get_most_common_class_over_particles"><code class="docutils literal notranslate"><span class="pre">get_most_common_class_over_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_multiclass"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_multiclass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_regression()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/view_misclassified_images.html">view_misclassified_images</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../metrics/view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Parameter Search</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">print_evaluation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#stein_vi.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv"><code class="docutils literal notranslate"><span class="pre">print_evaluation_multiclass_to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stein_vi.parameter_search.print_evaluation.print_evaluation_regression_to_csv"><code class="docutils literal notranslate"><span class="pre">print_evaluation_regression_to_csv()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bayesian Neural Networks through Stein VI in JAX</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Source</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Parameter Search</a></li>
+      <li class="breadcrumb-item active">print_evaluation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/stein_vi/parameter_search/print_evaluation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stein_vi.parameter_search.print_evaluation">
+<span id="print-evaluation"></span><h1>print_evaluation<a class="headerlink" href="#module-stein_vi.parameter_search.print_evaluation" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="stein_vi.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv">
+<span class="sig-prename descclassname"><span class="pre">stein_vi.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_multiclass_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.parameter_search.print_evaluation.print_evaluation_multiclass_to_csv" title="Link to this definition"></a></dt>
+<dd><p>Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the model or experiment for identifying the file.</p></li>
+<li><p><strong>parameter</strong> (<em>object</em>) – Object containing SVGD training parameters like batch size, num_particles,
+kernel length, and early stopping parameters.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – The true output values (ground truth) for the test set.</p></li>
+<li><p><strong>test_predictions</strong> (<em>jax.numpy.ndarray</em>) – Predicted class probabilities from the SVGD model over particles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function saves the evaluation to a CSV file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stein_vi.parameter_search.print_evaluation.print_evaluation_regression_to_csv">
+<span class="sig-prename descclassname"><span class="pre">stein_vi.parameter_search.print_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_regression_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_precision</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.parameter_search.print_evaluation.print_evaluation_regression_to_csv" title="Link to this definition"></a></dt>
+<dd><p>Saves evaluation metrics for a regression model into a CSV file. If the file already exists, it appends the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the model or experiment for identifying the file.</p></li>
+<li><p><strong>parameter</strong> (<em>object</em>) – Object containing SVGD training parameters like batch size, num_particles,
+kernel length, and early stopping parameters.</p></li>
+<li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – The true output values (ground truth) for the test set.</p></li>
+<li><p><strong>test_predictions</strong> (<em>jax.numpy.ndarray</em>) – Predicted values from the SVGD model over particles.</p></li>
+<li><p><strong>test_precision</strong> (<em>jax.numpy.ndarray</em>) – Predicted precision values from the model over particles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function saves the evaluation to a CSV file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Parameter Search" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Sarah Deubner, Kilian Runnwerth and Luke-Liam Bergmeier.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
