@@ -9,12 +9,12 @@ tqdm = "*"
 typing = "*"
 scikit-learn = "*"
 tensorflow = "*"
-pytest = "*"
 pandas = "*"
 
 [dev-packages]
 sphinx = "*"
 myst-parser = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.10"

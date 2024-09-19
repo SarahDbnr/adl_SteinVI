@@ -41,51 +41,37 @@ The project supports two installation modes:
   ```
 
 3. **Activate the Environment**  
-Once the dependencies are installed, activate the environment by running:
-
-  ```
-  pipenv shell
-  ```
+   Once the dependencies are installed, activate the environment by running:
+   ```
+   pipenv shell
+   ```
 
 4. **Set PYTHONPATH**  
-  Ensure that `PYTHONPATH` is set to the root directory of the project for proper module resolution. You can add the following to your shell configuration (e.g., `.bashrc`, `.zshrc`):
-  ```
-  export PYTHONPATH=$(pwd)
-  ```
+   Ensure that `PYTHONPATH` is set to the root directory of the project for proper module resolution. You can add the following to your shell configuration (e.g., `.bashrc`, `.zshrc`):
+   ```
+   export PYTHONPATH=$(pwd)
+   ```
 
 ## Project Structure
   ```
 .
-├── data/                                      # Contains data handling scripts and dataset information
-│   ├── data_handling.py                       # Functions to handle datasets
-│   ├── datasets_info.py                       # Contains metadata or functions to retrieve dataset info
-│   └── regression_toy_example.py              # Example script for running regression tasks on toy datasets
-├── model/                                     # Main folder for the Bayesian Neural Network (BNN) model implementation
-│   ├── BNN_Model.py                           # Defines the Bayesian Neural Network class
-│   ├── Example_Run_parameter_search.py        # Script for running parameter search experiments
-│   ├── Example_Run.py                         # Script for running example training experiments
-│   ├── Examples_Run_advanced_algorithms.py    # Advanced algorithms for running example BNNs
-│   ├── stein_vi/                              # Implementation of Stein Variational Inference (SVI) algorithms
-│   │   ├── algorithm/
-│   │   │   ├── plain_SVGD.py                  # Implementation of plain Stein Variational Gradient Descent (SVGD)
-│   │   │   ├── SVGD.py                        # Main SVGD implementation script
-│   │   │   └── quasi_SVN_with_lbfgs.py        # Quasi-Stochastic Variational Newton with L-BFGS optimizer
-│   │   ├── Classes/
-│   │   │   ├── Handler_Class.py               # Class to handle operations like training and evaluation
-│   │   │   ├── Parameter_Class.py             # Class for managing parameters
-│   │   │   └── SteinVI_BNN.py                 # Core class for BNN using Stein Variational Gradient Descent
-│   │   ├── metrics/
-│   │   │   ├── plots_validation_metrics.py    # Script for plotting validation metrics
-│   │   │   ├── validation_and_evaluation.py   # Contains functions for model evaluation
-│   │   │   └── view_misclassified_images.py   # Helper function to view misclassified images
-│   │   ├── svgd_plots/                        # Folder for visualizations related to SVGD training process
-│   │   └── stein_vi.py                        # Script defining main training and evaluation loop for the BNN
-│   └── run_stein_vi/                          # Scripts for running SVGD experiments
-│       └── run_SVGD.py                        # Main entry point for running SVGD on datasets like MNIST
-├── tests/                                     # Folder containing test scripts for the project
-└── docs/                                      # Documentation folder
-    ├── get_started.md                         # Guide for setting up and running the project
-    └── index.rst                              # Sphinx documentation index file
+stein_vi/
+├── algorithm/
+│   ├── get_posteriori.py
+│   ├── model_training.py
+│   ├── random_forest.py
+│   └── svgd.py
+├── Classes/
+│   ├── Handler_Class.py
+│   ├── Parameter_Class.py
+│   └── SteinVI_BNN_Class.py
+├── metrics/
+│   ├── plots_validation_metrics.py
+│   ├── validation_and_evaluation.py
+│   └── view_misclassified_images.py
+├── parameter_search/
+│   └── print_evaluation.py
+└── stein_vi.py
   ```
 ## Quick Start
 

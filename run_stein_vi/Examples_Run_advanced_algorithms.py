@@ -1,7 +1,7 @@
 from optax import sgd, lbfgs
 import jax
 import tensorflow as tf
-from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
+from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 from stein_vi.stein_vi import train_with_stein_vi
 import data.datasets_info as datasets_info

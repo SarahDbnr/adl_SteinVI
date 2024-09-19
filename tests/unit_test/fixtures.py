@@ -6,7 +6,7 @@ from optax import adam, exponential_decay
 
 from run_stein_vi.data.data_handling import apply_data_settings_keras
 
-from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
+from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 
 
