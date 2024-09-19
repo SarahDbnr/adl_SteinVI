@@ -18,6 +18,7 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_outpu
         x_input (jax.numpy.ndarray): Input features to the model.
         true_output (jax.numpy.ndarray): True output labels or values for the given input.
         model_regression (bool): A flag indicating whether the model is used for regression or classification.
+        print_eva: ...
 
     Returns:
         tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).
