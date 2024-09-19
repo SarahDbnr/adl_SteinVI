@@ -28,7 +28,7 @@ def init(
     kernel_parameters: dict[str, Any],
 ) -> SVGDState:
     """
-    Initializes Stein Variational Gradient Descent Algorithm.
+    Initializes the stochastic Stein Variational Gradient Descent Algorithm.
 
     Parameters
     ----------
@@ -49,9 +49,10 @@ def build_kernel():
         **grad_params,
     ) -> SVGDState:
         """
-        Performs one step of Stein Variational Gradient Descent.
+        Performs one step of stochastic Stein Variational Gradient Descent.
 
-        See Algorithm 1 of :cite:p:`liu2016stein`.
+        See Algorithm 2 of "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman
+
 
         Parameters
         ----------
@@ -146,7 +147,7 @@ def as_top_level_api(
     kernel: Callable = rbf_kernel,
     update_kernel_parameters: Callable = update_median_heuristic,
 ):
-    """Implements the (basic) user interface for the svgd algorithm :cite:p:`liu2016stein`.
+    """Implements the (basic) user interface for the ssvgd algorithm "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.
 
     Parameters
     ----------

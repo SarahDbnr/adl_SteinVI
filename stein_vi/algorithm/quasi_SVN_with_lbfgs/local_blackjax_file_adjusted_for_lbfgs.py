@@ -54,9 +54,10 @@ def build_kernel(optimizer: optax.GradientTransformation):
         **grad_params,
     ) -> SVGDState:
         """
-        Performs one step of Stein Variational Gradient Descent.
+        Performs one step of quasi Stein Variational Newton. Here we use the basic structure of the BlackJax file svgd.py but we adjust the file so that the 
+        second order optimizer LBFGS can be used. This process takes a lot longer than normal SVGD.
 
-        See Algorithm 1 of :cite:p:`liu2016stein`.
+        See Algorithms 3 "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman
 
         Parameters
         ----------
@@ -143,7 +144,7 @@ def as_top_level_api(
     kernel: Callable = rbf_kernel,
     update_kernel_parameters: Callable = update_median_heuristic,
 ):
-    """Implements the (basic) user interface for the svgd algorithm :cite:p:`liu2016stein`.
+    """Implements the (basic) user interface for the quasi SVN algorithm.
 
     Parameters
     ----------
