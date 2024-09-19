@@ -43,3 +43,7 @@ source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
 }
+
+html_theme_options = {
+    'collapse_navigation': False,  # Keep the sidebar open and expand the current section
+}

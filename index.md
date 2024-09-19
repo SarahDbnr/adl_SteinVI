@@ -12,15 +12,22 @@ This repository employs a Stein Variational Inference (Stein VI) approach to app
 :caption: Documentation:
 
 get_started
-src/BNN_Model
-src/Parameter_Class
-src/run_SVGD
-src/get_posteriori
-src/svgd
-src/data_handling
-src/datasets_info
-src/plots_validation_metrics
-src/print_evaluation
-src/regression_toy_example
-src/run_SVGD_and_return_evaluation_values
-src/validation_and_evaluation
+
+stein_vi
+
+stein_vi/Classes/Handler_Class
+stein_vi/Classes/Parameter_Class
+stein_vi/Classes/SteinVI_BNN
+
+stein_vi/algorithm/get_posteriori
+stein_vi/algorithm/model_training
+stein_vi/algorithm/random_forest
+stein_vi/algorithm/svgd
+
+stein_vi/metrics/plots_validation_metrics
+stein_vi/metrics/validation_and_evaluation
+stein_vi/metrics/view_misclassified_images
+
+stein_vi/parameter_search/print_evaluation
+stein_vi/parameter_search/run_SVGD_and_return_evaluation_values
+

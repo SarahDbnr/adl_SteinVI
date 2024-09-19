@@ -10,7 +10,7 @@ def train_general_algorithm(steinvi, dataset, key):
     General training function for neural networks that supports different mini-batching modes for both data and particles.
 
     Args:
-        steinvi: ...
+        steinvi (class)
         dataset (tuple): A tuple containing training and validation datasets (z_train, y_train, z_val, y_val, etc.).
         key (jax.random.PRNGKey): JAX random key for managing randomness.
 
@@ -35,7 +35,7 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
     Training loop without mini-batching, using full data and particles.
 
     Args:
-        steinvi : ...
+        steinvi :
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
 
@@ -63,7 +63,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
     Training loop with mini-batching on the data while using the full particle set.
 
     Args:
-        steinvi : ...
+        steinvi
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
         early_stopping_fn (callable): Function to apply early stopping criteria.
@@ -96,7 +96,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
     Training loop with mini-batching on the particles while using the full dataset.
 
     Args:
-        steinvi : ...
+        steinvi
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
 

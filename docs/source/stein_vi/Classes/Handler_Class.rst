@@ -1,7 +1,7 @@
-Parameter\_Class module
+Handler_Class
 =======================
 
-.. automodule:: src.Parameter_Class
+.. automodule:: stein_vi.Classes.Handler_Class
    :members:
    :undoc-members:
    :no-index:
