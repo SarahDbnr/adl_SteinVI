@@ -1,6 +1,6 @@
 import pytest
 import jax.numpy as jnp
-from run_stein_vi.data.data_handling import apply_data_settings_keras, apply_data_settings_sklearn 
+from run_stein_vi.data.data_handling import apply_data_settings_keras, apply_data_settings_sklearn, print_data_information
 from sklearn.utils import Bunch
 
 
@@ -210,3 +210,33 @@ def test_apply_data_settings_sklearn_shuffling():
     assert not jnp.array_equal(y_test1, y_test3), "Shuffling with different keys should produce different test labels"
 
 
+
+def test_print_data_information_basic(capfd):
+    """Test the basic functionality of print_data_information by checking the printed shapes."""
+    key = jax.random.PRNGKey(0)
+
+    # Mock dataset with 80 samples for training, 10 for validation, and 20 for testing
+    x_train = jax.random.normal(key, (80, 10))  # 80 samples, 10 features
+    y_train = jax.random.randint(key, minval=0, maxval=2, shape=(80,))  # Binary labels for training
+
+    x_val = jax.random.normal(key, (10, 10))  # 10 samples, 10 features
+    y_val = jax.random.randint(key, minval=0, maxval=2, shape=(10,))  # Binary labels for validation
+
+    x_test = jax.random.normal(key, (20, 10))  # 20 samples, 10 features
+    y_test = jax.random.randint(key, minval=0, maxval=2, shape=(20,))  # Binary labels for testing
+
+    # Call the function and capture the printed output
+    print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
+
+    # Capture the stdout
+    captured = capfd.readouterr()
+
+    # Expected output
+    expected_output = (
+        f"Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}\n"
+        f"Validation data shape: {x_val.shape}, Validation labels shape: {y_val.shape}\n"
+        f"Test data shape: {x_test.shape}, Test labels shape: {y_test.shape}\n"
+    )
+
+    # Check if the output matches the expected output
+    assert captured.out == expected_output, "The printed output does not match the expected shapes."
