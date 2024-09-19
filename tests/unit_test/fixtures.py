@@ -77,4 +77,3 @@ def synthetic_regression_dataset():
     X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
     return (jnp.array(X_train), jnp.array(y_train), jnp.array(X_val), jnp.array(y_val), jnp.array(X_test), jnp.array(y_test))
-

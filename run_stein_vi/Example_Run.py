@@ -388,5 +388,4 @@ def run_bike_sharing(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes()
-
+    run_MNIST()

@@ -18,7 +18,6 @@ def test_random_forest_vs_svgd_mnist():
     """Test Random Forest vs SVGD on the MNIST dataset for classification."""
     mnist_data = mnist.load_data()
     mnist_dataset = apply_data_settings_keras(mnist_data, with_flattening=False)
-
     # Unpack the dataset
     X_train, y_train, X_val, y_val, X_test, y_test = mnist_dataset
 
@@ -65,7 +64,6 @@ def test_random_forest_vs_svgd_diabetes():
     """Test Random Forest vs SVGD on the Diabetes dataset for regression."""
     diabetes_data = load_diabetes()
     diabetes_dataset = apply_data_settings_sklearn(diabetes_data)
-
     # Unpack the dataset
     X_train, y_train, X_val, y_val, X_test, y_test = diabetes_dataset
 
