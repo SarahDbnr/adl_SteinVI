@@ -53,7 +53,10 @@ The project supports two installation modes:
    ```
 
 ## Project Structure
-  ```
+
+The `stein_vi` directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD) and related algorithms. This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, and parameter management.
+
+```
 .
 stein_vi/
 ├── algorithm/
@@ -72,7 +75,24 @@ stein_vi/
 ├── parameter_search/
 │   └── print_evaluation.py
 └── stein_vi.py
-  ```
+```
+
+The `run_stein_vi` directory provides ready-to-run examples that use the core logic from the `stein_vi` package. These scripts demonstrate how to use the SVGD-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.
+
+```
+.
+run_stein_vi/
+├── data/
+│   ├── data_handling.py
+│   ├── datasets_info.py
+│   └── regression_toy_example.py
+├── model/
+│   └── BNN_Model.py
+├── Example_Run.py
+├── Example_Run_advanced_algorithms.py
+└── Example_Run_parameter_search.py
+```
+
 ## Quick Start
 
 1. Clone the repository:
