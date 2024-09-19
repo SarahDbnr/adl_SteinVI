@@ -37,7 +37,6 @@ autoclass_content = "class"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-#html_static_path = ['_static']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -46,4 +45,13 @@ source_suffix = {
 
 html_theme_options = {
     'collapse_navigation': False,  # Keep the sidebar open and expand the current section
+    'style_external_links': True,  # Improve external link styling
+    'navigation_depth': 4,         # Set how many levels of TOC to display in the sidebar
+    'prev_next_buttons_location': 'bottom',  # Display navigation buttons at the bottom
+    'body_max_width': '80%',       # Use 80% of the available width, adjust as needed
 }
+
+html_static_path = ['_static']
+html_css_files = [
+    'custom.css',  # Custom CSS for additional width control
+]

@@ -11,7 +11,6 @@ scikit-learn = "*"
 tensorflow = "*"
 pytest = "*"
 pandas = "*"
-myst-parser = "*"
 
 [dev-packages]
 sphinx = "*"
