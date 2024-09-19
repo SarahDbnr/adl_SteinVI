@@ -54,7 +54,7 @@ def run_MNIST(info=False):
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
     """
-    key = jax.random.PRNGKey(1)
+    key = jax.random.PRNGKey(3000)
 
     if info:
         datasets_info.print_mnist_dataset_info()
@@ -71,10 +71,10 @@ def run_MNIST(info=False):
             staircase=True
         )
     )
-    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
+    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 50, 25))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=3, num_particles=5)
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model,image_data=True, use_for_regression=False, optimizer=optimizer,
+                                num_iterations=3, num_particles=5,mode_training_print="full", mode_evaluation="full")
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -385,4 +385,4 @@ def run_bike_sharing(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    run_MNIST()
