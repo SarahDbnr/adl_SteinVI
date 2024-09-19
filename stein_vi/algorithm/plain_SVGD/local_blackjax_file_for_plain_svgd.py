@@ -49,7 +49,9 @@ def build_kernel():
         **grad_params,
     ) -> SVGDState:
         """
-        Performs one step of Stein Variational Gradient Descent.
+        Performs one step of Stein Variational Gradient Descent. Here just the part with the optimizer was removed to only be able to do plain gradient decent like proposed in the 
+        paper 'Liu2016 stein' so no optax optimizers are needed and supported since this function always performs gradient decent.
+        
         See Algorithm 1 of :cite:p:`liu2016stein`.
         Parameters
         ----------

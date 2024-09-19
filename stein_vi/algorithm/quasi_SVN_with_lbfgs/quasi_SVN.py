@@ -7,7 +7,20 @@ from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_ov
 
 
 def set_up_quasi_SVN(steinvi_svdg):
+    """Sets up the quasi Stein Variational Newton process for training a Bayesian Neural Network (BNN).
 
+    This function initializes the state for SVGD, including defining the update function for SVGD and the evaluation function
+    for assessing the model's performance.
+
+    This function uses the need the optax optimizer lbfgs to function properly. The results often take much longer to compute and are not really better.
+
+    Args:
+        steinvi_svdg (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network, 
+        training parameters, particles, and the log posterior function.
+
+    Returns:
+        SteinVI_BNN: The updated `SteinVI_BNN` instance with initialized SVGD state, update function, and evaluation function.
+    """
     steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):

@@ -1,6 +1,17 @@
 import jax.numpy as jnp
 import jax
 def compute_stochastic_correction_old(particles, kernel_fn, kernel_params, random_normal_samples):
+    """Computes the stochastic correction term used in sSVGD. Based on the paper "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.
+
+    Args:
+        particles (ndarray): The particle set, shape (n_particles, d), representing the current state.
+        kernel_fn (Callable): The kernel function to compute pairwise distances between particles.
+        kernel_params (dict): Parameters for the kernel function (e.g., length scale).
+        random_normal_samples (ndarray): Random normal samples used to introduce stochasticity, shape (Nd,).
+
+    Returns:
+        ndarray: The stochastic correction term `v_stc` used to adjust particle updates, shape (n_particles, d).
+    """
     n_particles, d = particles.shape
     Nd = n_particles * d
     
@@ -27,6 +38,17 @@ def compute_stochastic_correction_old(particles, kernel_fn, kernel_params, rando
     return v_stc.reshape(n_particles, d)
 
 def compute_stochastic_correction(particles, kernel_fn, kernel_params, random_normal_samples):
+    """Efficiently computes the stochastic correction term used in sSVGD.
+
+    Args:
+        particles (ndarray): The particle set, shape (n_particles, d), representing the current state.
+        kernel_fn (Callable): The kernel function to compute pairwise distances between particles.
+        kernel_params (dict): Parameters for the kernel function (e.g., length scale).
+        random_normal_samples (ndarray): Random normal samples used to introduce stochasticity, shape (Nd,).
+
+    Returns:
+        ndarray: The stochastic correction term `v_stc` used to adjust particle updates, shape (n_particles, d).
+    """
     n_particles, d = particles.shape
 
     # Step 1: Calculate the kernel Gram matrix k_bar
@@ -36,32 +58,42 @@ def compute_stochastic_correction(particles, kernel_fn, kernel_params, random_no
         )(particles)
         return pairwise_kernels / n_particles
 
-    k_bar = compute_k_bar(particles)  # Shape (n_particles, n_particles)
+    k_bar = compute_k_bar(particles)  
 
     # Step 2: Compute Cholesky decomposition of k_bar
-    L_k_bar = jnp.linalg.cholesky(k_bar)  # Shape (n_particles, n_particles)
+    L_k_bar = jnp.linalg.cholesky(k_bar)  
 
     # Step 3: Generate random normal samples and reshape
     Nd = n_particles * d
-    epsilon = random_normal_samples.reshape(d, n_particles)  # Shape (d, n_particles)
+    epsilon = random_normal_samples.reshape(d, n_particles)  
 
     # Step 4: Compute V = L_k_bar @ epsilon.T, resulting in (n_particles, d)
-    V = L_k_bar @ epsilon.T  # Shape (n_particles, d)
+    V = L_k_bar @ epsilon.T 
 
     # Step 5: Transpose V to get (d, n_particles)
-    V = V.T  # Shape (d, n_particles)
+    V = V.T  
 
     # Step 6: Reshape V to (n_particles, d)
-    v_stc = V.T  # Shape (n_particles, d)
+    v_stc = V.T 
 
     # Step 7: Multiply by sqrt(2)
-    v_stc = jnp.sqrt(2) * v_stc  # Shape (n_particles, d)
-    # jax.debug.print("v_stc_new:\n {}", v_stc)
+    v_stc = jnp.sqrt(2) * v_stc  
+
     return v_stc  # Return shape (n_particles, d)
 
 
 
 def compute_permutation_matrix_test(N, d):
+    """
+    Computes the permutation matrix to reshape elements between particle dimensions for testing purposes.
+
+    Args:
+        N (int): The number of particles.
+        d (int): The dimension of each particle.
+
+    Returns:
+        ndarray: The permutation matrix of shape (Nd, Nd), where Nd = N * d.
+    """
     Nd = N * d
     P = jnp.zeros((Nd, Nd))
     for i in range(d):
@@ -70,6 +102,16 @@ def compute_permutation_matrix_test(N, d):
     return P
 
 def compute_permutation_matrix(N, d):
+    """
+    Efficiently computes the permutation matrix to reshape elements between particle dimensions.
+
+    Args:
+        N (int): The number of particles.
+        d (int): The dimension of each particle.
+
+    Returns:
+        ndarray: The permutation matrix of shape (Nd, Nd), where Nd = N * d.
+    """
     #should return the same result as the test matrix but i am not sure if this is the case
     Nd = N * d
     # Create the identity matrix of size Nd x Nd

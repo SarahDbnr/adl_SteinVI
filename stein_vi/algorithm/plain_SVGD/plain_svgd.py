@@ -30,6 +30,7 @@ def set_up_plain_svgd(steinvi_svdg):
 def initialize_svgd_state(svi):
     """
     Initializes the state for SVGD including the log posterior function, particles, and kernel function.
+    The algorithm often gets stuck before reaching any maximum so the overall test performance will be pretty bad.
 
     Args:
         logp_model (callable): A function representing the log posterior of the model given the data.
