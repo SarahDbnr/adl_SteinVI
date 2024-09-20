@@ -1,4 +1,3 @@
-import pytest
 import jax
 import jax.numpy as jnp
 import tensorflow as tf
@@ -131,7 +130,7 @@ def test_get_most_common_class():
     assert most_common_class == 3
 
 
-def test_compute_confidence_intervals_with_2_neurons(regression_toy_examplestein_vi_regression_example):
+def test_compute_confidence_intervals_with_2_neurons(stein_vi_regression_example):
     # given
     regression_toy_example = get_regression_toy_example(num_points=100)
     z_train, y_train, _, _, _, _ = regression_toy_example
@@ -140,4 +139,9 @@ def test_compute_confidence_intervals_with_2_neurons(regression_toy_examplestein
     # when
     mean_star, variance_star = compute_confidence_intervals_with_2_neurons(nnet_model, out=state, dz=z_train)
     # then
-    # TODO: ask chatgpt
+    assert jnp.isfinite(mean_star).all()
+    assert jnp.isfinite(variance_star).all()
+    assert jnp.all(variance_star >= 0)
+    assert mean_star.shape == (72,)
+    assert variance_star.shape == (72,)
+
