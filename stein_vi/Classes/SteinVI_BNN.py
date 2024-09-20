@@ -103,7 +103,6 @@ class SteinVI_BNN:
         """
         init_param = self.nnet.init(key, x_train)
         param_vec, self.tree_def = ravel_pytree(init_param)
-        # TODO: should this allow different distibutions in the future
         self.initial_particle_vector = jax.random.normal(key, shape=(num_particles,) + param_vec.shape)
 
     def predict(self, weights, x_input, use_softmax=False):
