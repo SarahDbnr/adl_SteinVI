@@ -40,7 +40,7 @@ class SteinVI_BNN:
 
     use_for_regression: bool
 
-    log_posteriori: callable #object seems to be wrong here???
+    log_posteriori: callable  # TODO: object seems to be wrong here???
     nnet: flax.linen.Module
     tree_def: None
     initial_particle_vector: jnp.array
@@ -54,7 +54,7 @@ class SteinVI_BNN:
     def __init__(self, key, x_train, nnet, use_for_regression,
                  optimizer=adam(0.01), mode_training_print='none', mode_evaluation='full', early_stopping=False,
                  image_data=False, batch_size=0, particle_batch_size=0,
-                 num_particles=10, num_iterations=100, rf_comparison=False, learning_rate=0.0001):
+                 num_particles=10, num_iterations=100, learning_rate=0.0001):
         """_summary_
 
         Args:
@@ -71,10 +71,9 @@ class SteinVI_BNN:
             particle_batch_size (int): The number of particles in a mini-batch of particles used for training.  Defaults to 0 (i.e., no batching).
             num_particles (int): The number of particles used in the process to approximate the posterior. Defaults to 10.
             num_iterations (int): The total number of training iterations. Defaults to 100.
-            rf_comparison (bool, optional): ???. Defaults to False.
             learning_rate (float, optional): Learning rate used for plain_svgd and ssvgd for the other algorithms the learning rate is included in the optimizer. Defaults to 0.0001.
         """
-        self.handler = Handler(rf_comparison)
+        self.handler = Handler()
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
 
