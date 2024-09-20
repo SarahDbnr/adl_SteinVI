@@ -4,9 +4,6 @@ import math
 import tensorflow as tf
 from optax import adam, exponential_decay
 
-import jax.numpy as jnp
-from sklearn.datasets import make_classification, make_regression
-from sklearn.model_selection import train_test_split
 from run_stein_vi.data.data_handling import apply_data_settings_keras
 
 from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
