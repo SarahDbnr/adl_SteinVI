@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
-import stein_vi.algorithm.quasi_SVN_with_lbfgs.local_blackjax_file_adjusted_for_lbfgs
-from stein_vi.algorithm.quasi_SVN_with_lbfgs.local_blackjax_file_adjusted_for_lbfgs import rbf_kernel, update_median_heuristic
+import stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs
+from stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs import rbf_kernel, update_median_heuristic
 
 from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 

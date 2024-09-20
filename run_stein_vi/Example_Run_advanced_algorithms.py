@@ -37,34 +37,6 @@ def run_MNIST_GD(info=False):
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-def run_MNIST_plain_svgd(info=False):
-    """
-    Run SVGD on the MNIST dataset for classification. Without an optimizer from the optax package. Just perform plain gradient decent, based on the given learningrate.
-
-    Args:
-        info (bool, optional): If True, prints dataset information. Defaults to False.
-    """
-    key = jax.random.PRNGKey(1)
-
-    if info:
-        datasets_info.print_mnist_dataset_info()
-
-    mnist = tf.keras.datasets.mnist
-    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
-    z_train, _, _, _, z_test, y_test = mnist_dataset
-
-    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
-
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                               use_for_regression=False, batch_size=0, particle_batch_size=3, num_iterations=3,
-                               num_particles=9, learning_rate=0.001)
-
-    train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="plain_svgd")
-
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
-
-
 # TODO:Problem everything in the noise matrix gets 0
 def run_MNIST_ssvgd(info=False):
     """
@@ -94,7 +66,7 @@ def run_MNIST_ssvgd(info=False):
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-def run_MNIST_quasi_SVN(info=False):
+def run_MNIST_quasiSVN(info=False):
     """
     Run quasi SVN on the MNIST dataset for classification. Here for the optax optimizer lbfgs is used.
 
@@ -128,4 +100,4 @@ def run_MNIST_quasi_SVN(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST_quasi_SVN()
+    run_MNIST_quasiSVN()
