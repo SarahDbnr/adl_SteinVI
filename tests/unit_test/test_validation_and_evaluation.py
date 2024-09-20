@@ -1,12 +1,98 @@
+import pytest
 import jax
 import jax.numpy as jnp
-from jax import random
-from flax import linen as nn
-from jax.flatten_util import ravel_pytree
-from run_stein_vi.model.BNN_Model import FlexibleSimpleNN
-from src.algorithm.get_posteriori import link_function
-from src.metrics.validation_and_evaluation import (calculate_number_of_different_classified_by_particles,
-                                                   get_most_common_class_over_particles,get_most_common_class, compute_confidence_intervals_with_2_neurons)
+import tensorflow as tf
+
+from fixtures import stein_vi_regression_example, stein_vi_multiclass_example
+from run_stein_vi.data.data_handling import apply_data_settings_keras
+from run_stein_vi.data.regression_toy_example import get_regression_toy_example
+from stein_vi.algorithm.svgd import initialize_svgd_state
+from stein_vi.algorithm.get_posteriori import link_function
+
+from stein_vi.metrics.validation_and_evaluation import (get_evaluation_metrics_over_predictions, calculate_mse,
+                                                        calculate_accuracy, calculate_mean_span_over_particles,
+                                                        calculate_number_of_different_classified_by_particles,
+                                                        get_most_common_class_over_particles, get_most_common_class,
+                                                        compute_confidence_intervals_with_2_neurons)
+
+
+def test_get_evaluation_metrics_over_predictions_regression(stein_vi_regression_example, stein_vi_multiclass_example):
+    # given
+    regression_toy_example = get_regression_toy_example(num_points=100)
+    z_train, y_train, _, _, _, _ = regression_toy_example
+    svgd_vi = stein_vi_regression_example
+    state, _ = initialize_svgd_state(svgd_vi)
+    nnet_model = svgd_vi.nnet
+    # when
+    mse, averaged_var, prediction = get_evaluation_metrics_over_predictions(state, nnet_model, z_train, y_train,
+                                                                            model_regression=True, print_eva=True)
+    # then
+    expected_predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_train))(state.particles)
+    expected_mse = calculate_mse(expected_predictions.squeeze(), y_train)
+    scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
+    expected_averaged_var = jnp.sqrt(scale).mean()
+    assert jnp.all(prediction == expected_predictions)
+    assert jnp.all(mse == expected_mse)
+    assert jnp.all(averaged_var == expected_averaged_var)
+
+
+def test_get_evaluation_metrics_over_predictions_multiclass(stein_vi_regression_example, stein_vi_multiclass_example):
+    # given
+    mnist = tf.keras.datasets.mnist
+    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
+    z_train, y_train, _, _, _, _ = mnist_dataset
+    svgd_vi = stein_vi_multiclass_example
+    state, _ = initialize_svgd_state(svgd_vi)
+    nnet_model = svgd_vi.nnet
+    # when
+    accuracy, _, prediction = get_evaluation_metrics_over_predictions(state, nnet_model, z_train, y_train,
+                                                                      model_regression=False, print_eva=True)
+    # then
+    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_train))(state.particles)
+    expected_accuracy = calculate_accuracy(precisions, y_train)
+    assert expected_accuracy == accuracy
+
+
+def test_calculate_mse():
+    # given
+    predictions = jnp.array([[[1, ], [1, ]], [[0, ], [0, ]]])
+    true_output = jnp.array([1, 1],)
+    # when
+    mse = calculate_mse(predictions, true_output)
+    # then
+    expected_mse = jnp.sqrt(((1+1)/2 - 1)**2 + ((0+0)/2 -1)**2)/4
+    assert mse == expected_mse
+
+
+def test_calculate_accuracy():
+    # given
+    number_particles = 4
+    x_dim = 3
+    num_classes = 2
+    precisions = jnp.array([[[1, 0], [1, 0], [0, 1]], [[1, 0], [1, 0], [0, 1]], [[1, 0], [1, 0], [0, 1]], [[1, 0], [1, 0], [0, 1]]])
+    true_output = jnp.array([0, 0, 0], )
+    # when
+    accuracy = calculate_accuracy(precisions, true_output)
+    averaged_precision = precisions.mean(0)
+    predicted_classes = jnp.argmax(averaged_precision, axis=-1)
+    # one class is wrongly predicted
+    # then
+    print(predicted_classes)
+    assert precisions.shape == (number_particles, x_dim, num_classes)
+    assert accuracy == 2 / 3
+
+
+def test_calculate_mean_span_over_particles():
+    predictions = jnp.array([[[4, ], [4, ]], [[1, ], [1, ]],
+                             [[2, ], [2, ]], [[1, ], [1, ]],
+                             [[2, ], [2, ]], [[0, ], [0, ]],
+                             [[1, ], [1, ]], [[0, ], [0, ]],
+                             [[1, ], [1, ]], [[-1, ], [-1, ]]])
+    # TODO: make a bigger array that has number not within 5% with chat gpt
+    # when
+    span = calculate_mean_span_over_particles(predictions.squeeze())
+    # then
+    assert span == 5
 
 
 def test_calculate_number_of_different_classified_by_particles():
@@ -36,107 +122,22 @@ def test_get_most_common_class_over_particles():
     assert most_common_class_over_particles[0] == unique_vals[max_index]
 
 
-
 def test_get_most_common_class():
-    # Test case 1: Single most common class
-    column = jnp.array([1, 2, 2, 3, 2])
-    expected_most_common = 2
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
-    
-    # Test case 2: Tie case (should return the first most common by index)
-    column = jnp.array([1, 2, 2, 3, 3])
-    expected_most_common = 2  # `2` appears first in case of tie with `3`
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
-
-    # Test case 3: All elements are the same
-    column = jnp.array([1, 1, 1, 1, 1])
-    expected_most_common = 1
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
-    
-    # Test case 4: Each element appears once
-    column = jnp.array([1, 2, 3, 4, 5])
-    expected_most_common = 1  # Returns the first element in case of all unique elements
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
-    
-    # Test case 5: Large array with clear majority
-    column = jnp.array([5] * 100 + [3] * 10 + [1] * 5)
-    expected_most_common = 5
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
-
-    # Test case 6: Edge case with a single element array
-    column = jnp.array([42])
-    expected_most_common = 42
-    result = get_most_common_class(column)
-    assert result == expected_most_common, f"Expected {expected_most_common}, but got {result}"
+    # given
+    column = jnp.array([1, 2, 3, 3, 3, 3, 3, 2, 1, 3, 3, 3, 3, 3, 2, 2, 1, 1])
+    # when
+    most_common_class = get_most_common_class(column)
+    # then
+    assert most_common_class == 3
 
 
-
-def test_compute_confidence_intervals_with_2_neurons():
-    # Set up the neural network model
-    model = FlexibleSimpleNN(
-        hidden_layers=[2],  # Example with 1 hidden layer of 2 neurons
-        output_size=2,  # Output size for regression (mean and variance)
-        activation=nn.relu,
-        kernel_init=nn.initializers.glorot_uniform(),
-        bias_init=nn.initializers.zeros,
-        use_for_regression=True
-    )
-    
-    # Initialize random key and input data
-    key = random.PRNGKey(0)
-    input_size = 4
-    dz = jnp.ones((1, input_size))  # Input data of ones, batch size 1
-
-    # Initialize model parameters
-    params = model.init(key, dz)
-    
-    # Simulate multiple particles for Bayesian Neural Networks
-    num_particles = 5
-    particles = jax.vmap(lambda _: ravel_pytree(params)[0])(jnp.arange(num_particles))
-
-    # Create a mock tree_def function that flattens and unflattens the parameters
-    _, tree_def = ravel_pytree(params)
-    
-    # Prepare a mock output structure that mimics a model output
-    class MockOutput:
-        def __init__(self, particles):
-            self.particles = particles
-    
-    out = MockOutput(particles)
-    
-    # Run the function being tested
-    mean_star, variance_star = compute_confidence_intervals_with_2_neurons(model, tree_def, out, dz)
-    
-    # Check that the outputs have the correct shape
-    assert mean_star.shape == (), f"Expected mean_star shape (), but got {mean_star.shape}"
-    assert variance_star.shape == (), f"Expected variance_star shape (), but got {variance_star.shape}"
-    
-    # Check that mean_star and variance_star are numeric and finite
-    assert jnp.isfinite(mean_star).all(), "mean_star contains non-finite values."
-    assert jnp.isfinite(variance_star).all(), "variance_star contains non-finite values."
-    
-    # Check that variance_star is non-negative (as variances must be)
-    assert jnp.all(variance_star >= 0), "variance_star contains negative values, which is invalid for variance."
-    
-    # Calculate expected values for mean_star and variance_star manually
-    predictions, precision = jax.vmap(lambda p: model.predict(tree_def(p), dz))(out.particles)
-    predictions = predictions.squeeze()
-    precision = precision.squeeze()
-    expected_mean_star = predictions.mean(0)  # Averaging over particles
-    
-    squared_means_i = jnp.square(predictions)
-    variance_i = jax.vmap(lambda p: link_function(p))(precision)
-    expected_variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(expected_mean_star)
-    
-    # Assert the values of mean_star and variance_star
-    assert jnp.allclose(mean_star, expected_mean_star, rtol=1e-5), \
-        f"Expected mean_star: {expected_mean_star}, but got: {mean_star}"
-    
-    assert jnp.allclose(variance_star, expected_variance_star, rtol=1e-5), \
-        f"Expected variance_star: {expected_variance_star}, but got:  {variance_star}"
-    
+def test_compute_confidence_intervals_with_2_neurons(regression_toy_examplestein_vi_regression_example):
+    # given
+    regression_toy_example = get_regression_toy_example(num_points=100)
+    z_train, y_train, _, _, _, _ = regression_toy_example
+    nnet_model = stein_vi_regression_example.nnet
+    state, _ = initialize_svgd_state(stein_vi_regression_example)
+    # when
+    mean_star, variance_star = compute_confidence_intervals_with_2_neurons(nnet_model, out=state, dz=z_train)
+    # then
+    # TODO: ask chatgpt

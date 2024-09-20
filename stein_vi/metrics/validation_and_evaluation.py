@@ -53,7 +53,6 @@ def calculate_mse(predictions, true_output):
     return mse
 
 
-# TODO: Set order precisions, mean, argmax or precisions, argmax, mean
 def calculate_accuracy(precisions, true_output):
     """
     Calculates the accuracy of classification predictions.
