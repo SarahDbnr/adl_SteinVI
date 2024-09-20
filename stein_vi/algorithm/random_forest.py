@@ -21,46 +21,32 @@ def random_forest(dataset, task_type='classification'):
     """
 
     # Unpack the dataset directly into 6 variables
-    X_train, y_train, X_val, y_val, X_test, y_test = dataset
+    x_train_combined, y_train_combined, x_test, y_test = prepare_dataset(dataset)
 
-    # Combine training and validation datasets
-    X_train_combined = jnp.concatenate((X_train, X_val), axis=0)
-    y_train_combined = jnp.concatenate((y_train, y_val), axis=0)
-    X_train_combined = X_train_combined.reshape((X_train_combined.shape[0], -1))
-    X_test = X_test.reshape((X_test.shape[0], -1))
     if task_type == 'classification':
-        # Initialize the RandomForestClassifier
-        model = RandomForestClassifier()
-        # Train the model on the combined training and validation data
-        model.fit(X_train_combined, y_train_combined)
-        
-        # Predict on the validation and test sets
-        y_test_pred = model.predict(X_test)
 
-        # Compute accuracy
+        model = RandomForestClassifier()
+        model.fit(x_train_combined, y_train_combined)
+
+        y_test_pred = model.predict(x_test)
+
         accuracy_test = accuracy_score(y_test, y_test_pred)
 
-        # Output metrics
         metrics = {
             'Test Accuracy': accuracy_test
         }
         
     elif task_type == 'regression':
-        # Initialize the RandomForestRegressor
+
         model = RandomForestRegressor()
-        # Train the model on the combined training and validation data
-        model.fit(X_train_combined, y_train_combined)
-        
-        # Predict on the validation and test sets
-        y_test_pred = model.predict(X_test)
-        
-        # Compute MSE
+        model.fit(x_train_combined, y_train_combined)
+
+        y_test_pred = model.predict(x_test)
+
         mse_test = mean_squared_error(y_test, y_test_pred)
-        
-        # Compute precision as standard deviation of predictions
+
         precision_test = jnp.std(y_test_pred)
 
-        # Output metrics
         metrics = {
             'Test MSE': mse_test,
             'Test Precision': precision_test
@@ -70,3 +56,13 @@ def random_forest(dataset, task_type='classification'):
         raise ValueError("task_type must be either 'classification' or 'regression'")
 
     return metrics
+
+
+def prepare_dataset(dataset):
+    x_train, y_train, x_val, y_val, x_test, y_test = dataset
+
+    x_train_combined = jnp.concatenate((x_train, x_val), axis=0)
+    y_train_combined = jnp.concatenate((y_train, y_val), axis=0)
+    x_train_combined = x_train_combined.reshape((x_train_combined.shape[0], -1))
+    x_test = x_test.reshape((x_test.shape[0], -1))
+    return x_train_combined, y_train_combined, x_test, y_test
