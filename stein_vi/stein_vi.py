@@ -4,7 +4,7 @@ from stein_vi.algorithm.sSVGD.ssvgd import set_up_ssvgd
 from stein_vi.algorithm.quasiSVN.quasiSVN import set_up_quasi_SVN
 from stein_vi.metrics.validation_and_evaluation import (print_summary_over_particles_regression,
                                                         print_summary_over_particles_multiclass)
-
+from stein_vi.algorithm.random_forest import random_forest
 
 def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     """
@@ -52,11 +52,16 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     _, _, _, _, z_test, y_test = dataset
     print("\nFor Test Data:")
     if steinvi.use_for_regression:
-        mse_test, averaged_precision_test, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test,
-                                                                                  print_out=True)
+        _, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print_out=True)
         print_summary_over_particles_regression(predictions_test)
     else:
-        accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print_out=True)
+        _, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print_out=True)
         print_summary_over_particles_multiclass(predictions_test)
+
+    if steinvi.handler.rf_comparison and steinvi.use_for_regression:
+        print("Random Forest Test MSE:       ", random_forest(dataset, 'regression')['Test MSE'])
+        print("Random Forest Test Precision: ", random_forest(dataset, 'regression')['Test Precision'])
+    elif steinvi.handler.rf_comparison and steinvi.use_for_regression == False:
+        print("Random Forest Accuracy:", random_forest(dataset)['Test Accuracy'])
 
     return steinvi

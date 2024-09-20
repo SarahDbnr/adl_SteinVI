@@ -2,7 +2,7 @@
 
 This guide will help you set up and run Stein Variation Inference algorithms for Bayesian Neural Networks (BNNs). Our project leverages a particle-based variational inference method, to approximate Bayesian posterior distributions over the weights of neural networks.
 
-Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library [Blackjax](https://blackjax-devs.github.io/blackjax/), for Bayesian Neural Networks.
+Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library [Blackjax](https://blackjax-devs.github.io/blackjax/), for BNNs.
 
 ## Collaborative Work
 This repository is a collaborative effort between **Sarah Deubner**, **Kilian Runnwerth**, and **Luke-Liam Bergmeier**.
@@ -54,12 +54,20 @@ The project supports two installation modes:
 
 ## Project Structure
 
-The `stein_vi` directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD) and related algorithms. This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, and parameter management.
+The `stein_vi` directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD), stochastic Stein Variational Gradient Descent (sSVGD) and Stein Variantional Newton method (SVN). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.
 
 ```
 .
 stein_vi/
 ├── algorithm/
+│   ├── quasiSVN/
+│   │   ├── local_blackjax_file_adjusted_for_lbfgs.py
+│   │   └── quasiSVN.py
+│   ├── sSVGD/
+│   │   ├── local_blackjax_file_with_adjustments_for_sSVGD.py
+│   │   ├── matrices_for_noise_matrix.py
+│   │   ├── ssvgd.py
+│   │   └── test_matrix_equivalent_to_tests_later.py
 │   ├── get_posteriori.py
 │   ├── model_training.py
 │   ├── random_forest.py
@@ -77,7 +85,7 @@ stein_vi/
 └── stein_vi.py
 ```
 
-The `run_stein_vi` directory provides ready-to-run examples that use the core logic from the `stein_vi` package. These scripts demonstrate how to use the SVGD-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.
+The `run_stein_vi` directory provides ready-to-run examples that use the core logic from the `stein_vi` package. These scripts demonstrate how to use the SVGD, sSVGD and SVN-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.
 
 ```
 .
