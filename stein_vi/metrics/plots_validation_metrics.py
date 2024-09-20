@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from stein_vi.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
 
 
-def plot_and_save_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None):
+def plot_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None):
     """
     Plots and saves a graph of evaluation metrics over iterations for a neural network model.
 

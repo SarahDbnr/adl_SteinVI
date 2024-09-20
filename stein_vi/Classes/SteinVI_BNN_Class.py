@@ -1,6 +1,6 @@
 from stein_vi.Classes.Parameter_Class import Parameter
 import stein_vi.metrics.plots_validation_metrics as plots
-from stein_vi.metrics.view_misclassified_images import view_misclassified
+from stein_vi.metrics.view_misclassified import view_misclassified
 from stein_vi.Classes.Handler_Class import Handler
 from stein_vi.algorithm.get_posteriori import get_posteriori
 
@@ -148,14 +148,14 @@ class SteinVI_BNN:
                 "Error: Minimal evaluation mode does not gather information while training for efficiency reasons.")
         else:
             if self.use_for_regression:
-                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
+                plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
                                                       num_particles=self.parameter.num_particles,
                                                       eval_metric="MSE")
-                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_2,
+                plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_2,
                                                       num_particles=self.parameter.num_particles,
                                                       eval_metric="averaged_precision")
             else:
-                plots.plot_and_save_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
+                plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
                                                             num_particles=self.parameter.num_particles,
                                                             eval_metric="Accuracy")
 
