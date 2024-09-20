@@ -28,12 +28,12 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_outpu
         scale = jax.vmap(lambda p: link_function(p))(precisions.squeeze())
         averaged_var = jnp.sqrt(scale).mean()
         if print_eva:
-            print(f"\nMSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
+            print(f"MSE: {mse}, Average Variance: {averaged_var} with mean predictions of {predictions.squeeze().mean()}")
         return mse, averaged_var, predictions
     else:
         accuracy = calculate_accuracy(precisions, true_output)
         if print_eva:
-            print(f"\nAccuracy: {accuracy} ")
+            print(f"Accuracy: {accuracy} ")
         return accuracy, None, predictions
 
 

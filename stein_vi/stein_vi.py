@@ -59,9 +59,11 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
         print_summary_over_particles_multiclass(predictions_test)
 
     if steinvi.handler.rf_comparison and steinvi.use_for_regression:
-        print("Random Forest Test MSE:       ", random_forest(dataset, 'regression')['Test MSE'])
-        print("Random Forest Test Precision: ", random_forest(dataset, 'regression')['Test Precision'])
+        print("\nRandom Forest comparison")
+        print("Test MSE:       ", random_forest(dataset, 'regression')['Test MSE'])
+        print("Test Precision: ", random_forest(dataset, 'regression')['Test Precision'])
     elif steinvi.handler.rf_comparison and steinvi.use_for_regression == False:
-        print("Random Forest Accuracy:", random_forest(dataset)['Test Accuracy'])
+        print("\nRandom Forest comparison")
+        print("Test Accuracy:   ", random_forest(dataset)['Test Accuracy'])
 
     return steinvi

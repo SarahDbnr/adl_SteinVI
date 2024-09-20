@@ -74,7 +74,7 @@ def run_MNIST(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 50, 25))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=30, num_particles=5,mode_evaluation="full", mode_training_print="full")
+                               batch_size=300, num_iterations=3, num_particles=5, rf_comparison=True)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
