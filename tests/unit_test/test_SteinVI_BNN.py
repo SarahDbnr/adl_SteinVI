@@ -3,7 +3,6 @@ import jax
 import jax.numpy as jnp
 from flax import linen as nn
 from optax import adam
-import tensorflow as tf
 
 from stein_vi.Classes.Parameter_Class import Parameter
 from stein_vi.Classes.Handler_Class import Handler
@@ -11,9 +10,7 @@ from stein_vi.algorithm.get_posteriori import logp_unnormalized_posterior_regres
 from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 
-from fixtures import stein_vi_multiclass_example, stein_vi_regression_example
-from run_stein_vi.data.data_handling import apply_data_settings_keras
-from run_stein_vi.data.regression_toy_example import get_regression_toy_example
+from fixtures import stein_vi_multiclass_example, stein_vi_regression_example, get_regression_toy_example, get_MNIST
 
 from stein_vi.algorithm.svgd import set_up_svgd
 
@@ -142,11 +139,9 @@ def test_initial_particles_and_kernel():
     assert jnp.isclose(particle_std, 1, atol=0.1), f"Particle std should be close to 1, but got {particle_std}"
 
 
-def test_predict_multiclass(stein_vi_multiclass_example):
+def test_predict_multiclass(stein_vi_multiclass_example, get_MNIST):
     # given
-    mnist = tf.keras.datasets.mnist
-    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
-    z_train, y_train, _, _, _, _ = mnist_dataset
+    z_train, y_train, _, _, _, _ = get_MNIST
     set_up_svgd(stein_vi_multiclass_example)
 
     number_of_classes = 10
@@ -164,10 +159,9 @@ def test_predict_multiclass(stein_vi_multiclass_example):
     assert jnp.allclose(jnp.sum(precisions, axis=-1), 1), "Probabilities should sum to 1 across classes"
 
 
-def test_predict_shape_regression(stein_vi_regression_example):
+def test_predict_shape_regression(stein_vi_regression_example, get_regression_toy_example):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=10000)
-    z_train, y_train, _, _, _, _ = regression_toy_example
+    z_train, y_train, _, _, _, _ = get_regression_toy_example
     set_up_svgd(stein_vi_regression_example)
 
     nnet = stein_vi_regression_example.nnet
@@ -181,11 +175,9 @@ def test_predict_shape_regression(stein_vi_regression_example):
     assert precisions.squeeze().shape == (stein_vi_regression_example.parameter.num_particles, len(y_train))
 
 
-def test_predict_over_particles_classification(stein_vi_multiclass_example):
+def test_predict_over_particles_classification(stein_vi_multiclass_example, get_MNIST):
     # given
-    mnist = tf.keras.datasets.mnist
-    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
-    z_train, y_train, _, _, _, _ = mnist_dataset
+    z_train, y_train, _, _, _, _ = get_MNIST
     set_up_svgd(stein_vi_multiclass_example)
     number_of_classes = 10
 
@@ -200,9 +192,9 @@ def test_predict_over_particles_classification(stein_vi_multiclass_example):
     assert jnp.allclose(jnp.sum(precisions, axis=-1), 1), "Probabilities should sum to 1 across classes"
 
 
-def test_predict_over_particles_regression(stein_vi_regression_example):
+def test_predict_over_particles_regression(stein_vi_regression_example, get_regression_toy_example):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=10000)
+    regression_toy_example = get_regression_toy_example
     z_train, y_train, _, _, _, _ = regression_toy_example
     set_up_svgd(stein_vi_regression_example)
 

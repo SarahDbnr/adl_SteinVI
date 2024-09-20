@@ -1,4 +1,3 @@
-import pytest
 from optax import adam
 from stein_vi.Classes.Parameter_Class import Parameter
 

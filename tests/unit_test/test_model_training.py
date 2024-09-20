@@ -3,8 +3,7 @@ from _pytest.capture import CaptureResult
 import jax
 import jax.numpy as jnp
 
-from fixtures import stein_vi_regression_example, stein_vi_multiclass_example
-from run_stein_vi.data.regression_toy_example import get_regression_toy_example
+from fixtures import stein_vi_regression_example, stein_vi_multiclass_example, get_regression_toy_example
 from stein_vi.algorithm.svgd import set_up_svgd
 
 from stein_vi.algorithm.model_training import (create_particle_minibatch_indices,
@@ -20,11 +19,10 @@ def no_print():
         err='')
 
 
-def test_create_minibatches():
+def test_create_minibatches(get_regression_toy_example):
     # given
     key = jax.random.PRNGKey(1)
-    regression_toy_example = get_regression_toy_example(num_points=100)
-    z_train, y_train, z_val, y_val, _, _ = regression_toy_example
+    z_train, y_train, z_val, y_val, _, _ = get_regression_toy_example
     batch_size = 8
     # when
     minibatches = create_minibatches(batch_size, z_train, y_train, key)
@@ -59,6 +57,7 @@ def test_create_particle_minibatch_indices(batch_size, expected_length):
     assert jnp.all(sorted_indices == expected_indices)
 
 
+# TODO: check
 @pytest.mark.parametrize(
     "mode_training_print, iteration, check_no_print_expected",
     [
@@ -68,12 +67,11 @@ def test_create_particle_minibatch_indices(batch_size, expected_length):
         ('none', 1, True),
     ]
 )
-def test_get_evaluation_and_apply_early_stopping_logic(capsys, stein_vi_regression_example, no_print,
-                                                       mode_training_print, iteration,
+def test_get_evaluation_and_apply_early_stopping_logic(capsys, stein_vi_regression_example, get_regression_toy_example,
+                                                       no_print, mode_training_print, iteration,
                                                        check_no_print_expected):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=100)
-    z_train, y_train, z_val, y_val, _, _ = regression_toy_example
+    z_train, y_train, z_val, y_val, _, _ = get_regression_toy_example
     patience_counter = 0
     stein_vi_regression_example.parameter.num_iterations = 100
     best_eval_metric = 0
