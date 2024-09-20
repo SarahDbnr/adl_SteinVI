@@ -135,7 +135,7 @@ class SteinVI_BNN:
     def predict_over_particles(self, input_data):
         predictions, precisions = jax.vmap(lambda p: self.predict(p, input_data))(self.state.particles)
         return predictions.squeeze(), precisions.squeeze()
-
+    
     def plot_val_metric_over_iter(self):
         """Plots the evaluation metrics over the course of training iterations.
         This function plots validation metrics (such as Mean Squared Error for regression tasks or Accuracy for classification tasks) for each iteration of training, based on the evaluation mode.
