@@ -10,7 +10,6 @@ from stein_vi.algorithm.get_posteriori import get_posteriori
 from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 
-
 # Test for successful initialization
 def test_steinvi_bnn_init_success():
     key = jax.random.PRNGKey(0)
