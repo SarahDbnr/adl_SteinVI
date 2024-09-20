@@ -54,7 +54,7 @@ class SteinVI_BNN:
     def __init__(self, key, x_train, nnet, use_for_regression,
                  optimizer=adam(0.01), mode_training_print='none', mode_evaluation='full', early_stopping=False,
                  image_data=False, batch_size=0, particle_batch_size=0,
-                 num_particles=10, num_iterations=100, learning_rate=0.0001):
+                 num_particles=10, num_iterations=100, rf_comparison=False, learning_rate=0.0001, kernel_length=0.005):
         """_summary_
 
         Args:
@@ -82,7 +82,7 @@ class SteinVI_BNN:
         if num_particles < particle_batch_size:
             raise ValueError("Error: particle_batch_size bigger then number of particles")
         self.parameter = Parameter(optimizer, early_stopping, image_data, batch_size, particle_batch_size,
-                                   num_particles, num_iterations, learning_rate)
+                                   num_particles, num_iterations, learning_rate, kernel_length)
         self.use_for_regression = use_for_regression
         self.nnet = nnet
         self.nnet.predict = self.predict

@@ -35,7 +35,7 @@ class Parameter:
     patience_early_stopping: int = 15
     min_delta_early_stopping: float = 0.005
     def __init__(self, optimizer, early_stopping, image_data, batch_size, particle_batch_size, num_particles,
-                 num_iterations, learning_rate:float):
+                 num_iterations, learning_rate:float, kernel_length):
         """Initializes the Parameter class with the specified training settings.
 
         Args:
@@ -57,6 +57,7 @@ class Parameter:
         self.early_stopping = early_stopping
         self.learning_rate = learning_rate
         self.image_data = image_data
+        self.kernel_length = kernel_length
 
     def set_early_stopping(self, warm_up_iterations, patience, min_delta):
         """
