@@ -74,7 +74,7 @@ def run_MNIST(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=3, num_particles=5)
+                               batch_size=300, num_iterations=3, num_particles=5, rf_comparison=True)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -374,4 +374,4 @@ def run_bike_sharing(info=False):
 
 
 if __name__ == "__main__":
-    run_regression_toy_example()
+    run_MNIST()
