@@ -1,8 +1,7 @@
 from stein_vi.algorithm.model_training import train_general_algorithm
 from stein_vi.algorithm.svgd import set_up_svgd
-from stein_vi.algorithm.plain_SVGD.plain_svgd import set_up_plain_svgd
 from stein_vi.algorithm.sSVGD.ssvgd import set_up_ssvgd
-from stein_vi.algorithm.quasi_SVN_with_lbfgs.quasi_SVN import set_up_quasi_SVN
+from stein_vi.algorithm.quasiSVN.quasiSVN import set_up_quasi_SVN
 from stein_vi.metrics.validation_and_evaluation import (print_summary_over_particles_regression,
                                                         print_summary_over_particles_multiclass)
 
@@ -35,8 +34,6 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     """
     if algorithm == "svgd":
         set_up_svgd(steinvi)
-    elif algorithm == "plain_svgd":
-        set_up_plain_svgd(steinvi)
     elif algorithm == "ssvgd":
         set_up_ssvgd(steinvi)
     elif algorithm == "quasi_svn":
