@@ -1,6 +1,17 @@
 import pytest
 from stein_vi.Classes.Handler_Class import Handler
 
+def test_handler_init():
+    """Test the initialization of the Handler class."""
+    
+    # Test with rf_comparison set to True
+    handler = Handler(rf_comparison=True)
+    assert handler.rf_comparison is True, "rf_comparison should be set to True during initialization"
+    
+    # Test with rf_comparison set to False (default)
+    handler = Handler()
+    assert handler.rf_comparison is False, "rf_comparison should be False by default"
+
 
 def test_set_training_print_mode():
     """Test the set_training_print_mode function."""
