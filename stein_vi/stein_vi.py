@@ -5,6 +5,7 @@ from stein_vi.metrics.validation_and_evaluation import (print_summary_over_parti
                                                         print_summary_over_particles_multiclass)
 from stein_vi.algorithm.random_forest import random_forest
 
+
 def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     """
     Performs the training using one of the specified algorithms (svgd, plain_svgd, ssvgd, quasi_svn) for a Bayesian Neural Network (BNN).

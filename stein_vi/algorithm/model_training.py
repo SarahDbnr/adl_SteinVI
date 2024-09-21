@@ -90,7 +90,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
                 break
 
 
-#TODO: Particle minibatching: Use the full dataset but split particles into minibatches (do we need this?)
+
 def particle_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on the particles while using the full dataset.
@@ -124,7 +124,6 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
                 break
 
 
-# Both data and particle minibatching
 def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
     """
     Training loop with mini-batching on both data and particles.
@@ -159,8 +158,6 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
         if patience_counter >= steinvi.parameter.patience_early_stopping:
             break
 
-
-# Utility function to create minibatches
 
 def create_minibatches(batch_size, input_data, output_data, key):
     """

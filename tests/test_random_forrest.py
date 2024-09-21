@@ -1,4 +1,4 @@
-from tests.unit_test.fixtures import get_regression_toy_example, get_MNIST
+from tests.fixtures import get_regression_toy_example, get_MNIST
 from stein_vi.algorithm.random_forest import random_forest  
 
 

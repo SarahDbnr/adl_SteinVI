@@ -28,7 +28,9 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, get_regression_
     stein_vi_regression_example.parameter.batch_size = 0
     stein_vi_regression_example.parameter.particle_batch_size = 0
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
+    stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
     stein_vi_regression_example._full_evaluation = True
     set_up_svgd(stein_vi_regression_example)
     stein_vi_regression_example_copy = copy.copy(stein_vi_regression_example)
@@ -42,10 +44,7 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, get_regression_
     if patience_early_stopping > 1:
         stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                                   z_train, y_train)
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_1) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_1))
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_2) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_2))
+    assert jnp.all(stein_vi_regression_example.state.particles == stein_vi_regression_example_copy.state.particles)
 
 
 @pytest.mark.parametrize(
@@ -63,22 +62,28 @@ def test_data_minibatch_training_loop(stein_vi_regression_example, get_regressio
     stein_vi_regression_example.parameter.batch_size = 36
     stein_vi_regression_example.parameter.particle_batch_size = 0
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
+    stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
     stein_vi_regression_example._full_evaluation = True
     set_up_svgd(stein_vi_regression_example)
     stein_vi_regression_example_copy = copy.copy(stein_vi_regression_example)
-
-    z_train_batched, y_train_batched = create_minibatches(36, z_train, y_train, key)
 
     # when
     data_minibatch_training_loop(stein_vi_regression_example_copy, regression_toy_example, key)
 
     # then
+    key_loop, _ = jax.random.split(key)
+    z_train_batched, y_train_batched = create_minibatches(stein_vi_regression_example.parameter.batch_size, z_train,
+                                                          y_train, key_loop)
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                               z_train_batched[0], y_train_batched[0])
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                               z_train_batched[1], y_train_batched[1])
     if patience_early_stopping > 1:
+        key_loop, _ = jax.random.split(key_loop)
+        z_train_batched, y_train_batched = create_minibatches(stein_vi_regression_example.parameter.batch_size, z_train,
+                                                              y_train, key_loop)
         stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                                   z_train_batched[0],
                                                                                   y_train_batched[0])
@@ -86,10 +91,7 @@ def test_data_minibatch_training_loop(stein_vi_regression_example, get_regressio
                                                                                   z_train_batched[1],
                                                                                   y_train_batched[1])
 
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_1) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_1))
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_2) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_2))
+    assert jnp.all(stein_vi_regression_example.state.particles == stein_vi_regression_example_copy.state.particles)
 
 
 @pytest.mark.parametrize(
@@ -108,19 +110,21 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regre
     stein_vi_regression_example.parameter.batch_size = 0
     stein_vi_regression_example.parameter.particle_batch_size = 5
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
+    stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
     stein_vi_regression_example._full_evaluation = True
     set_up_svgd(stein_vi_regression_example)
     stein_vi_regression_example_copy = copy.copy(stein_vi_regression_example)
-
-    particle_indices_batches = create_particle_minibatch_indices(key,
-                                                                 stein_vi_regression_example.state.particles.shape[0],
-                                                                 batch_size=5)
 
     # when
     particle_minibatch_training_loop(stein_vi_regression_example_copy, regression_toy_example, key)
 
     # then
+    key_loop, _ = jax.random.split(key)
+    particle_indices_batches = create_particle_minibatch_indices(key_loop,
+                                                                 stein_vi_regression_example.state.particles.shape[0],
+                                                                 batch_size=5)
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                               z_train, y_train,
                                                                               particle_indices=particle_indices_batches[0])
@@ -128,6 +132,11 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regre
                                                                               z_train, y_train,
                                                                               particle_indices=particle_indices_batches[1])
     if patience_early_stopping > 1:
+        key_loop, _ = jax.random.split(key_loop)
+        particle_indices_batches = create_particle_minibatch_indices(key_loop,
+                                                                     stein_vi_regression_example.state.particles.shape[
+                                                                         0],
+                                                                     batch_size=5)
         stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                                   z_train, y_train,
                                                                                   particle_indices=particle_indices_batches[0])
@@ -135,10 +144,7 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regre
                                                                                   z_train, y_train,
                                                                                   particle_indices=particle_indices_batches[1])
 
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_1) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_1))
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_2) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_2))
+    assert jnp.all(stein_vi_regression_example.state.particles == stein_vi_regression_example_copy.state.particles)
 
 
 @pytest.mark.parametrize(
@@ -148,7 +154,8 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regre
         2,
     ]
 )
-def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example, patience_early_stopping):
+def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example,
+                                                   patience_early_stopping):
     # given
     key = jax.random.PRNGKey(1)
     regression_toy_example = get_regression_toy_example
@@ -157,20 +164,23 @@ def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, 
     stein_vi_regression_example.parameter.batch_size = 36
     stein_vi_regression_example.parameter.particle_batch_size = 5
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
+    stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
     stein_vi_regression_example._full_evaluation = True
     set_up_svgd(stein_vi_regression_example)
     stein_vi_regression_example_copy = copy.copy(stein_vi_regression_example)
 
-    particle_indices_batches = create_particle_minibatch_indices(key,
-                                                                 stein_vi_regression_example.state.particles.shape[0],
-                                                                 batch_size=5)
-    z_train_batched, y_train_batched = create_minibatches(36, z_train, y_train, key)
-
     # when
-    data_and_particle_minibatch_training_loop(stein_vi_regression_example_copy, regression_toy_example, key)
+    data_and_particle_minibatch_training_loop(stein_vi_regression_example_copy,
+                                                                                 regression_toy_example, key)
 
     # then
+    key_loop, _ = jax.random.split(key)
+    z_train_batched, y_train_batched = create_minibatches(36, z_train, y_train, key_loop)
+    particle_indices_batches = create_particle_minibatch_indices(key_loop,
+                                                                 stein_vi_regression_example.state.particles.shape[0],
+                                                                 batch_size=5)
     stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                               z_train_batched[0], y_train_batched[0],
                                                                               particle_indices=particle_indices_batches[0])
@@ -184,6 +194,12 @@ def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, 
                                                                               z_train_batched[1], y_train_batched[1],
                                                                               particle_indices=particle_indices_batches[1])
     if patience_early_stopping > 1:
+        key_loop, _ = jax.random.split(key_loop)
+        z_train_batched, y_train_batched = create_minibatches(36, z_train, y_train, key_loop)
+        particle_indices_batches = create_particle_minibatch_indices(key_loop,
+                                                                     stein_vi_regression_example.state.particles.shape[
+                                                                         0],
+                                                                     batch_size=5)
         stein_vi_regression_example.state = stein_vi_regression_example.update_fn(stein_vi_regression_example.state,
                                                                                   z_train_batched[0],
                                                                                   y_train_batched[0],
@@ -205,7 +221,4 @@ def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, 
                                                                                   particle_indices=
                                                                                   particle_indices_batches[1])
 
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_1) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_1))
-    assert jnp.all(jnp.array(stein_vi_regression_example.evaluation_metrics_2) ==
-                   jnp.array(stein_vi_regression_example_copy.evaluation_metrics_2))
+    assert jnp.all(stein_vi_regression_example.state.particles == stein_vi_regression_example_copy.state.particles)

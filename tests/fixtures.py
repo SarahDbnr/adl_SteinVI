@@ -10,7 +10,7 @@ from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 
 
-@pytest.fixture
+@pytest.fixture(scope="function", autouse=True)
 def stein_vi_regression_example(get_regression_toy_example):
     key = jax.random.PRNGKey(1)
 
@@ -33,7 +33,7 @@ def stein_vi_regression_example(get_regression_toy_example):
     return steinvi_regression
 
 
-@pytest.fixture
+@pytest.fixture(scope="function", autouse=True)
 def stein_vi_multiclass_example():
     key = jax.random.PRNGKey(1)
 
