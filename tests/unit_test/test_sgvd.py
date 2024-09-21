@@ -1,8 +1,7 @@
 import pytest
 import jax.numpy as jnp
 
-from fixtures import stein_vi_regression_example
-from run_stein_vi.data.regression_toy_example import get_regression_toy_example
+from fixtures import stein_vi_regression_example, get_regression_toy_example
 from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 
 from stein_vi.algorithm.svgd import (set_up_svgd, particle_minibatching, initialize_svgd_state,
@@ -16,10 +15,9 @@ from stein_vi.algorithm.svgd import (set_up_svgd, particle_minibatching, initial
         True,
     ]
 )
-def test_set_up_svgd(stein_vi_regression_example, do_particle_minibatching):
+def test_set_up_svgd(stein_vi_regression_example, get_regression_toy_example, do_particle_minibatching):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=100)
-    z_train, y_train, z_val, y_val, _, _ = regression_toy_example
+    z_train, y_train, z_val, y_val, _, _ = get_regression_toy_example
     if do_particle_minibatching:
         particle_indices = jnp.array([9, 4])
     else:
@@ -53,10 +51,9 @@ def test_set_up_svgd(stein_vi_regression_example, do_particle_minibatching):
     assert jnp.allclose(jnp.array(predictions), jnp.array(expected_predictions))
 
 
-def test_particle_minibatching(stein_vi_regression_example):
+def test_particle_minibatching(stein_vi_regression_example, get_regression_toy_example):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=100)
-    z_train, y_train, z_val, y_val, _, _ = regression_toy_example
+    z_train, y_train, z_val, y_val, _, _ = get_regression_toy_example
     state, svgd = initialize_svgd_state(stein_vi_regression_example)
     step_fn = svgd.step
     particle_indices = jnp.array([9, 4])
@@ -85,10 +82,9 @@ def test_get_batched_optimizer_state(stein_vi_regression_example):
     assert batched_optimizer_state[0].nu.shape == (1, 252)
 
 
-def test_update_optimizer_state(stein_vi_regression_example):
+def test_update_optimizer_state(stein_vi_regression_example, get_regression_toy_example):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=100)
-    z_train, y_train, _, _, _, _ = regression_toy_example
+    z_train, y_train, _, _, _, _ = get_regression_toy_example
 
     indices = jnp.array([4, 9])
     state, svgd = initialize_svgd_state(stein_vi_regression_example)

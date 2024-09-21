@@ -3,8 +3,7 @@ import jax
 import jax.numpy as jnp
 import copy
 
-from fixtures import stein_vi_regression_example
-from run_stein_vi.data.regression_toy_example import get_regression_toy_example
+from fixtures import stein_vi_regression_example, get_regression_toy_example
 
 from stein_vi.algorithm.svgd import set_up_svgd
 
@@ -23,9 +22,9 @@ from stein_vi.algorithm.model_training import (no_minibatch_training_loop, data_
         2,
     ]
 )
-def test_no_minibatch_training_loop(stein_vi_regression_example, patience_early_stopping):
+def test_no_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example, patience_early_stopping):
     # given
-    regression_toy_example = get_regression_toy_example(num_points=100)
+    regression_toy_example = get_regression_toy_example
     z_train, y_train, z_val, y_val, _, _ = regression_toy_example
     stein_vi_regression_example.parameter.batch_size = 0
     stein_vi_regression_example.parameter.particle_batch_size = 0
@@ -57,10 +56,10 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, patience_early_
         2,
     ]
 )
-def test_data_minibatch_training_loop(stein_vi_regression_example, patience_early_stopping):
+def test_data_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example, patience_early_stopping):
     # given
     key = jax.random.PRNGKey(1)
-    regression_toy_example = get_regression_toy_example(num_points=100)
+    regression_toy_example = get_regression_toy_example
     z_train, y_train, z_val, y_val, _, _ = regression_toy_example
     stein_vi_regression_example.parameter.batch_size = 36
     stein_vi_regression_example.parameter.particle_batch_size = 0
@@ -101,10 +100,10 @@ def test_data_minibatch_training_loop(stein_vi_regression_example, patience_earl
         2,
     ]
 )
-def test_particle_minibatch_training_loop(stein_vi_regression_example, patience_early_stopping):
+def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example, patience_early_stopping):
     # given
     key = jax.random.PRNGKey(1)
-    regression_toy_example = get_regression_toy_example(num_points=100)
+    regression_toy_example = get_regression_toy_example
     z_train, y_train, z_val, y_val, _, _ = regression_toy_example
     stein_vi_regression_example.parameter.num_particles = 10
     stein_vi_regression_example.parameter.batch_size = 0
@@ -150,10 +149,10 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, patience_
         2,
     ]
 )
-def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, patience_early_stopping):
+def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, get_regression_toy_example, patience_early_stopping):
     # given
     key = jax.random.PRNGKey(1)
-    regression_toy_example = get_regression_toy_example(num_points=100)
+    regression_toy_example = get_regression_toy_example
     z_train, y_train, z_val, y_val, _, _ = regression_toy_example
     stein_vi_regression_example.parameter.num_particles = 10
     stein_vi_regression_example.parameter.batch_size = 36
