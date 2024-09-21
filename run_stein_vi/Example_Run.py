@@ -310,7 +310,6 @@ def run_diabetes(info=False):
                                num_iterations=100, num_particles=10)
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
 
-
 # TODO: auch sehr schlecht
 
 def run_wine_quality(info=False):
@@ -375,3 +374,4 @@ def run_bike_sharing(info=False):
 
 if __name__ == "__main__":
     run_diabetes()
+

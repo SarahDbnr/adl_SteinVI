@@ -71,9 +71,10 @@ class SteinVI_BNN:
             particle_batch_size (int): The number of particles in a mini-batch of particles used for training.  Defaults to 0 (i.e., no batching).
             num_particles (int): The number of particles used in the process to approximate the posterior. Defaults to 10.
             num_iterations (int): The total number of training iterations. Defaults to 100.
+            rf_comparison (bool, optional): ???. Defaults to False.
             learning_rate (float, optional): Learning rate used for plain_svgd and ssvgd for the other algorithms the learning rate is included in the optimizer. Defaults to 0.0001.
         """
-        self.handler = Handler()
+        self.handler = Handler(rf_comparison)
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
 
@@ -102,6 +103,7 @@ class SteinVI_BNN:
         """
         init_param = self.nnet.init(key, x_train)
         param_vec, self.tree_def = ravel_pytree(init_param)
+
         self.initial_particle_vector = jax.random.normal(key, shape=(num_particles,) + param_vec.shape)
 
     def predict(self, weights, x_input, use_softmax=False):
