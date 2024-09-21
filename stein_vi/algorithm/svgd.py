@@ -122,4 +122,4 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
             return orig.at[indices].set(batched)
         return orig
 
-    return jax.tree_map(update_fn, optimizer_state, batched_state.opt_state)
+    return jax.tree.map(update_fn, optimizer_state, batched_state.opt_state)
