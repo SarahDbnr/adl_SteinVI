@@ -54,7 +54,7 @@ def run_MNIST(info=False):
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
     """
-    key = jax.random.PRNGKey(1)
+    key = jax.random.PRNGKey(3000)
 
     if info:
         datasets_info.print_mnist_dataset_info()
@@ -74,7 +74,7 @@ def run_MNIST(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=30, num_particles=5,mode_evaluation="full", mode_training_print="full")
+                               batch_size=300, num_iterations=30, num_particles=5, rf_comparison=True, mode_training_print="full")
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -310,11 +310,6 @@ def run_diabetes(info=False):
                                num_iterations=100, num_particles=10)
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
 
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.plot_residuals(z_test, y_test)
-    steinvi_svdg.plot_location_in_relation_to_scale(z_test)
-
-
 # TODO: auch sehr schlecht
 
 def run_wine_quality(info=False):
@@ -379,3 +374,4 @@ def run_bike_sharing(info=False):
 
 if __name__ == "__main__":
     run_MNIST()
+
