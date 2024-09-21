@@ -16,7 +16,8 @@ def test_parameter_init():
         particle_batch_size=10,
         num_particles=20,
         num_iterations=100,
-        learning_rate=0.001
+        learning_rate=0.001,
+        kernel_length=0.05
     )
 
     # then
@@ -50,7 +51,8 @@ def test_parameter_set_early_stopping():
         particle_batch_size=5,
         num_particles=10,
         num_iterations=50,
-        learning_rate=0.01
+        learning_rate=0.01,
+        kernel_length=0.1
     )
 
     # when

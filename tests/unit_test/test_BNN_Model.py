@@ -63,82 +63,65 @@ def test_flexible_simple_nn_regression():
 
 
 
+def test_build_model():
+    # given 
+    key = random.PRNGKey(0)
+    
+    # Create sample input data
+    x_train = jnp.ones((1, 28, 28))  
+    
+
+    hidden_layers = (10, 10)  
+    output_size = 10  
+    activation = nn.relu
+    kernel_init = nn.initializers.glorot_normal()
+    bias_init = nn.initializers.zeros
+    # when
+    nnet_model = build_model(hidden_layers, output_size, activation, kernel_init, bias_init)
+    
+    params = nnet_model.init(key, x_train)
+    
+    def count_params(params):
+        return sum(jnp.size(p) for p in jax.tree_util.tree_leaves(params))
+    
+    input_size = 28 * 28
+    expected_num_params = 0
+    
+    expected_num_params += input_size * hidden_layers[0] + hidden_layers[0]  
+    
+    for i in range(len(hidden_layers) - 1):
+        expected_num_params += hidden_layers[i] * hidden_layers[i + 1] + hidden_layers[i + 1]
+    
+    expected_num_params += hidden_layers[-1] * output_size + output_size
+
+    actual_num_params = count_params(params)
+    # then 
+    assert actual_num_params == expected_num_params, f"Expected {expected_num_params} parameters, but got {actual_num_params}"
+
+
+
+
 
 def test_flexible_simple_nn_all_ones():
-    # Set up the model
+    # given
     model = FlexibleSimpleNN(
-        hidden_layers=(2, 2),  # Small example for simplicity
-        output_size=2,  # Example output size for classification
+        hidden_layers=(2, 2), 
+        output_size=2,  
         activation=nn.relu,
         kernel_init=nn.initializers.ones,
         bias_init=nn.initializers.zeros
     )
-    
-    # Initialize random weights with key
     key = random.PRNGKey(0)
+    input_size = 4  
+    x_input = jnp.ones((1, input_size)) 
     
-    # Input data, all ones
-    input_size = 4  # Example flattened input size
-    x_input = jnp.ones((1, input_size))  # Batch size of 1, input size of 4 (all ones)
     
-    # Initialize parameters with the custom initializers
     params = model.init(key, x_input)
+    expected_output = input_size * 2 * 2  
     
-    # Get predictions from the model
-    predictions = model.apply(params, x_input)
-
-    # Manually calculate the expected output
-    expected_output = input_size * 2 * 2  # Each neuron in the first hidden layer receives input size * 1 + bias * 1
-    
-    # Since ReLU is used and input is positive, ReLU does nothing
     expected_final_output = jnp.array([expected_output] * model.output_size, dtype=jnp.float32)  # Ensure float type
-
-    # Ensure type consistency and compare values
+    # when 
+    predictions = model.apply(params, x_input)
+    # then
     assert jnp.allclose(predictions, expected_final_output, atol=1e-5), \
         f"Expected predictions: {expected_final_output}, but got: {predictions}"
-
-def test_build_model():
-    # Initialize random key
-    key = random.PRNGKey(0)
-    
-    # Create sample input data
-    x_train = jnp.ones((1, 28, 28))  # Example input for MNIST-like data, with shape (1, 28, 28)
-    
-    # Define model parameters
-    hidden_layers = (10, 10)  # Example hidden layers
-    output_size = 10  # Example output size for classification (10 classes)
-    activation = nn.relu
-    kernel_init = nn.initializers.glorot_normal()
-    bias_init = nn.initializers.zeros
-
-    # Call the build_model function
-    nnet_model = build_model(hidden_layers, output_size, activation, kernel_init, bias_init)
-    
-    # Initialize parameters using the model
-    params = nnet_model.init(key, x_train)
-    
-    # Flatten the parameters dictionary to count elements
-    def count_params(params):
-        return sum(jnp.size(p) for p in jax.tree_util.tree_leaves(params))
-    
-    # Calculate the expected number of parameters
-    input_size = 28 * 28  # Flattened input size
-    expected_num_params = 0
-    
-    # Input layer to first hidden layer
-    expected_num_params += input_size * hidden_layers[0] + hidden_layers[0]  # weights + biases
-    
-    # Hidden layers
-    for i in range(len(hidden_layers) - 1):
-        expected_num_params += hidden_layers[i] * hidden_layers[i + 1] + hidden_layers[i + 1]
-    
-    # Last hidden layer to output layer
-    expected_num_params += hidden_layers[-1] * output_size + output_size
-
-    # Test that the parameter vector has the correct length
-    actual_num_params = count_params(params)
-    assert actual_num_params == expected_num_params, f"Expected {expected_num_params} parameters, but got {actual_num_params}"
-
-
-if __name__ == "__main__":
-    test_build_model()
