@@ -12,13 +12,6 @@ from stein_vi.algorithm.model_training import (create_particle_minibatch_indices
                                                early_stopping_fn)
 
 
-@pytest.fixture
-def no_print():
-    return CaptureResult(
-        out='Training data shape: (7200, 2), Training labels shape: (7200,)\nValidation data shape: (800, 2), Validation labels shape: (800,)\nTest data shape: (2000, 2), Test labels shape: (2000,)\nTraining data shape: (72, 2), Training labels shape: (72,)\nValidation data shape: (8, 2), Validation labels shape: (8,)\nTest data shape: (20, 2), Test labels shape: (20,)\n',
-        err='')
-
-
 def test_create_minibatches(get_regression_toy_example):
     # given
     key = jax.random.PRNGKey(1)
@@ -57,7 +50,6 @@ def test_create_particle_minibatch_indices(batch_size, expected_length):
     assert jnp.all(sorted_indices == expected_indices)
 
 
-# TODO: check
 @pytest.mark.parametrize(
     "mode_training_print, iteration, check_no_print_expected",
     [
@@ -68,7 +60,7 @@ def test_create_particle_minibatch_indices(batch_size, expected_length):
     ]
 )
 def test_get_evaluation_and_apply_early_stopping_logic(capsys, stein_vi_regression_example, get_regression_toy_example,
-                                                       no_print, mode_training_print, iteration,
+                                                       mode_training_print, iteration,
                                                        check_no_print_expected):
     # given
     z_train, y_train, z_val, y_val, _, _ = get_regression_toy_example
@@ -93,7 +85,7 @@ def test_get_evaluation_and_apply_early_stopping_logic(capsys, stein_vi_regressi
     assert len(stein_vi_regression_example.evaluation_metrics_2) == keep_len_2 + 1
     assert patience_counter == 0
     capture = capsys.readouterr()
-    check_no_print = (capture == no_print)
+    check_no_print = (capture.out == '')
     assert check_no_print == check_no_print_expected
 
 
