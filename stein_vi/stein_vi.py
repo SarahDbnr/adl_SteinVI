@@ -61,5 +61,3 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     else:
         accuracy_test, _, predictions_test = steinvi.evaluate_fn(steinvi.state, z_test, y_test, print_out=True)
         print_summary_over_particles_multiclass(predictions_test)
-
-    return steinvi
