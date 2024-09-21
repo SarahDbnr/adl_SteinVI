@@ -65,5 +65,3 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     elif steinvi.handler.rf_comparison and steinvi.use_for_regression == False:
         print("\nRandom Forest comparison")
         print("Test Accuracy:   ", random_forest(dataset)['Test Accuracy'])
-
-    return steinvi
