@@ -40,7 +40,7 @@ class SteinVI_BNN:
 
     use_for_regression: bool
 
-    log_posteriori: callable  # TODO: object seems to be wrong here???
+    log_posteriori: callable
     nnet: flax.linen.Module
     tree_def: None
     initial_particle_vector: jnp.array
@@ -171,7 +171,6 @@ class SteinVI_BNN:
         Raises: 
             ValueError: If this method is called for a classification task instead of regression.
         """
-        # TODO: check
         if not self.use_for_regression:
             ValueError("This plot is only available for regression problems.")
         plots.plot_residuals(self.predict_over_particles(z_test)[0], y_test, num_particles=self.parameter.num_particles)
