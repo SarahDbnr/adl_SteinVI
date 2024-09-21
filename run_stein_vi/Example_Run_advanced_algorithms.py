@@ -24,12 +24,13 @@ def run_MNIST_GD(info=False):
     mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
     z_train, _, _, _, z_test, y_test = mnist_dataset
 
-    optimizer = sgd(0.001)
+    optimizer = sgd(0.0001)
     
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=300, num_iterations=30, num_particles=5)
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
+                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
+                               num_particles=5, learning_rate=0.0001)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -57,8 +58,8 @@ def run_MNIST_ssvgd(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
-                               num_particles=2, learning_rate=0.001)
+                               use_for_regression=False, batch_size=300, particle_batch_size=0, num_iterations=100,
+                               num_particles=5, learning_rate=0.0001)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="ssvgd")
 
@@ -83,16 +84,15 @@ def run_MNIST_quasiSVN(info=False):
     z_train, _, _, _, z_test, y_test = mnist_dataset
 
     optimizer = lbfgs(
-        learning_rate=0.5,  # Increase learning rate to speed up convergence
+        learning_rate=0.00001,  # Increase learning rate to speed up convergence
         memory_size=100,  # Memory size to store previous gradients
         scale_init_precond=False,  # Apply scaling to initial preconditioning
     )
     nnet_model = build_model(output_size=10, hidden_layers=(200, 10))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, use_for_regression=False, optimizer=optimizer,
-                               batch_size=30000, num_iterations=30, num_particles=9, mode_training_print="full",
-                               particle_batch_size=0)
-
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
+                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
+                               num_particles=5, learning_rate=0.0001)
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="quasi_svn")
 
     steinvi_svdg.plot_val_metric_over_iter()
