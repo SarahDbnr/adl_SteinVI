@@ -75,16 +75,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#comparison-with-random-forest">Comparison with Random Forest</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stein_vi/index.html">Source</a><ul>
@@ -223,7 +218,6 @@
 <li><p><a class="reference internal" href="#code-structure-training-and-evaluation"><span class="std std-ref">Code Structure: Training and Evaluation</span></a></p></li>
 <li><p><a class="reference internal" href="#understanding-the-main-classes"><span class="std std-ref">Understanding the Main Classes</span></a></p></li>
 <li><p><a class="reference internal" href="#collected-findings"><span class="std std-ref">Collected Findings</span></a></p></li>
-<li><p><a class="reference internal" href="#further-reading"><span class="std std-ref">Further Reading</span></a></p></li>
 </ol>
 </section>
 <section id="introduction">
@@ -561,7 +555,7 @@ Within <code class="docutils literal notranslate"><span class="pre">train_with_s
 </div>
 </li>
 <li><p><strong>Model Updates:</strong>
-During each iteration, the <code class="docutils literal notranslate"><span class="pre">update_fn</span></code> defined in <code class="docutils literal notranslate"><span class="pre">svgd.py</span></code> updates the model’s particles.</p>
+During each iteration, the <code class="docutils literal notranslate"><span class="pre">update_fn</span></code> defined in <code class="docutils literal notranslate"><span class="pre">svgd.py</span></code> updates the models particles.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">model_training.py</span></code> (within the selected training loop):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">):</span> 
    <span class="c1"># Create mini-batches of data and particles </span>
@@ -609,42 +603,172 @@ After training, you can evaluate the model on test data and visualize results.</
 </section>
 <section id="understanding-the-main-classes">
 <span id="id13"></span><h2>Understanding the Main Classes<a class="headerlink" href="#understanding-the-main-classes" title="Link to this heading"></a></h2>
-<section id="advanced-usage">
-<h3>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Link to this heading"></a></h3>
-<section id="mini-batching">
-<h4>Mini-batching<a class="headerlink" href="#mini-batching" title="Link to this heading"></a></h4>
-<p>The project supports different mini-batching modes for both data and particles. You can set these in the <code class="docutils literal notranslate"><span class="pre">steinvi.parameter</span></code> object:</p>
+<p>In this project, the primary class you will interact with is the SteinVI_BNN class, which manages the training and evaluation of Bayesian Neural Networks using Stein Variational Inference methods. Understanding this class and its associated components is crucial for configuring and executing your experiments effectively.</p>
+<section id="steinvi-bnn-class">
+<h3><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class<a class="headerlink" href="#steinvi-bnn-class" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> class encapsulates the entire training process, managing particles, model configurations, and evaluation metrics. Below, we detail the key parameters and methods you need to know to set up and run your BNN.</p>
+<p><strong>Class Initialization Parameters</strong></p>
+<p>When creating an instance of SteinVI_BNN, you can specify various parameters to customize your training run:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: Size of data mini-batches (0 for full batch)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">particle_batch_size</span></code>: Size of particle mini-batches (0 for full batch)</p></li>
+<li><p>key: jax.random.PRNGKey</p>
+<ul>
+<li><p>A JAX random key used for initializing particles and managing randomness.</p></li>
 </ul>
-</section>
-<section id="early-stopping">
-<h4>Early Stopping<a class="headerlink" href="#early-stopping" title="Link to this heading"></a></h4>
-<p>Early stopping is implemented to prevent overfitting. You can configure it using:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">steinvi.parameter.early_stopping</span></code>: Enable/disable early stopping</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">steinvi.parameter.patience_early_stopping</span></code>: Number of iterations to wait for improvement</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">steinvi.parameter.min_delta_early_stopping</span></code>: Minimum change to qualify as improvement</p></li>
+</li>
+<li><p>x_train: jax.numpy.ndarray</p>
+<ul>
+<li><p>The input training data, used to initialize the neural network’s parameters.</p></li>
 </ul>
-</section>
-<section id="comparison-with-random-forest">
-<h4>Comparison with Random Forest<a class="headerlink" href="#comparison-with-random-forest" title="Link to this heading"></a></h4>
-<p>You can compare the performance of your SVGD-based Bayesian Neural Network with a Random Forest model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random_forest</span> <span class="kn">import</span> <span class="n">random_forest</span>
-
-<span class="n">rf_metrics</span> <span class="o">=</span> <span class="n">random_forest</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">task_type</span><span class="o">=</span><span class="s1">&#39;regression&#39;</span><span class="p">)</span>  <span class="c1"># or &#39;classification&#39;</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">rf_metrics</span><span class="p">)</span>
+</li>
+<li><p>nnet: flax.linen.Module</p>
+<ul>
+<li><p>The neural network model to be optimized.</p></li>
+</ul>
+</li>
+<li><p>use_for_regression: bool</p>
+<ul>
+<li><p>Indicates whether the model is used for regression (True) or classification (False).</p></li>
+</ul>
+</li>
+<li><p>optimizer: optax.GradientTransformation</p>
+<ul>
+<li><p>The optimizer used for updating model parameters. Examples include optax.adam or optax.sgd.</p></li>
+</ul>
+</li>
+<li><p>mode_training_print: str (optional, default ‘none’)</p>
+<ul>
+<li><p>Controls the verbosity of training logs. Options are:</p>
+<ul>
+<li><p>‘full’: Prints detailed information during training.</p></li>
+<li><p>‘reduced’: Prints minimal information.</p></li>
+<li><p>‘none’: Disables training logs.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mode_evaluation: str (optional, default ‘full’)</p>
+<ul>
+<li><p>Determines the level of evaluation during training. Options are:</p>
+<ul>
+<li><p>‘full’: Performs comprehensive evaluation.</p></li>
+<li><p>‘minimal’: Collects essential evaluation metrics only.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>early_stopping: bool (optional, default False)</p>
+<ul>
+<li><p>Enables early stopping based on validation metrics if set to True.</p></li>
+</ul>
+</li>
+<li><p>image_data: bool (optional, default False)</p>
+<ul>
+<li><p>Specifies whether the input data consists of images, affecting certain visualizations.</p></li>
+</ul>
+</li>
+<li><p>batch_size: int (optional, default 0)
+-Size of data mini-batches. Set to 0 for full-batch training.</p></li>
+<li><p>particle_batch_size: int (optional, default 0)</p>
+<ul>
+<li><p>Size of particle mini-batches. Set to 0 to update all particles simultaneously.</p></li>
+</ul>
+</li>
+<li><p>num_particles: int (optional, default 10)</p>
+<ul>
+<li><p>Number of particles used to approximate the posterior distribution.</p></li>
+</ul>
+</li>
+<li><p>num_iterations: int (optional, default 100)</p>
+<ul>
+<li><p>Total number of training iterations.</p></li>
+</ul>
+</li>
+<li><p>learning_rate: float (optional, default 0.0001)</p>
+<ul>
+<li><p>Learning rate used for certain algorithms. For algorithms like SVGD, the learning rate is included in the optimizer.</p></li>
+</ul>
+</li>
+<li><p>kernel_length: float (optional, default 0.005)</p>
+<ul>
+<li><p>Length scale parameter for the RBF kernel used in SVGD.</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Create an instance of SteinVI_BNN with custom parameters</span>
+<span class="n">steinvi</span> <span class="o">=</span> <span class="n">SteinVI_BNN</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">x_train</span><span class="o">=</span><span class="n">z_train</span><span class="p">,</span> <span class="n">nnet</span><span class="o">=</span><span class="n">nnet_model</span><span class="p">,</span> <span class="n">use_for_regression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">mode_training_print</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="n">mode_evaluation</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="n">early_stopping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">particle_batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">num_particles</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">num_iterations</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">kernel_length</span><span class="o">=</span><span class="mf">0.01</span> <span class="p">)</span>
 </pre></div>
 </div>
+<p><strong>Additional Methods and Attributes</strong></p>
+<p>The SteinVI_BNN class provides several methods for model evaluation and visualization:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">predict(z)</span></code>: Makes predictions for input data z using the trained model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predict_over_particles(z)</span></code>: Returns predictions over all particles, useful for uncertainty estimation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evaluate_fn(state,</span> <span class="pre">z_val,</span> <span class="pre">y_val,</span> <span class="pre">print_out)</span></code>: Evaluates the model on validation data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_val_metric_over_iter()</span></code>: Plots validation metrics over training iterations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_residuals(z_test,</span> <span class="pre">y_test)</span></code>: Plots residuals between predictions and true values (for regression tasks).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale(z_test)</span></code>: Visualizes the relationship between prediction means and uncertainties.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view_misclassified(z_test,</span> <span class="pre">y_test)</span></code>: Displays misclassified examples and their predicted probabilities (for classification tasks).</p></li>
+</ul>
 </section>
+<section id="configuring-training-runs">
+<h3>Configuring Training Runs<a class="headerlink" href="#configuring-training-runs" title="Link to this heading"></a></h3>
+<p>You can further customize your training runs by adjusting parameters in the Parameter and Handler classes.</p>
+<p><strong>- Setting Early Stopping Criteria</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Set early stopping parameters</span>
+<span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">set_early_stopping</span><span class="p">(</span> <span class="n">warm_up_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.001</span> <span class="p">)</span> 
+</pre></div>
+</div>
+<p><strong>- Adjusting Training Print Modes</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Set training print mode to &#39;reduced&#39;, &#39;minimal&#39; also possible</span>
+<span class="n">steinvi</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">set_training_print_mode</span><span class="p">(</span><span class="s1">&#39;reduced&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>- Enabling Random Feature Comparison</strong>
+If you wish to compare your BNN with random feature models like Random Forests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Enable random feature comparison</span>
+<span class="n">steinvi</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">rf_comparison</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>A detailed example of all classes can also be found in the generated documentation under <a class="reference internal" href="stein_vi/Classes/index.html"><span class="std std-doc">Classes</span></a>.</p>
 </section>
 </section>
 <section id="collected-findings">
 <span id="id14"></span><h2>Collected Findings<a class="headerlink" href="#collected-findings" title="Link to this heading"></a></h2>
-</section>
-<section id="further-reading">
-<span id="id15"></span><h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading"></a></h2>
+<p>CURRENTLY JUST FILLET</p>
+<p>Below is a summary of the general findings from our experiments using different Stein Variational Inference algorithms on Bayesian Neural Networks.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Aspect</strong></p></th>
+<th class="head"><p><strong>Findings</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Algorithm Performance</strong></p></td>
+<td><p>- <strong>SVGD</strong>: Consistently performed well across different tasks.<br>- <strong>sSVGD</strong>: Introduced beneficial stochasticity but required careful tuning.<br>- <strong>quasi-SVN</strong>: Achieved faster convergence but at a higher computational cost.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Number of Particles</strong></p></td>
+<td><p>- Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load linearly.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Batch Size</strong></p></td>
+<td><p>- Smaller data batch sizes introduced more noise but helped in escaping local minima.<br>- Particle mini-batching helped manage memory usage when using a large number of particles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Learning Rate and Optimizers</strong></p></td>
+<td><p>- Adaptive optimizers like Adam performed better than plain SGD.<br>- Learning rate schedules (e.g., exponential decay) improved training stability over long runs.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Kernel Parameters in SVGD</strong></p></td>
+<td><p>- The kernel length scale significantly impacted particle updates.<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Training Dynamics</strong></p></td>
+<td><p>- Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.<br>- quasi-SVN converged faster but was computationally intensive per iteration.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Uncertainty Estimation</strong></p></td>
+<td><p>- BNNs trained with Stein VI methods provided meaningful uncertainty estimates.<br>- Particles captured different modes of the posterior, enhancing uncertainty quantification.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Recommendations</strong></p></td>
+<td><p>- Use SVGD for general purposes and when resources are limited.<br>- Consider quasi-SVN for faster convergence if computational cost is acceptable.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

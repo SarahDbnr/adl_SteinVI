@@ -11,7 +11,6 @@
 8. [Code Structure: Training and Evaluation](code-structure-training-and-evaluation)
 9. [Understanding the Main Classes](understanding-the-main-classes)
 10. [Collected Findings](collected-findings)
-11. [Further Reading](further-reading)
 
 (introduction)=
 ## Introduction
@@ -409,36 +408,109 @@ Below is an overview of how these files interact during execution, with code exa
 (understanding-the-main-classes)=
 ## Understanding the Main Classes
 
-### Advanced Usage
+In this project, the primary class you will interact with is the SteinVI_BNN class, which manages the training and evaluation of Bayesian Neural Networks using Stein Variational Inference methods. Understanding this class and its associated components is crucial for configuring and executing your experiments effectively.
 
-#### Mini-batching
+### `SteinVI_BNN` Class
 
-The project supports different mini-batching modes for both data and particles. You can set these in the `steinvi.parameter` object:
+The `SteinVI_BNN` class encapsulates the entire training process, managing particles, model configurations, and evaluation metrics. Below, we detail the key parameters and methods you need to know to set up and run your BNN.
 
-- `batch_size`: Size of data mini-batches (0 for full batch)
-- `particle_batch_size`: Size of particle mini-batches (0 for full batch)
+**Class Initialization Parameters**
 
-#### Early Stopping
+When creating an instance of SteinVI_BNN, you can specify various parameters to customize your training run:
 
-Early stopping is implemented to prevent overfitting. You can configure it using:
+- key: jax.random.PRNGKey
+   - A JAX random key used for initializing particles and managing randomness.
 
-- `steinvi.parameter.early_stopping`: Enable/disable early stopping
-- `steinvi.parameter.patience_early_stopping`: Number of iterations to wait for improvement
-- `steinvi.parameter.min_delta_early_stopping`: Minimum change to qualify as improvement
-
-#### Comparison with Random Forest
-
-You can compare the performance of your SVGD-based Bayesian Neural Network with a Random Forest model:
+- x_train: jax.numpy.ndarray
+   - The input training data, used to initialize the neural network's parameters.
+- nnet: flax.linen.Module
+   - The neural network model to be optimized.
+- use_for_regression: bool
+   - Indicates whether the model is used for regression (True) or classification (False).
+- optimizer: optax.GradientTransformation
+   - The optimizer used for updating model parameters. Examples include optax.adam or optax.sgd.
+- mode_training_print: str (optional, default 'none')
+   - Controls the verbosity of training logs. Options are:
+      - 'full': Prints detailed information during training.
+      - 'reduced': Prints minimal information.
+      - 'none': Disables training logs.
+- mode_evaluation: str (optional, default 'full')
+   - Determines the level of evaluation during training. Options are:
+      - 'full': Performs comprehensive evaluation.
+      - 'minimal': Collects essential evaluation metrics only.
+- early_stopping: bool (optional, default False)
+   - Enables early stopping based on validation metrics if set to True.
+- image_data: bool (optional, default False)
+   - Specifies whether the input data consists of images, affecting certain visualizations.
+- batch_size: int (optional, default 0)
+   -Size of data mini-batches. Set to 0 for full-batch training.
+- particle_batch_size: int (optional, default 0)
+   - Size of particle mini-batches. Set to 0 to update all particles simultaneously.
+- num_particles: int (optional, default 10)
+   - Number of particles used to approximate the posterior distribution.
+- num_iterations: int (optional, default 100)
+   - Total number of training iterations.
+- learning_rate: float (optional, default 0.0001)
+   - Learning rate used for certain algorithms. For algorithms like SVGD, the learning rate is included in the optimizer.
+-  kernel_length: float (optional, default 0.005)
+   - Length scale parameter for the RBF kernel used in SVGD.
 
 ```python
-from random_forest import random_forest
-
-rf_metrics = random_forest(dataset, task_type='regression')  # or 'classification'
-print(rf_metrics)
+#Create an instance of SteinVI_BNN with custom parameters
+steinvi = SteinVI_BNN(key=key, x_train=z_train, nnet=nnet_model, use_for_regression=False, optimizer=optimizer, mode_training_print='full', mode_evaluation='full', early_stopping=True, image_data=True, batch_size=300, particle_batch_size=5, num_particles=50, num_iterations=500, kernel_length=0.01 )
 ```
+
+**Additional Methods and Attributes**
+
+The SteinVI_BNN class provides several methods for model evaluation and visualization:
+- `predict(z)`: Makes predictions for input data z using the trained model.
+- `predict_over_particles(z)`: Returns predictions over all particles, useful for uncertainty estimation.
+- `evaluate_fn(state, z_val, y_val, print_out)`: Evaluates the model on validation data.
+- `plot_val_metric_over_iter()`: Plots validation metrics over training iterations.
+- `plot_residuals(z_test, y_test)`: Plots residuals between predictions and true values (for regression tasks).
+- `plot_location_in_relation_to_scale(z_test)`: Visualizes the relationship between prediction means and uncertainties.
+- `view_misclassified(z_test, y_test)`: Displays misclassified examples and their predicted probabilities (for classification tasks).
+
+### Configuring Training Runs
+
+You can further customize your training runs by adjusting parameters in the Parameter and Handler classes.
+
+**- Setting Early Stopping Criteria**
+
+```python
+#Set early stopping parameters
+steinvi.parameter.set_early_stopping( warm_up_iterations=50, patience=10, min_delta=0.001 ) 
+```
+
+**- Adjusting Training Print Modes**
+
+```python
+#Set training print mode to 'reduced', 'minimal' also possible
+steinvi.handler.set_training_print_mode('reduced')
+```
+
+**- Enabling Random Feature Comparison**
+If you wish to compare your BNN with random feature models like Random Forests:
+```python
+#Enable random feature comparison
+steinvi.handler.rf_comparison = True
+```
+
+A detailed example of all classes can also be found in the generated documentation under [Classes](stein_vi/Classes/index.rst).
 
 (collected-findings)=
 ## Collected Findings
+CURRENTLY JUST FILLET
 
-(further-reading)=
-## Further Reading
+Below is a summary of the general findings from our experiments using different Stein Variational Inference algorithms on Bayesian Neural Networks.
+
+| **Aspect**                       | **Findings**                                                                                                                                                                                                                             |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Algorithm Performance**        | - **SVGD**: Consistently performed well across different tasks.<br>- **sSVGD**: Introduced beneficial stochasticity but required careful tuning.<br>- **quasi-SVN**: Achieved faster convergence but at a higher computational cost.       |
+| **Number of Particles**          | - Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load linearly.                                 |
+| **Batch Size**                   | - Smaller data batch sizes introduced more noise but helped in escaping local minima.<br>- Particle mini-batching helped manage memory usage when using a large number of particles.                                                      |
+| **Learning Rate and Optimizers** | - Adaptive optimizers like Adam performed better than plain SGD.<br>- Learning rate schedules (e.g., exponential decay) improved training stability over long runs.                                                                     |
+| **Kernel Parameters in SVGD**    | - The kernel length scale significantly impacted particle updates.<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.            |
+| **Training Dynamics**            | - Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.<br>- quasi-SVN converged faster but was computationally intensive per iteration.      |
+| **Uncertainty Estimation**       | - BNNs trained with Stein VI methods provided meaningful uncertainty estimates.<br>- Particles captured different modes of the posterior, enhancing uncertainty quantification.                                                         |
+| **Recommendations**              | - Use SVGD for general purposes and when resources are limited.<br>- Consider quasi-SVN for faster convergence if computational cost is acceptable.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting. |
