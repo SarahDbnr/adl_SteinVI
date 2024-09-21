@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
@@ -135,6 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -223,7 +223,7 @@
 <section id="introduction">
 <span id="id1"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
 <p>This guide will help you set up and run Stein Variation Inference algorithms for Bayesian Neural Networks (BNNs). Our project leverages a particle-based variational inference method, to approximate Bayesian posterior distributions over the weights of neural networks.</p>
-<p>Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library <a class="reference external" href="https://blackjax-devs.github.io/blackjax/">Blackjax</a>, for BNNs.</p>
+<p>Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) based on the python library <a class="reference external" href="https://blackjax-devs.github.io/blackjax/">Blackjax</a>, for BNNs.</p>
 <p>This repository employs Stein Variational Inference (Stein VI) to perform Bayesian Inference via Variational Gradient Descent (VGD) for optimizing Bayesian Neural Networks. The approach is rooted in the work described in the paper <a class="reference external" href="https://arxiv.org/abs/1608.04471">Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm</a>, which lays the foundation for this particle-based approximation method.</p>
 </section>
 <section id="collaborative-work">
@@ -277,13 +277,10 @@ Ensure that <code class="docutils literal notranslate"><span class="pre">PYTHONP
 </section>
 <section id="project-structure">
 <span id="id5"></span><h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD), stochastic Stein Variational Gradient Descent (sSVGD) and Stein Variantional Newton method (SVN). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD) and stochastic Stein Variational Gradient Descent (sSVGD). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 stein_vi/
 ├── algorithm/
-│   ├── quasiSVN/
-│   │   ├── local_blackjax_file_adjusted_for_lbfgs.py
-│   │   └── quasiSVN.py
 │   ├── sSVGD/
 │   │   ├── local_blackjax_file_with_adjustments_for_sSVGD.py
 │   │   ├── matrices_for_noise_matrix.py
@@ -306,7 +303,7 @@ stein_vi/
 └── stein_vi.py
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">run_stein_vi</span></code> directory provides ready-to-run examples that use the core logic from the <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> package. These scripts demonstrate how to use the SVGD, sSVGD and SVN-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">run_stein_vi</span></code> directory provides ready-to-run examples that use the core logic from the <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> package. These scripts demonstrate how to use the SVGD and sSVGD based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 run_stein_vi/
 ├── data/
@@ -340,23 +337,13 @@ run_stein_vi/
 <li><p><strong>Implementation</strong>: sSVGD is implemented with some modifications to the <code class="docutils literal notranslate"><span class="pre">blackjax</span></code> framework to adjust the noise term for better performance. The noise is scaled appropriately to match the magnitude of the particles.</p></li>
 </ul>
 </section>
-<section id="stein-variational-newton-method-svn">
-<h3>Stein Variational Newton Method (SVN)<a class="headerlink" href="#stein-variational-newton-method-svn" title="Link to this heading"></a></h3>
-<p>ADD HERE A ADJUSTMENT FOR QUASI SVN</p>
-<ul class="simple">
-<li><p><strong>Source</strong>: The Stein Variational Newton method builds on SVGD by approximating second-order derivatives, allowing for faster convergence in certain cases.</p></li>
-<li><p><strong>What it does</strong>: SVN aims to improve the efficiency of particle updates by using second-order information (like Newton’s method) to refine the gradient updates.</p></li>
-<li><p><strong>Implementation</strong>: This is integrated using a modified version of <code class="docutils literal notranslate"><span class="pre">blackjax</span></code> with the <code class="docutils literal notranslate"><span class="pre">LBFGS</span></code> optimizer from <code class="docutils literal notranslate"><span class="pre">optax</span></code>, making it more suitable for optimization problems with fewer iterations but higher computational complexity.</p></li>
-</ul>
-</section>
 <section id="summary-of-usage">
 <h3>Summary of Usage<a class="headerlink" href="#summary-of-usage" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>SVGD</strong>: General-purpose, particle-based inference method, efficient for most tasks.</p></li>
 <li><p><strong>sSVGD</strong>: Adds stochastic noise to SVGD, particularly useful for larger datasets and models.</p></li>
-<li><p><strong>SVN</strong>: A second-order method that can converge faster for certain problems but at a higher computational cost.</p></li>
 </ul>
-<p>These algorithms are used interchangeably within the <code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> class to manage the training of BNNs. You can configure the specific algorithm you want to use in the setup phase by calling the corresponding setup functions (<code class="docutils literal notranslate"><span class="pre">set_up_svgd</span></code>, <code class="docutils literal notranslate"><span class="pre">set_up_ssvgd</span></code>, or <code class="docutils literal notranslate"><span class="pre">set_up_quasi_SVN</span></code>).</p>
+<p>These algorithms are used interchangeably within the <code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> class to manage the training of BNNs. You can configure the specific algorithm you want to use in the setup phase by calling the corresponding setup functions (<code class="docutils literal notranslate"><span class="pre">set_up_svgd</span></code> or <code class="docutils literal notranslate"><span class="pre">set_up_ssvgd</span></code>).</p>
 </section>
 </section>
 <section id="running-the-examples">
@@ -404,7 +391,7 @@ SVGD is used on FashionMNIST for image classification tasks:</p>
 </section>
 <section id="example-run-advanced-algorithms-py">
 <span id="id9"></span><h3>Example_Run_advanced_algorithms.py<a class="headerlink" href="#example-run-advanced-algorithms-py" title="Link to this heading"></a></h3>
-<p>This file showcases more advanced algorithms, such as <strong>quasi-SVN</strong> and <strong>sSVGD</strong> as well as <strong>SVGD</strong>, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.</p>
+<p>This file showcases more advanced algorithms, such as <strong>sSVGD</strong> as well as <strong>SVGD</strong>, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.</p>
 <section id="id10">
 <h4>Available Runs:<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
 <ul>
@@ -419,13 +406,6 @@ Runs MNIST classification with SVGD using plain gradient descent:</p>
 Runs MNIST classification with stochastic Stein Variational Gradient Descent (sSVGD):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">run_MNIST_ssvgd</span><span class="p">()</span>
-</pre></div>
-</div>
-</li>
-<li><p><strong>MNIST with quasi-SVN</strong><br />
-Uses quasi Stein Variational Newton (SVN) method for MNIST classification:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">run_MNIST_quasiSVN</span><span class="p">()</span>
 </pre></div>
 </div>
 </li>
@@ -744,7 +724,7 @@ If you wish to compare your BNN with random feature models like Random Forests:<
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>Algorithm Performance</strong></p></td>
-<td><p>- <strong>SVGD</strong>: Consistently performed well across different tasks.<br>- <strong>sSVGD</strong>: Introduced beneficial stochasticity but required careful tuning.<br>- <strong>quasi-SVN</strong>: Achieved faster convergence but at a higher computational cost.</p></td>
+<td><p>- <strong>SVGD</strong>: Consistently performed well across different tasks.<br>- <strong>sSVGD</strong>: Introduced beneficial stochasticity but required careful tuning.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Number of Particles</strong></p></td>
 <td><p>- Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load linearly.</p></td>
@@ -759,13 +739,13 @@ If you wish to compare your BNN with random feature models like Random Forests:<
 <td><p>- The kernel length scale significantly impacted particle updates.<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Training Dynamics</strong></p></td>
-<td><p>- Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.<br>- quasi-SVN converged faster but was computationally intensive per iteration.</p></td>
+<td><p>- Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Uncertainty Estimation</strong></p></td>
 <td><p>- BNNs trained with Stein VI methods provided meaningful uncertainty estimates.<br>- Particles captured different modes of the posterior, enhancing uncertainty quantification.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Recommendations</strong></p></td>
-<td><p>- Use SVGD for general purposes and when resources are limited.<br>- Consider quasi-SVN for faster convergence if computational cost is acceptable.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting.</p></td>
+<td><p>- Use SVGD for general purposes and when resources are limited.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting.</p></td>
 </tr>
 </tbody>
 </table>

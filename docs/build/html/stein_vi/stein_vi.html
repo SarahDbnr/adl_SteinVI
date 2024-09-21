@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../get_started.html#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
@@ -75,16 +74,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Source</a><ul class="current">
@@ -140,6 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="algorithm/random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="algorithm/random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -220,7 +215,6 @@ Also prints out a score for the performance of the network on the test dataset.<
 <dt>Algorithms:</dt><dd><ul class="simple">
 <li><p><strong>svgd (Stein Variational Gradient Descent)</strong>: Uses the blackjax implementation of SVGD.</p></li>
 <li><p><strong>ssvgd (Stochastic Stein Variational Gradient Descent)</strong>: A variant of plain_svgd where noise is added to the particle updates. (Attention: Often in our BNN the gradient and the weights have quite high values e.g. (-40000;40000) and noise calculated based on the paper “A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD”  is very small since the kernel is used to scale the variance and when using the RBF_Kernel the values are between 0 and 1.</p></li>
-<li><p><strong>quasi_svn</strong>: Here the optax optimizer LBFGS needs to be used, allowing for second-order updates. Note: This method does not support particle batching, and will raise an error if attempted.</p></li>
 </ul>
 </dd>
 </dl>

@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
@@ -66,22 +65,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#available-runs">Available Runs:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Source</a><ul class="current">
@@ -137,6 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -211,22 +209,8 @@
 <h1>quasiSVN<a class="headerlink" href="#quasisvn" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="quasiSVN.html">quasiSVN</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quasiSVN.html#stein_vi.algorithm.quasiSVN.quasiSVN.get_batched_optimizer_state"><code class="docutils literal notranslate"><span class="pre">get_batched_optimizer_state()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="quasiSVN.html#stein_vi.algorithm.quasiSVN.quasiSVN.initialize_svgd_state"><code class="docutils literal notranslate"><span class="pre">initialize_svgd_state()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="quasiSVN.html#stein_vi.algorithm.quasiSVN.quasiSVN.particle_minibatching"><code class="docutils literal notranslate"><span class="pre">particle_minibatching()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="quasiSVN.html#stein_vi.algorithm.quasiSVN.quasiSVN.set_up_quasi_SVN"><code class="docutils literal notranslate"><span class="pre">set_up_quasi_SVN()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="quasiSVN.html#stein_vi.algorithm.quasiSVN.quasiSVN.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.as_top_level_api"><code class="docutils literal notranslate"><span class="pre">as_top_level_api()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.build_kernel"><code class="docutils literal notranslate"><span class="pre">build_kernel()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.init"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.rbf_kernel"><code class="docutils literal notranslate"><span class="pre">rbf_kernel()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.update_median_heuristic"><code class="docutils literal notranslate"><span class="pre">update_median_heuristic()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="quasiSVN.html">quasiSVN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
 </ul>
 </div>
 </section>

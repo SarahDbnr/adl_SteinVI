@@ -54,20 +54,31 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#running-the-examples">Running the Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#running-the-examples">Running the Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-py">Example_Run.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#available-runs">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Source</a><ul class="current">
@@ -123,6 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -194,61 +206,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs">
-<span id="local-blackjax-file-adjusted-for-lbfgs"></span><h1>local_blackjax_file_adjusted_for_lbfgs<a class="headerlink" href="#module-stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs" title="Link to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.as_top_level_api">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.</span></span><span class="sig-name descname"><span class="pre">as_top_level_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_logdensity_fn:</span> <span class="pre">~typing.Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdensity_fn:</span> <span class="pre">~typing.Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">rbf_kernel&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_kernel_parameters:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">update_median_heuristic&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.as_top_level_api" title="Link to this definition"></a></dt>
-<dd><p>Implements the (basic) user interface for the quasi SVN algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grad_logdensity_fn</strong> – gradient, or an estimate, of the target log density function to samples approximately from</p></li>
-<li><p><strong>optimizer</strong> – Optax compatible optimizer, which conforms to the <cite>optax.GradientTransformation</cite> protocol</p></li>
-<li><p><strong>kernel</strong> – positive semi definite kernel</p></li>
-<li><p><strong>update_kernel_parameters</strong> – function that updates the kernel parameters given the current state of the particles</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">SamplingAlgorithm</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.build_kernel">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.</span></span><span class="sig-name descname"><span class="pre">build_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTransformation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.build_kernel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.init">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool_</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool_</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayLikeTree</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ArrayLikeTree</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool_</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayLikeTree</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ArrayLikeTree</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GradientTransformation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SVGDState</span></span></span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.init" title="Link to this definition"></a></dt>
-<dd><p>Initializes Stein Variational Gradient Descent Algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>initial_particles</strong> – Initial set of particles to start the optimization</p></li>
-<li><p><strong>kernel_paremeters</strong> – Arguments to the kernel function</p></li>
-<li><p><strong>optimizer</strong> – Optax compatible optimizer, which conforms to the <cite>optax.GradientTransformation</cite> protocol</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.rbf_kernel">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.</span></span><span class="sig-name descname"><span class="pre">rbf_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.rbf_kernel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.update_median_heuristic">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.</span></span><span class="sig-name descname"><span class="pre">update_median_heuristic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SVGDState</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SVGDState</span></span></span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.update_median_heuristic" title="Link to this definition"></a></dt>
-<dd><p>Median heuristic for setting the bandwidth of RBF kernels.</p>
-<p>A reasonable middle-ground for choosing the <cite>length_scale</cite> of the RBF kernel
-is to pick the empirical median of the squared distance between particles.
-This strategy is called the median heuristic.</p>
-</dd></dl>
-
+  <section id="local-blackjax-file-adjusted-for-lbfgs">
+<h1>local_blackjax_file_adjusted_for_lbfgs<a class="headerlink" href="#local-blackjax-file-adjusted-for-lbfgs" title="Link to this heading"></a></h1>
 </section>
 
 

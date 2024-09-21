@@ -17,7 +17,7 @@
 
 This guide will help you set up and run Stein Variation Inference algorithms for Bayesian Neural Networks (BNNs). Our project leverages a particle-based variational inference method, to approximate Bayesian posterior distributions over the weights of neural networks.
 
-Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library [Blackjax](https://blackjax-devs.github.io/blackjax/), for BNNs.
+Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) based on the python library [Blackjax](https://blackjax-devs.github.io/blackjax/), for BNNs.
 
 This repository employs Stein Variational Inference (Stein VI) to perform Bayesian Inference via Variational Gradient Descent (VGD) for optimizing Bayesian Neural Networks. The approach is rooted in the work described in the paper [Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm](https://arxiv.org/abs/1608.04471), which lays the foundation for this particle-based approximation method.
 
@@ -70,15 +70,12 @@ The project supports two installation modes:
 (project-structure)=
 ## Project Structure
 
-The `stein_vi` directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD), stochastic Stein Variational Gradient Descent (sSVGD) and Stein Variantional Newton method (SVN). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.
+The `stein_vi` directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD) and stochastic Stein Variational Gradient Descent (sSVGD). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.
 
 ```
 .
 stein_vi/
 ├── algorithm/
-│   ├── quasiSVN/
-│   │   ├── local_blackjax_file_adjusted_for_lbfgs.py
-│   │   └── quasiSVN.py
 │   ├── sSVGD/
 │   │   ├── local_blackjax_file_with_adjustments_for_sSVGD.py
 │   │   ├── matrices_for_noise_matrix.py
@@ -101,7 +98,7 @@ stein_vi/
 └── stein_vi.py
 ```
 
-The `run_stein_vi` directory provides ready-to-run examples that use the core logic from the `stein_vi` package. These scripts demonstrate how to use the SVGD, sSVGD and SVN-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.
+The `run_stein_vi` directory provides ready-to-run examples that use the core logic from the `stein_vi` package. These scripts demonstrate how to use the SVGD and sSVGD based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.
 
 ```
 .
@@ -132,19 +129,11 @@ In this project, we employ several Stein Variational Inference (SVI) algorithms 
 - **What it does**: Similar to SVGD, sSVGD updates particles using gradients, but with added stochastic noise to make the updates more varied. This allows for more efficient exploration of the posterior distribution.
 - **Implementation**: sSVGD is implemented with some modifications to the `blackjax` framework to adjust the noise term for better performance. The noise is scaled appropriately to match the magnitude of the particles.
 
-### Stein Variational Newton Method (SVN)
-
-ADD HERE A ADJUSTMENT FOR QUASI SVN 
-- **Source**: The Stein Variational Newton method builds on SVGD by approximating second-order derivatives, allowing for faster convergence in certain cases.
-- **What it does**: SVN aims to improve the efficiency of particle updates by using second-order information (like Newton’s method) to refine the gradient updates.
-- **Implementation**: This is integrated using a modified version of `blackjax` with the `LBFGS` optimizer from `optax`, making it more suitable for optimization problems with fewer iterations but higher computational complexity.
-
 ### Summary of Usage
 - **SVGD**: General-purpose, particle-based inference method, efficient for most tasks.
 - **sSVGD**: Adds stochastic noise to SVGD, particularly useful for larger datasets and models.
-- **SVN**: A second-order method that can converge faster for certain problems but at a higher computational cost.
 
-These algorithms are used interchangeably within the `SteinVI_BNN` class to manage the training of BNNs. You can configure the specific algorithm you want to use in the setup phase by calling the corresponding setup functions (`set_up_svgd`, `set_up_ssvgd`, or `set_up_quasi_SVN`).
+These algorithms are used interchangeably within the `SteinVI_BNN` class to manage the training of BNNs. You can configure the specific algorithm you want to use in the setup phase by calling the corresponding setup functions (`set_up_svgd` or `set_up_ssvgd`).
 
 
 (running-the-examples)=
@@ -198,7 +187,7 @@ SVGD is used on FashionMNIST for image classification tasks:
 (example-run-advanced-algorithms-py)=
 ### Example_Run_advanced_algorithms.py
 
-This file showcases more advanced algorithms, such as **quasi-SVN** and **sSVGD** as well as **SVGD**, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.
+This file showcases more advanced algorithms, such as **sSVGD** as well as **SVGD**, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.
 
 
 #### Available Runs:
@@ -215,13 +204,6 @@ Runs MNIST classification with stochastic Stein Variational Gradient Descent (sS
   ```python
    if __name__ == "__main__":
       run_MNIST_ssvgd()
-   ```
-
-- **MNIST with quasi-SVN**  
-Uses quasi Stein Variational Newton (SVN) method for MNIST classification:
-  ```python
-   if __name__ == "__main__":
-      run_MNIST_quasiSVN()
    ```
 
 **Command to Exceute:**
@@ -506,11 +488,11 @@ Below is a summary of the general findings from our experiments using different 
 
 | **Aspect**                       | **Findings**                                                                                                                                                                                                                             |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Algorithm Performance**        | - **SVGD**: Consistently performed well across different tasks.<br>- **sSVGD**: Introduced beneficial stochasticity but required careful tuning.<br>- **quasi-SVN**: Achieved faster convergence but at a higher computational cost.       |
+| **Algorithm Performance**        | - **SVGD**: Consistently performed well across different tasks.<br>- **sSVGD**: Introduced beneficial stochasticity but required careful tuning.|
 | **Number of Particles**          | - Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load linearly.                                 |
 | **Batch Size**                   | - Smaller data batch sizes introduced more noise but helped in escaping local minima.<br>- Particle mini-batching helped manage memory usage when using a large number of particles.                                                      |
 | **Learning Rate and Optimizers** | - Adaptive optimizers like Adam performed better than plain SGD.<br>- Learning rate schedules (e.g., exponential decay) improved training stability over long runs.                                                                     |
 | **Kernel Parameters in SVGD**    | - The kernel length scale significantly impacted particle updates.<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.            |
-| **Training Dynamics**            | - Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.<br>- quasi-SVN converged faster but was computationally intensive per iteration.      |
+| **Training Dynamics**            | - Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.|
 | **Uncertainty Estimation**       | - BNNs trained with Stein VI methods provided meaningful uncertainty estimates.<br>- Particles captured different modes of the posterior, enhancing uncertainty quantification.                                                         |
-| **Recommendations**              | - Use SVGD for general purposes and when resources are limited.<br>- Consider quasi-SVN for faster convergence if computational cost is acceptable.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting. |
+| **Recommendations**              | - Use SVGD for general purposes and when resources are limited.<br>- Start with a moderate number of particles (e.g., 50).<br>- Implement early stopping to prevent overfitting. |

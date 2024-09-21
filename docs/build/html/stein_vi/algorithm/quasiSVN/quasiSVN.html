@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
@@ -66,22 +65,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#available-runs">Available Runs:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Source</a><ul class="current">
@@ -137,6 +134,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -208,119 +206,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-stein_vi.algorithm.quasiSVN.quasiSVN">
-<span id="quasisvn"></span><h1>quasiSVN<a class="headerlink" href="#module-stein_vi.algorithm.quasiSVN.quasiSVN" title="Link to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.quasiSVN.get_batched_optimizer_state">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.quasiSVN.</span></span><span class="sig-name descname"><span class="pre">get_batched_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.quasiSVN.get_batched_optimizer_state" title="Link to this definition"></a></dt>
-<dd><p>Extracts a minibatch of the optimizer state for the selected particles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>optimizer_state</strong> (<em>object</em>) – The full optimizer state across all particles.</p></li>
-<li><p><strong>indices</strong> (<em>jax.numpy.ndarray</em>) – Indices of the particles to extract optimizer states for.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The optimizer state for the selected particles.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.quasiSVN.initialize_svgd_state">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.quasiSVN.</span></span><span class="sig-name descname"><span class="pre">initialize_svgd_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.quasiSVN.initialize_svgd_state" title="Link to this definition"></a></dt>
-<dd><p>Initializes the state for SVGD including the log posterior function, particles, and kernel function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>logp_model</strong> (<em>callable</em>) – A function representing the log posterior of the model given the data.</p></li>
-<li><p><strong>initial_particles_vector</strong> (<em>jax.numpy.ndarray</em>) – Initial particle vectors for SVGD.</p></li>
-<li><p><strong>kernel_fn</strong> (<em>callable</em>) – The kernel function used in SVGD to measure distances between particles.</p></li>
-<li><p><strong>parameter</strong> (<em>Parameter</em>) – A Parameter object containing the SVGD hyperparameters like kernel length scale and optimizer.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The initialized SVGD state and the JIT-compiled update function for SVGD.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.quasiSVN.particle_minibatching">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.quasiSVN.</span></span><span class="sig-name descname"><span class="pre">particle_minibatching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.quasiSVN.particle_minibatching" title="Link to this definition"></a></dt>
-<dd><p>Updates the SVGD particles and optimizer state, with support for minibatching.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>state</strong> (<em>object</em>) – The current SVGD state containing particles and optimizer state.</p></li>
-<li><p><strong>z_batch</strong> (<em>jax.numpy.ndarray</em>) – The current batch of input data for training.</p></li>
-<li><p><strong>y_batch</strong> (<em>jax.numpy.ndarray</em>) – The corresponding true output labels for the current batch.</p></li>
-<li><p><strong>step_fn</strong> (<em>callable</em>) – The update function that performs the SVGD step.</p></li>
-<li><p><strong>particle_indices</strong> (<em>jax.numpy.ndarray</em><em> or </em><em>None</em>) – Indices of the particles to be updated (if minibatching particles).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated SVGD state after the current step.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.quasiSVN.set_up_quasi_SVN">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.quasiSVN.</span></span><span class="sig-name descname"><span class="pre">set_up_quasi_SVN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steinvi_svdg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.quasiSVN.set_up_quasi_SVN" title="Link to this definition"></a></dt>
-<dd><p>Sets up the quasi Stein Variational Newton process for training a Bayesian Neural Network (BNN).</p>
-<p>This function initializes the state for SVGD, including defining the update function for SVGD and the evaluation function
-for assessing the model’s performance.</p>
-<p>This function uses the need the optax optimizer lbfgs to function properly. The results often take much longer to compute and are not really better.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi_svdg</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network,</p></li>
-<li><p><strong>parameters</strong> (<em>training</em>)</p></li>
-<li><p><strong>particles</strong></p></li>
-<li><p><strong>function.</strong> (<em>and the log posterior</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated <cite>SteinVI_BNN</cite> instance with initialized SVGD state, update function, and evaluation function.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>SteinVI_BNN</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.quasiSVN.quasiSVN.update_optimizer_state">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.quasiSVN.quasiSVN.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batched_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.quasiSVN.quasiSVN.update_optimizer_state" title="Link to this definition"></a></dt>
-<dd><p>Updates the global optimizer state with the minibatched state after an update step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>optimizer_state</strong> (<em>object</em>) – The full optimizer state across all particles.</p></li>
-<li><p><strong>batched_state</strong> (<em>object</em>) – The optimizer state after a minibatch update.</p></li>
-<li><p><strong>indices</strong> (<em>jax.numpy.ndarray</em>) – Indices of the particles that were updated.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated optimizer state.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="quasisvn">
+<h1>quasiSVN<a class="headerlink" href="#quasisvn" title="Link to this heading"></a></h1>
 </section>
 
 
