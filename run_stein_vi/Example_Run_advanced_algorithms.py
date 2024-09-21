@@ -67,37 +67,5 @@ def run_MNIST_ssvgd(info=False):
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-def run_MNIST_quasiSVN(info=False):
-    """
-    Run quasi SVN on the MNIST dataset for classification. Here for the optax optimizer lbfgs is used.
-
-    Args:
-        info (bool, optional): If True, prints dataset information. Defaults to False.
-    """
-    key = jax.random.PRNGKey(1)
-
-    if info:
-        datasets_info.print_mnist_dataset_info()
-
-    mnist = tf.keras.datasets.mnist
-    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
-    z_train, _, _, _, z_test, y_test = mnist_dataset
-
-    optimizer = lbfgs(
-        learning_rate=0.00001,  # Increase learning rate to speed up convergence
-        memory_size=100,  # Memory size to store previous gradients
-        scale_init_precond=False,  # Apply scaling to initial preconditioning
-    )
-    nnet_model = build_model(output_size=10, hidden_layers=(200, 10))
-
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
-                               num_particles=5, learning_rate=0.0001)
-    train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="quasi_svn")
-
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
-
-
 if __name__ == "__main__":
-    run_MNIST_quasiSVN()
+    run_MNIST_ssvgd()

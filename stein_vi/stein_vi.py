@@ -1,7 +1,6 @@
 from stein_vi.algorithm.model_training import train_general_algorithm
 from stein_vi.algorithm.svgd import set_up_svgd
 from stein_vi.algorithm.sSVGD.ssvgd import set_up_ssvgd
-from stein_vi.algorithm.quasiSVN.quasiSVN import set_up_quasi_SVN
 from stein_vi.metrics.validation_and_evaluation import (print_summary_over_particles_regression,
                                                         print_summary_over_particles_multiclass)
 from stein_vi.algorithm.random_forest import random_forest
@@ -14,7 +13,6 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     Algorithms:
         - **svgd (Stein Variational Gradient Descent)**: Uses the blackjax implementation of SVGD.
         - **ssvgd (Stochastic Stein Variational Gradient Descent)**: A variant of plain_svgd where noise is added to the particle updates. (Attention: Often in our BNN the gradient and the weights have quite high values e.g. (-40000;40000) and noise calculated based on the paper "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD"  is very small since the kernel is used to scale the variance and when using the RBF_Kernel the values are between 0 and 1.
-        - **quasi_svn**: Here the optax optimizer LBFGS needs to be used, allowing for second-order updates. Note: This method does not support particle batching, and will raise an error if attempted.
 
     Args:
         steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, containing the Bayesian neural network, particles, and other relevant parameters.
@@ -35,10 +33,6 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
         set_up_svgd(steinvi)
     elif algorithm == "ssvgd":
         set_up_ssvgd(steinvi)
-    elif algorithm == "quasi_svn":
-        if steinvi.parameter.particle_batch_size != 0:
-            raise ValueError(f"Particle batching is not supported for {algorithm}")
-        set_up_quasi_SVN(steinvi)
     else:
         raise ValueError(f"Unsupported algorithm: {algorithm}")
 
