@@ -57,8 +57,8 @@ def run_MNIST_ssvgd(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                               use_for_regression=False, batch_size=0, particle_batch_size=3, num_iterations=3,
-                               num_particles=9, learning_rate=0.001)
+                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
+                               num_particles=10, learning_rate=0.05)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="ssvgd")
 
@@ -100,4 +100,4 @@ def run_MNIST_quasiSVN(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST_quasiSVN()
+    run_MNIST_ssvgd()

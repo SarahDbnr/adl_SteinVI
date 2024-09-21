@@ -45,20 +45,26 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="get_started.html">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="get_started.html#collaborative-work">Collaborative Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#table-of-contents">Table of Contents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_started.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#collaborative-work">Collaborative Work</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_started.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_started.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_started.html#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_started.html#quick-start">Quick Start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l3"><a class="reference internal" href="get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#running-the-examples">Running the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="get_started.html#advanced-usage">Advanced Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="get_started.html#mini-batching">Mini-batching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="get_started.html#early-stopping">Early Stopping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="get_started.html#contributing">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_started.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#collected-findings">Collected Findings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stein_vi/index.html">Source</a><ul>
@@ -121,7 +127,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="stein_vi/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html">plots_validation_metrics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_and_save_evaluation_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_evaluation_metric()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_location_in_relation_to_scale"><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_residuals"><code class="docutils literal notranslate"><span class="pre">plot_residuals()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.view_probabilities_classification"><code class="docutils literal notranslate"><span class="pre">view_probabilities_classification()</span></code></a></li>
@@ -140,8 +146,8 @@
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_regression()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/view_misclassified_images.html">view_misclassified_images</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/view_misclassified.html">view_misclassified</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/view_misclassified.html#stein_vi.metrics.view_misclassified.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -368,7 +374,7 @@
 </li>
         <li><a href="stein_vi/metrics/validation_and_evaluation.html#module-stein_vi.metrics.validation_and_evaluation">stein_vi.metrics.validation_and_evaluation</a>
 </li>
-        <li><a href="stein_vi/metrics/view_misclassified_images.html#module-stein_vi.metrics.view_misclassified_images">stein_vi.metrics.view_misclassified_images</a>
+        <li><a href="stein_vi/metrics/view_misclassified.html#module-stein_vi.metrics.view_misclassified">stein_vi.metrics.view_misclassified</a>
 </li>
         <li><a href="stein_vi/parameter_search/print_evaluation.html#module-stein_vi.parameter_search.print_evaluation">stein_vi.parameter_search.print_evaluation</a>
 </li>
@@ -399,7 +405,7 @@
         <li><a href="stein_vi/algorithm/svgd.html#stein_vi.algorithm.svgd.particle_minibatching">(in module stein_vi.algorithm.svgd)</a>
 </li>
       </ul></li>
-      <li><a href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric">plot_and_save_evaluation_metric() (in module stein_vi.metrics.plots_validation_metrics)</a>
+      <li><a href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_evaluation_metric">plot_evaluation_metric() (in module stein_vi.metrics.plots_validation_metrics)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -525,10 +531,10 @@
 </li>
       </ul></li>
       <li>
-    stein_vi.metrics.view_misclassified_images
+    stein_vi.metrics.view_misclassified
 
       <ul>
-        <li><a href="stein_vi/metrics/view_misclassified_images.html#module-stein_vi.metrics.view_misclassified_images">module</a>
+        <li><a href="stein_vi/metrics/view_misclassified.html#module-stein_vi.metrics.view_misclassified">module</a>
 </li>
       </ul></li>
       <li>
@@ -583,7 +589,7 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="stein_vi/metrics/view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified">view_misclassified() (in module stein_vi.metrics.view_misclassified_images)</a>
+      <li><a href="stein_vi/metrics/view_misclassified.html#stein_vi.metrics.view_misclassified.view_misclassified">view_misclassified() (in module stein_vi.metrics.view_misclassified)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

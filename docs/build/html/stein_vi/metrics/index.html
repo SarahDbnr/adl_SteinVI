@@ -48,20 +48,26 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../get_started.html">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collaborative-work">Collaborative Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#table-of-contents">Table of Contents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collaborative-work">Collaborative Work</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#quick-start">Quick Start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-examples">Running the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#advanced-usage">Advanced Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#mini-batching">Mini-batching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#early-stopping">Early Stopping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#contributing">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collected-findings">Collected Findings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Source</a><ul class="current">
@@ -105,6 +111,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/svgd.html#stein_vi.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/sSVGD/index.html">sSVGD</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../algorithm/quasiSVN/index.html">quasiSVN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../algorithm/random_forest.html">random_forest</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
@@ -113,7 +130,7 @@
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_and_save_evaluation_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_evaluation_metric()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_location_in_relation_to_scale"><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_residuals"><code class="docutils literal notranslate"><span class="pre">plot_residuals()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.view_probabilities_classification"><code class="docutils literal notranslate"><span class="pre">view_probabilities_classification()</span></code></a></li>
@@ -132,8 +149,8 @@
 <li class="toctree-l4"><a class="reference internal" href="validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_regression()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="view_misclassified_images.html">view_misclassified_images</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="view_misclassified.html">view_misclassified</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="view_misclassified.html#stein_vi.metrics.view_misclassified.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -180,7 +197,7 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="plots_validation_metrics.html">plots_validation_metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_and_save_evaluation_metric()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_evaluation_metric()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_location_in_relation_to_scale"><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_residuals"><code class="docutils literal notranslate"><span class="pre">plot_residuals()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.view_probabilities_classification"><code class="docutils literal notranslate"><span class="pre">view_probabilities_classification()</span></code></a></li>
@@ -199,8 +216,8 @@
 <li class="toctree-l2"><a class="reference internal" href="validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_regression()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="view_misclassified_images.html">view_misclassified_images</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="view_misclassified.html">view_misclassified</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="view_misclassified.html#stein_vi.metrics.view_misclassified.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
 </ul>
 </li>
 </ul>

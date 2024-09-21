@@ -48,20 +48,26 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#collaborative-work">Collaborative Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collaborative-work">Collaborative Work</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#mini-batching">Mini-batching</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#early-stopping">Early Stopping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#comparison-with-random-forest">Comparison with Random Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-examples">Running the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-the-main-classes">Understanding the Main Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-usage">Advanced Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mini-batching">Mini-batching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#early-stopping">Early Stopping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#comparison-with-random-forest">Comparison with Random Forest</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#collected-findings">Collected Findings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stein_vi/index.html">Source</a><ul>
@@ -105,6 +111,17 @@
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/svgd.html#stein_vi.algorithm.svgd.update_optimizer_state"><code class="docutils literal notranslate"><span class="pre">update_optimizer_state()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/sSVGD/index.html">sSVGD</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/index.html">quasiSVN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/random_forest.html">random_forest</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
@@ -113,7 +130,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="stein_vi/metrics/index.html">Metrics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html">plots_validation_metrics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_and_save_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_and_save_evaluation_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_evaluation_metric"><code class="docutils literal notranslate"><span class="pre">plot_evaluation_metric()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_location_in_relation_to_scale"><code class="docutils literal notranslate"><span class="pre">plot_location_in_relation_to_scale()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.plot_residuals"><code class="docutils literal notranslate"><span class="pre">plot_residuals()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/plots_validation_metrics.html#stein_vi.metrics.plots_validation_metrics.view_probabilities_classification"><code class="docutils literal notranslate"><span class="pre">view_probabilities_classification()</span></code></a></li>
@@ -132,8 +149,8 @@
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/validation_and_evaluation.html#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression"><code class="docutils literal notranslate"><span class="pre">print_summary_over_particles_regression()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/view_misclassified_images.html">view_misclassified_images</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/view_misclassified_images.html#stein_vi.metrics.view_misclassified_images.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stein_vi/metrics/view_misclassified.html">view_misclassified</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stein_vi/metrics/view_misclassified.html#stein_vi.metrics.view_misclassified.view_misclassified"><code class="docutils literal notranslate"><span class="pre">view_misclassified()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -176,22 +193,38 @@
              
   <section id="getting-started-with-stein-variational-inference-for-bayesian-neural-networks">
 <h1>Getting Started with Stein Variational Inference for Bayesian Neural Networks<a class="headerlink" href="#getting-started-with-stein-variational-inference-for-bayesian-neural-networks" title="Link to this heading"></a></h1>
-<p>This guide will help you set up and run Stein Variation Inference algorithms for Bayesian Neural Networks (BNNs). Our project leverages a particle-based variational inference method, to approximate Bayesian posterior distributions over the weights of neural networks.</p>
-<p>Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library <a class="reference external" href="https://blackjax-devs.github.io/blackjax/">Blackjax</a>, for Bayesian Neural Networks.</p>
-<section id="collaborative-work">
-<h2>Collaborative Work<a class="headerlink" href="#collaborative-work" title="Link to this heading"></a></h2>
-<p>This repository is a collaborative effort between <strong>Sarah Deubner</strong>, <strong>Kilian Runnwerth</strong>, and <strong>Luke-Liam Bergmeier</strong>.</p>
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#introduction"><span class="std std-ref">Introduction</span></a></p></li>
+<li><p><a class="reference internal" href="#collaborative-work"><span class="std std-ref">Collaborative Work</span></a></p></li>
+<li><p><a class="reference internal" href="#prerequisites"><span class="std std-ref">Prerequisites</span></a></p></li>
+<li><p><a class="reference internal" href="#setup"><span class="std std-ref">Setup</span></a></p></li>
+<li><p><a class="reference internal" href="#project-structure"><span class="std std-ref">Project Structure</span></a></p></li>
+<li><p><a class="reference internal" href="#brief-overview-of-algorithms"><span class="std std-ref">Brief Overview of Algorithms</span></a></p></li>
+<li><p><a class="reference internal" href="#running-the-examples"><span class="std std-ref">Running the Examples</span></a></p></li>
+<li><p><a class="reference internal" href="#code-structure-training-and-evaluation"><span class="std std-ref">Code Structure: Training and Evaluation</span></a></p></li>
+<li><p><a class="reference internal" href="#understanding-the-main-classes"><span class="std std-ref">Understanding the Main Classes</span></a></p></li>
+<li><p><a class="reference internal" href="#collected-findings"><span class="std std-ref">Collected Findings</span></a></p></li>
+<li><p><a class="reference internal" href="#further-reading"><span class="std std-ref">Further Reading</span></a></p></li>
+</ol>
 </section>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>This guide will help you set up and run Stein Variation Inference algorithms for Bayesian Neural Networks (BNNs). Our project leverages a particle-based variational inference method, to approximate Bayesian posterior distributions over the weights of neural networks.</p>
+<p>Bayesian Neural Networks provide a probabilistic approach to machine learning, capturing model uncertainty in predictions, which is especially useful for tasks such as regression and classification. This repository provides implementations and extensions of Stein Variation Gradient Descent (SVGD) and Stein Variational Newton Method (SVN), based on the python library <a class="reference external" href="https://blackjax-devs.github.io/blackjax/">Blackjax</a>, for BNNs.</p>
 <p>This repository employs Stein Variational Inference (Stein VI) to perform Bayesian Inference via Variational Gradient Descent (VGD) for optimizing Bayesian Neural Networks. The approach is rooted in the work described in the paper <a class="reference external" href="https://arxiv.org/abs/1608.04471">Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm</a>, which lays the foundation for this particle-based approximation method.</p>
 </section>
+<section id="collaborative-work">
+<span id="id2"></span><h2>Collaborative Work<a class="headerlink" href="#collaborative-work" title="Link to this heading"></a></h2>
+<p>This repository is a collaborative effort between <strong>Sarah Deubner</strong>, <strong>Kilian Runnwerth</strong>, and <strong>Luke-Liam Bergmeier</strong>.</p>
+</section>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<span id="id3"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>Before you begin, ensure you have Python 3.10+ installed. All other dependencies, including JAX, NumPy, scikit-learn, BlackJAX, tqdm, and so on, will be installed automatically when you set up the environment.</p>
 </section>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
+<span id="id4"></span><h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><strong>Clone the Repository</strong><br />
 First, clone the repository to your local machine:</p>
@@ -232,11 +265,19 @@ Ensure that <code class="docutils literal notranslate"><span class="pre">PYTHONP
 </ol>
 </section>
 <section id="project-structure">
-<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD) and related algorithms. This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, and parameter management.</p>
+<span id="id5"></span><h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> directory contains the core implementation for training Bayesian Neural Networks (BNNs) using Stein Variational Gradient Descent (SVGD), stochastic Stein Variational Gradient Descent (sSVGD) and Stein Variantional Newton method (SVN). This package encapsulates all the logic and components necessary for performing variational inference on BNNs. It includes algorithms, helper classes, metrics for evaluation, parameter management and plotting functions.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 stein_vi/
 ├── algorithm/
+│   ├── quasiSVN/
+│   │   ├── local_blackjax_file_adjusted_for_lbfgs.py
+│   │   └── quasiSVN.py
+│   ├── sSVGD/
+│   │   ├── local_blackjax_file_with_adjustments_for_sSVGD.py
+│   │   ├── matrices_for_noise_matrix.py
+│   │   ├── ssvgd.py
+│   │   └── test_matrix_equivalent_to_tests_later.py
 │   ├── get_posteriori.py
 │   ├── model_training.py
 │   ├── random_forest.py
@@ -254,7 +295,7 @@ stein_vi/
 └── stein_vi.py
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">run_stein_vi</span></code> directory provides ready-to-run examples that use the core logic from the <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> package. These scripts demonstrate how to use the SVGD-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">run_stein_vi</span></code> directory provides ready-to-run examples that use the core logic from the <code class="docutils literal notranslate"><span class="pre">stein_vi</span></code> package. These scripts demonstrate how to use the SVGD, sSVGD and SVN-based Bayesian Neural Networks for specific tasks, including regression and classification. The examples are written to simplify running different configurations and datasets with minimal setup.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 run_stein_vi/
 ├── data/
@@ -269,56 +310,21 @@ run_stein_vi/
 </pre></div>
 </div>
 </section>
-<section id="quick-start">
-<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
-<ol class="arabic">
-<li><p>Clone the repository:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">username</span><span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">repo</span><span class="o">-</span><span class="n">name</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">your</span><span class="o">-</span><span class="n">repo</span><span class="o">-</span><span class="n">name</span>
-</pre></div>
-</div>
-</li>
-<li><p>Set up your dataset. The code expects data in the following format:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="p">(</span><span class="n">z_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">z_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">z_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">z</span></code> represents input features and <code class="docutils literal notranslate"><span class="pre">y</span></code> represents target values or labels.</p>
-</li>
-<li><p>Create an instance of the <code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> class (not shown in the provided code snippets, but assumed to exist):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stein_vi</span> <span class="kn">import</span> <span class="n">SteinVI_BNN</span>
-
-<span class="n">steinvi</span> <span class="o">=</span> <span class="n">SteinVI_BNN</span><span class="p">(</span><span class="n">nnet_model</span><span class="p">,</span> <span class="n">use_for_regression</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># or False for classification</span>
-</pre></div>
-</div>
-</li>
-<li><p>Set up SVGD:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">svgd</span> <span class="kn">import</span> <span class="n">set_up_svgd</span>
-
-<span class="n">set_up_svgd</span><span class="p">(</span><span class="n">steinvi</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p>Train the model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_training</span> <span class="kn">import</span> <span class="n">train_general_algorithm</span>
-<span class="kn">import</span> <span class="nn">jax</span>
-
-<span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Set a random seed</span>
-<span class="n">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p>Evaluate the model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-<span class="n">eval_metric1</span><span class="p">,</span> <span class="n">eval_metric2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">evaluate_fn</span><span class="p">(</span><span class="n">steinvi</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">z_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">print_out</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-</ol>
+<section id="brief-overview-of-algorithms">
+<span id="id6"></span><h2>Brief Overview of Algorithms<a class="headerlink" href="#brief-overview-of-algorithms" title="Link to this heading"></a></h2>
 </section>
+<section id="running-the-examples">
+<span id="id7"></span><h2>Running the Examples<a class="headerlink" href="#running-the-examples" title="Link to this heading"></a></h2>
+</section>
+<section id="code-structure-training-and-evaluation">
+<span id="id8"></span><h2>Code Structure: Training and Evaluation<a class="headerlink" href="#code-structure-training-and-evaluation" title="Link to this heading"></a></h2>
+</section>
+<section id="understanding-the-main-classes">
+<span id="id9"></span><h2>Understanding the Main Classes<a class="headerlink" href="#understanding-the-main-classes" title="Link to this heading"></a></h2>
 <section id="advanced-usage">
-<h2>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Link to this heading"></a></h2>
+<h3>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Link to this heading"></a></h3>
 <section id="mini-batching">
-<h3>Mini-batching<a class="headerlink" href="#mini-batching" title="Link to this heading"></a></h3>
+<h4>Mini-batching<a class="headerlink" href="#mini-batching" title="Link to this heading"></a></h4>
 <p>The project supports different mini-batching modes for both data and particles. You can set these in the <code class="docutils literal notranslate"><span class="pre">steinvi.parameter</span></code> object:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: Size of data mini-batches (0 for full batch)</p></li>
@@ -326,7 +332,7 @@ run_stein_vi/
 </ul>
 </section>
 <section id="early-stopping">
-<h3>Early Stopping<a class="headerlink" href="#early-stopping" title="Link to this heading"></a></h3>
+<h4>Early Stopping<a class="headerlink" href="#early-stopping" title="Link to this heading"></a></h4>
 <p>Early stopping is implemented to prevent overfitting. You can configure it using:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">steinvi.parameter.early_stopping</span></code>: Enable/disable early stopping</p></li>
@@ -335,7 +341,7 @@ run_stein_vi/
 </ul>
 </section>
 <section id="comparison-with-random-forest">
-<h3>Comparison with Random Forest<a class="headerlink" href="#comparison-with-random-forest" title="Link to this heading"></a></h3>
+<h4>Comparison with Random Forest<a class="headerlink" href="#comparison-with-random-forest" title="Link to this heading"></a></h4>
 <p>You can compare the performance of your SVGD-based Bayesian Neural Network with a Random Forest model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random_forest</span> <span class="kn">import</span> <span class="n">random_forest</span>
 
@@ -345,13 +351,12 @@ run_stein_vi/
 </div>
 </section>
 </section>
-<section id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
-<p>We welcome contributions! Please see our <code class="docutils literal notranslate"><span class="pre">CONTRIBUTING.md</span></code> file (if available) for guidelines on how to submit issues, feature requests, and pull requests.</p>
 </section>
-<section id="license">
-<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
-<p>[Include information about your project’s license here]</p>
+<section id="collected-findings">
+<span id="id10"></span><h2>Collected Findings<a class="headerlink" href="#collected-findings" title="Link to this heading"></a></h2>
+</section>
+<section id="further-reading">
+<span id="id11"></span><h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading"></a></h2>
 </section>
 </section>
 
