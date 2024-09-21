@@ -82,16 +82,21 @@ def test_calculate_accuracy():
 
 
 def test_calculate_mean_span_over_particles():
-    predictions = jnp.array([[[4, ], [4, ]], [[1, ], [1, ]],
+    predictions = jnp.array([[[4, ], [2, ]], [[1, ], [1, ]],
                              [[2, ], [2, ]], [[1, ], [1, ]],
                              [[2, ], [2, ]], [[0, ], [0, ]],
                              [[1, ], [1, ]], [[0, ], [0, ]],
-                             [[1, ], [1, ]], [[-1, ], [-1, ]]])
-    # TODO: make a bigger array that has number not within 5% with chat gpt
+                             [[1, ], [1, ]], [[0, ], [-1, ]],
+                             [[2, ], [2, ]], [[1, ], [1, ]],
+                             [[2, ], [2, ]], [[1, ], [1, ]],
+                             [[2, ], [2, ]], [[0, ], [0, ]],
+                             [[1, ], [1, ]], [[0, ], [0, ]],
+                             [[1, ], [1, ]], [[0, ], [0, ]],
+                             ])
     # when
     span = calculate_mean_span_over_particles(predictions.squeeze())
     # then
-    assert span == 5
+    assert span == 2.0750031
 
 
 def test_calculate_number_of_different_classified_by_particles():
