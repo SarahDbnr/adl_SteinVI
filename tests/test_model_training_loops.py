@@ -28,6 +28,7 @@ def test_no_minibatch_training_loop(stein_vi_regression_example, get_regression_
     stein_vi_regression_example.parameter.batch_size = 0
     stein_vi_regression_example.parameter.particle_batch_size = 0
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.warm_up_iterations_early_stopping = 0
     stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
@@ -62,6 +63,7 @@ def test_data_minibatch_training_loop(stein_vi_regression_example, get_regressio
     stein_vi_regression_example.parameter.batch_size = 36
     stein_vi_regression_example.parameter.particle_batch_size = 0
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.warm_up_iterations_early_stopping = 0
     stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
@@ -110,6 +112,7 @@ def test_particle_minibatch_training_loop(stein_vi_regression_example, get_regre
     stein_vi_regression_example.parameter.batch_size = 0
     stein_vi_regression_example.parameter.particle_batch_size = 5
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.warm_up_iterations_early_stopping = 0
     stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf
@@ -164,6 +167,7 @@ def test_data_and_particle_minibatch_training_loop(stein_vi_regression_example, 
     stein_vi_regression_example.parameter.batch_size = 36
     stein_vi_regression_example.parameter.particle_batch_size = 5
     stein_vi_regression_example.parameter.num_iterations = 2
+    stein_vi_regression_example.parameter.warm_up_iterations_early_stopping = 0
     stein_vi_regression_example.parameter.early_stopping = True
     stein_vi_regression_example.parameter.patience_early_stopping = patience_early_stopping
     stein_vi_regression_example.parameter.min_delta_early_stopping = jnp.inf

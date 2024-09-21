@@ -12,6 +12,8 @@ def test_train_with_stein_vi_multiclass(get_MNIST, stein_vi_multiclass_example):
     key = jax.random.PRNGKey(1)
     algorithm = "svgd"
     stein_vi_multiclass_example.parameter.num_iterations = 10
+    stein_vi_multiclass_example.evaluation_metrics_1 = []
+    stein_vi_multiclass_example.evaluation_metrics_2 = []
     # when
     train_with_stein_vi(stein_vi_multiclass_example, get_MNIST, key, algorithm=algorithm)
     # then
