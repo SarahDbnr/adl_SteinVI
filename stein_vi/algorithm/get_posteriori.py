@@ -10,7 +10,6 @@ def get_posteriori(nnet_model, regression):
 
     Args:
         nnet_model (flax.linen.Module): The neural network model to use for predictions.
-        tree_def (jax.tree_util.PyTreeDef): The tree definition for parameter transformation.
         regression (bool): Flag to determine whether the model is used for regression (True) or classification (False).
 
     Returns:
@@ -62,6 +61,15 @@ def logp_unnormalized_posterior_regression(weights, dz, dy, nnet_model):
 
 
 def get_scale(precision):
+    """
+    Calculates the scale based of on the precision.
+
+    Args:
+        precision (jax.numpy.ndarray): Input value(s) that represent pre-scale parameters.
+
+    Returns:
+        jax.numpy.ndarray: 
+    """
     return jax.vmap(lambda p: link_function(p))(precision.squeeze())
 
 

@@ -245,7 +245,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     stein_vi.evaluation_metrics_1.append(current_eval_1)
     stein_vi.evaluation_metrics_2.append(current_eval_2)
 
-    if stein_vi.parameter.early_stopping:
+    if stein_vi.parameter.early_stopping and stein_vi.parameter.warm_up_iterations_early_stopping <= iteration:
         patience_counter, best_eval_metric = early_stopping_fn(
             current_eval_1, best_eval_metric, patience_counter, stein_vi.parameter, stein_vi.use_for_regression
         )
