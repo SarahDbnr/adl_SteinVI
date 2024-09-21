@@ -28,7 +28,7 @@ This repository is a collaborative effort between **Sarah Deubner**, **Kilian Ru
 
 (prerequisites)=
 ## Prerequisites
-Before you begin, ensure you have Python 3.10+ installed. All other dependencies, including JAX, NumPy, scikit-learn, BlackJAX, tqdm, and so on, will be installed automatically when you set up the environment.
+Before you begin, ensure you have Python 3.10+, pip and pipenv installed. All other dependencies, including JAX, NumPy, scikit-learn, BlackJAX, tqdm and so on, will be installed automatically when you set up the environment.
 
 (setup)=
 ## Setup
@@ -121,11 +121,290 @@ run_stein_vi/
 (brief-overview-of-algorithms)=
 ## Brief Overview of Algorithms
 
+In this project, we employ several Stein Variational Inference (SVI) algorithms to optimize Bayesian Neural Networks (BNNs). Each algorithm is implemented using the `blackjax` library and integrates with the `SteinVI_BNN` class for managing training and evaluation processes.
+
+### Stein Variational Gradient Descent (SVGD)
+- **Source**: Based on the paper [Stein Variational Gradient Descent](https://arxiv.org/abs/1608.04471), SVGD is a particle-based variational inference method.
+- **What it does**: It updates particles (which represent the model parameters) by iteratively moving them towards the Bayesian posterior distribution using gradients.
+- **Implementation**: In our project, SVGD is implemented using `blackjax.vi.svgd` and the Radial Basis Function (RBF) kernel. The training process is managed by the `SteinVI_BNN` class through a state that tracks particles and kernel parameters.
+
+### Stochastic Stein Variational Gradient Descent (sSVGD)
+- **Source**: sSVGD builds upon SVGD by introducing stochasticity, making it more suitable for larger datasets or cases where full-batch updates are computationally expensive.
+- **What it does**: Similar to SVGD, sSVGD updates particles using gradients, but with added stochastic noise to make the updates more varied. This allows for more efficient exploration of the posterior distribution.
+- **Implementation**: sSVGD is implemented with some modifications to the `blackjax` framework to adjust the noise term for better performance. The noise is scaled appropriately to match the magnitude of the particles.
+
+### Stein Variational Newton Method (SVN)
+
+ADD HERE A ADJUSTMENT FOR QUASI SVN 
+- **Source**: The Stein Variational Newton method builds on SVGD by approximating second-order derivatives, allowing for faster convergence in certain cases.
+- **What it does**: SVN aims to improve the efficiency of particle updates by using second-order information (like Newton’s method) to refine the gradient updates.
+- **Implementation**: This is integrated using a modified version of `blackjax` with the `LBFGS` optimizer from `optax`, making it more suitable for optimization problems with fewer iterations but higher computational complexity.
+
+### Summary of Usage
+- **SVGD**: General-purpose, particle-based inference method, efficient for most tasks.
+- **sSVGD**: Adds stochastic noise to SVGD, particularly useful for larger datasets and models.
+- **SVN**: A second-order method that can converge faster for certain problems but at a higher computational cost.
+
+These algorithms are used interchangeably within the `SteinVI_BNN` class to manage the training of BNNs. You can configure the specific algorithm you want to use in the setup phase by calling the corresponding setup functions (`set_up_svgd`, `set_up_ssvgd`, or `set_up_quasi_SVN`).
+
+
 (running-the-examples)=
 ## Running the Examples
 
+We provide several examples to demonstrate how to run Stein Variational Inference (SVI) on different datasets using various algorithms. You can find these examples in the repository under the following files:
+
+1. [run_stein_vi/Example_Run.py](example-run-py)  
+2. [run_stein_vi/Example_Run_advanced_algorithms.py](example-run-advanced-algorithms-py)  
+3. [run_stein_vi/Example_Run_parameter_search.py](example-run-parameter-search-py)
+
+Please note that these are just a few of the available examples. The repository contains additional examples that cover various tasks, but only these three are highlighted here.
+
+
+(example-run-py)=
+### Example_Run.py
+
+This script contains several examples of running **SVGD** with the Adaptive Moment Estimation (ADAM) optimizer on different datasets, both for regression and classification tasks. You need to place the specific function you'd like to run under the `if __name__ == "__main__":` block at the bottom of the file.
+
+#### Available Runs:
+
+- **Regression Toy Example**  
+  A synthetic regression dataset is used to demonstrate SVGD:
+  
+  ```python
+  if __name__ == "__main__":
+      run_regression_toy_example()
+  ```
+
+- **MNIST Classification**  
+SVGD is applied to the MNIST dataset for image classification:
+  
+  ```python
+  if __name__ == "__main__":
+      run_MNIST()
+  ```
+
+- **FashionMNIST Classification**  
+SVGD is used on FashionMNIST for image classification tasks:
+  
+  ```python
+  if __name__ == "__main__":
+      run_FashionMNIST()
+  ```
+
+**Command to Exceute:**
+   ```
+   python run_stein_vi/Example_Run.py
+   ```
+
+(example-run-advanced-algorithms-py)=
+### Example_Run_advanced_algorithms.py
+
+This file showcases more advanced algorithms, such as **quasi-SVN** and **sSVGD** as well as **SVGD**, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.
+
+
+#### Available Runs:
+
+- **MNIST with Gradient Descent (GD)**  
+Runs MNIST classification with SVGD using plain gradient descent:
+  ```python
+   if __name__ == "__main__":
+      run_MNIST_GD()
+   ```
+
+- **MNIST with sSVGD**  
+Runs MNIST classification with stochastic Stein Variational Gradient Descent (sSVGD):
+  ```python
+   if __name__ == "__main__":
+      run_MNIST_ssvgd()
+   ```
+
+- **MNIST with quasi-SVN**  
+Uses quasi Stein Variational Newton (SVN) method for MNIST classification:
+  ```python
+   if __name__ == "__main__":
+      run_MNIST_quasiSVN()
+   ```
+
+**Command to Exceute:**
+   ```
+   python run_stein_vi/Example_Run_advanced_algorithms.py
+   ```
+
+(example-run-parameter-search-py)=
+### Example_Run_parameter_search.py
+
+This example demonstrates parameter search for both regression and classification tasks. The script iterates over various parameters (e.g., number of particles, batch size, learning rate) and logs the results.
+Running this file works similarly to the examples shown above. You simply choose the dataset and function you want to run and place it under the main execution block.
+
 (code-structure-training-and-evaluation)=
 ## Code Structure: Training and Evaluation
+
+When you run the code to train a Bayesian Neural Network (BNN) using Stein Variational Inference (SVI), several modules collaborate to handle different aspects of the process. Specifically, `SteinVI_BNN_Class.py`, `model_training.py` and the algorithm you choose for example `svgd.py` play crucial roles in setting up the model, initializing the SVGD algorithm, and executing the training loop.
+
+Below is an overview of how these files interact during execution, with code examples to illustrate the workflow.
+
+1. **Model and Training Setup:**
+   In your main script or function (e.g., `run_MNIST`), you set up the model, data, and training parameters. This involves creating an instance of the `SteinVI_BNN` class from `SteinVI_BNN_Class.py`.
+
+   The data must be structured as a tuple in the following order: `x_train`, `y_train`, `x_val`, `y_val`, `x_test`, `y_test`.
+
+   **Example:**
+     ```python
+   # Import necessary modules
+   from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
+   from stein_vi.stein_vi import train_with_stein_vi
+   from optax import adam, exponential_decay
+   import jax
+
+   # Initialize random key
+   key = jax.random.PRNGKey(1)
+
+   # Load and preprocess data, assuming the mnist dataset has the desired tuple structure
+   z_train, _, _, _, _, _ = mnist_dataset
+
+   # Define optimizer with exponential decay schedule
+   optimizer = adam(
+      exponential_decay(
+         init_value=0.05,
+         transition_steps=100,
+         decay_rate=0.95,
+         staircase=True
+      )
+   )
+
+   # Build neural network model (assuming build_model is defined)
+   nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
+
+   # Create an instance of SteinVI_BNN
+   steinvi_svdg = SteinVI_BNN(
+      key=key,
+      x_train=z_train,
+      nnet=nnet_model,
+      use_for_regression=False,
+      optimizer=optimizer,
+      batch_size=300,
+      num_particles=50
+   )
+
+   ```
+
+2. **Model and Training Setup:**
+   You initiate the training process by calling `train_with_stein_vi` from `stein_vi.py`, specifying the SVI algorithm (e.g., SVGD).
+
+   ```python
+   # Start training using the SVGD algorithm
+   train_with_stein_vi(
+      steinvi=steinvi_svdg,
+      dataset=mnist_dataset,
+      key=key,
+      algorithm="svgd"
+   )
+   ```
+3. **Algorithm Configuration:**
+   Within `train_with_stein_vi`, the appropriate setup function is called to configure the algorithm. For SVGD, `set_up_svgd` from `svgd.py` is used.
+   
+   In `stein_vi.py`:
+   ```python
+   def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"): 
+      if algorithm == "svgd": set_up_svgd(steinvi) 
+      # Additional algorithm setups... 
+
+      # Proceed to the training loop 
+      train_general_algorithm(steinvi, dataset, key) 
+   ```
+   In `svgd.py`:
+   ```python
+   def set_up_svgd(steinvi_svdg): 
+      # Initialize SVGD state 
+      steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
+      
+      # Define the update function for SVGD
+      def svgd_update_fn(state, z_batch, y_batch, particle_indices=None):
+         # Update particles using SVGD step
+
+      # Attach the update function to SteinVI_BNN instance
+      steinvi_svdg.update_fn = svgd_update_fn
+
+      # Define the evaluation function
+      def evaluate_model_fn(state, z_val, y_val, print_out):
+         # Evaluate model performance
+         # ...
+
+      # Attach the evaluation function
+      steinvi_svdg.evaluate_fn = evaluate_model_fn
+   ````
+
+   State Initialization `initialize_svgd_state` sets up the initial particles and kernel parameters, and function attachments `update_fn` and `evaluate_fn` are added to the `SteinVI_BNN` instance for use during training.
+
+4. **Training Loop Execution:**
+   `train_general_algorithm` from `model_training.py` is invoked to start the training loop based on the (particle-) minibatching configuration.
+
+   In `stein_vi.py`:
+   ```python
+   train_general_algorithm(steinvi=steinvi, dataset=dataset, key=key) 
+   ```
+   In `model_training.py`:
+   ```python
+   def train_general_algorithm(steinvi, dataset, key): 
+      # Determine the appropriate training loop based on batch sizes 
+      if steinvi.parameter.batch_size != 0 and steinvi.parameter.particle_batch_size != 0: 
+         training_loop_fn = data_and_particle_minibatch_training_loop 
+      # Other conditions for different batch modes...
+      
+      # Start the selected training loop
+      training_loop_fn(steinvi, dataset, key)
+   ```
+
+5. **Model Updates:**
+   During each iteration, the `update_fn` defined in `svgd.py` updates the model's particles.
+
+   In `model_training.py` (within the selected training loop):
+
+   ```python
+   for iteration in range(steinvi.parameter.num_iterations): 
+      # Create mini-batches of data and particles 
+      z_train_batched, y_train_batched = create_minibatches(...) particle_indices_batches = create_particle_minibatch_indices(...) 
+      for z_batch, y_batch in zip(z_train_batched, y_train_batched):
+         for particle_indices in particle_indices_batches:
+            # Update the models state (particles)
+            steinvi.state = steinvi.update_fn(
+                  steinvi.state, z_batch, y_batch particle_indices=particle_indices
+            )
+   ```
+
+6. **Evaluation:**
+   The models performance is periodically evaluated using the `evaluate_fn` attached to the `SteinVI_BNN` instance.
+
+   In `model_training.py`:
+   ```python
+   if steinvi.handler._full_evaluation: current_eval_1, current_eval_2, _ = steinvi.evaluate_fn( steinvi.state, z_val, y_val, print_out=False ) # Handle early stopping if enabled
+   ```
+
+7. **Post-Training:**
+   After training, you can evaluate the model on test data and visualize results.
+
+   In `stein_vi.py`:
+
+   ```python
+   #After training is complete
+   _, _, _, _, z_test, y_test = dataset
+   #Evaluate on test data
+   _, _, predictions_test = steinvi.evaluate_fn( steinvi.state, z_test, y_test, print_out=True )
+   #Print performance metrics
+   if steinvi.use_for_regression: 
+      print_summary_over_particles_regression(predictions_test) 
+   else: 
+      print_summary_over_particles_multiclass(predictions_test) 
+   ```
+
+   Optional Visualization:
+   ```python
+   # Plot validation metrics over iterations
+   steinvi.plot_val_metric_over_iter()
+
+   # View misclassified examples (for classification tasks)
+   steinvi.view_misclassified(z_test, y_test)
+   ```
 
 (understanding-the-main-classes)=
 ## Understanding the Main Classes

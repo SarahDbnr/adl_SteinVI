@@ -13,7 +13,6 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
 
     Algorithms:
         - **svgd (Stein Variational Gradient Descent)**: Uses the blackjax implementation of SVGD.
-        - **plain_svgd**: Uses a modified version of the blackjax svgd.py file where the optimizer is removed. So now only plain gradient decent will be performed with a given learning rate. (Attention: Gets stuck really easily and als much worse than normal SVGD with an adam optimizer)
         - **ssvgd (Stochastic Stein Variational Gradient Descent)**: A variant of plain_svgd where noise is added to the particle updates. (Attention: Often in our BNN the gradient and the weights have quite high values e.g. (-40000;40000) and noise calculated based on the paper "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD"  is very small since the kernel is used to scale the variance and when using the RBF_Kernel the values are between 0 and 1.
         - **quasi_svn**: Here the optax optimizer LBFGS needs to be used, allowing for second-order updates. Note: This method does not support particle batching, and will raise an error if attempted.
 

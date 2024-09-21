@@ -54,8 +54,25 @@
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../get_started.html#running-the-examples">Running the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#summary-of-usage">Summary of Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started.html#running-the-examples">Running the Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#example-run-py">Example_Run.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started.html#available-runs">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#advanced-usage">Advanced Usage</a><ul>
@@ -202,7 +219,6 @@ Also prints out a score for the performance of the network on the test dataset.<
 <dl class="simple">
 <dt>Algorithms:</dt><dd><ul class="simple">
 <li><p><strong>svgd (Stein Variational Gradient Descent)</strong>: Uses the blackjax implementation of SVGD.</p></li>
-<li><p><strong>plain_svgd</strong>: Uses a modified version of the blackjax svgd.py file where the optimizer is removed. So now only plain gradient decent will be performed with a given learning rate. (Attention: Gets stuck really easily and als much worse than normal SVGD with an adam optimizer)</p></li>
 <li><p><strong>ssvgd (Stochastic Stein Variational Gradient Descent)</strong>: A variant of plain_svgd where noise is added to the particle updates. (Attention: Often in our BNN the gradient and the weights have quite high values e.g. (-40000;40000) and noise calculated based on the paper “A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD”  is very small since the kernel is used to scale the variance and when using the RBF_Kernel the values are between 0 and 1.</p></li>
 <li><p><strong>quasi_svn</strong>: Here the optax optimizer LBFGS needs to be used, allowing for second-order updates. Note: This method does not support particle batching, and will raise an error if attempted.</p></li>
 </ul>
