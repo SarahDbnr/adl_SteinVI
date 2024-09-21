@@ -32,9 +32,9 @@ def set_up_quasi_SVN(steinvi_svdg):
 
     steinvi_svdg.update_fn = svgd_update_fn
 
-    def evaluate_model_fn(state, z_val, y_val, print):
-        return get_evaluation_metrics_over_predictions(state, steinvi_svdg.nnet, steinvi_svdg.tree_def, z_val, y_val,
-                                                       steinvi_svdg.use_for_regression, print)
+    def evaluate_model_fn(state, z_val, y_val, print_out):
+        return get_evaluation_metrics_over_predictions(state, steinvi_svdg.nnet, z_val, y_val,
+                                                       steinvi_svdg.use_for_regression, print_out)
 
     steinvi_svdg.evaluate_fn = evaluate_model_fn
 
@@ -53,7 +53,7 @@ def initialize_svgd_state(svi):
         tuple: The initialized SVGD state and the JIT-compiled update function for SVGD.
     """
     grad_log_posterior = jax.grad(svi.log_posteriori)
-    svgd = stein_vi.algorithm.quasi_SVN_with_lbfgs.local_blackjax_file_adjusted_for_lbfgs.as_top_level_api(grad_log_posterior, svi.log_posteriori, svi.parameter.optimizer, rbf_kernel, update_median_heuristic)
+    svgd = stein_vi.algorithm.quasiSVN.local_blackjax_file_adjusted_for_lbfgs.as_top_level_api(grad_log_posterior, svi.log_posteriori, svi.parameter.optimizer, rbf_kernel, update_median_heuristic)
     initial_kernel_params = {"length_scale": svi.parameter.kernel_length}
     return svgd.init(svi.initial_particle_vector, initial_kernel_params), svgd
 
