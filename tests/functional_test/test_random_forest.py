@@ -5,7 +5,7 @@ from tensorflow.keras.datasets import mnist
 from sklearn.metrics import accuracy_score, mean_squared_error
 from optax import adam, exponential_decay
 
-from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
+from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 from stein_vi.stein_vi import train_with_stein_vi
 from stein_vi.algorithm.random_forest import random_forest

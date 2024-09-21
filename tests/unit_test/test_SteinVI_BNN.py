@@ -7,7 +7,7 @@ from optax import adam
 from stein_vi.Classes.Parameter_Class import Parameter
 from stein_vi.Classes.Handler_Class import Handler
 from stein_vi.algorithm.get_posteriori import logp_unnormalized_posterior_regression
-from stein_vi.Classes.SteinVI_BNN import SteinVI_BNN
+from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 
 from fixtures import stein_vi_multiclass_example, stein_vi_regression_example, get_regression_toy_example, get_MNIST
