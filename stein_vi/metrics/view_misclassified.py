@@ -6,10 +6,10 @@ from stein_vi.metrics.plots_validation_metrics import view_probabilities_classif
 
 
 
-def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
+def view_misclassified(out, nnet_model, z_test, y_test, image_data, key, num_plots):
     """
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
-    5 random misclassified and 5 random right classified data examples.
+    num_plots random misclassified and num_plots random right classified data examples.
 
     Args:
         out (SVGDState???): State of the particles of the Stein VI optimization
@@ -18,10 +18,11 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
         y_test (jax.numpy.ndarray): True output labels for the given input.
         image_data (bool): Describes if it is image data or not.If it is image data the image will be shown next to the probabilites.
         key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
+        num_plots (int): Number of plots to be shown
     """
     
     # Get predictions and precisions from all particles
-    predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_test))(out.particles)
+    _, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_test))(out.particles)
 
     # Take the mean prediction across all particles
     averaged_precision = precisions.mean(0)
@@ -40,8 +41,7 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
         print("No misclassified samples.")
         misclassified_random_indices = jnp.array([])  # or handle it according to your logic
     else:
-        # Use all samples if fewer than 5, otherwise randomly select 5
-        num_misclassified_samples = min(5, misclassified_indices.size)
+        num_misclassified_samples = min(num_plots, misclassified_indices.size)
         misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices,
                                                          shape=(num_misclassified_samples,), replace=False)
 
@@ -50,8 +50,7 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
         print("No correctly classified samples.")
         correctly_classified_random_indices = jnp.array([])  # or handle it according to your logic
     else:
-        # Use all samples if fewer than 5, otherwise randomly select 5
-        num_correctly_classified_samples = min(5, correctly_classified_indices.size)
+        num_correctly_classified_samples = min(num_plots, correctly_classified_indices.size)
         correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices,
                                                                 shape=(num_correctly_classified_samples,),
                                                                 replace=False)
@@ -82,6 +81,5 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key):
             plt.show()
 
         else:
-            # If not image data, simply show the probability distribution
             view_probabilities_classification(precisions_sample=precisions[:, int(idx), :],
                                               predicted_class=predicted_classes[int(idx)], true_class=y_test[int(idx)])

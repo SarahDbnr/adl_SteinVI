@@ -191,17 +191,18 @@ class SteinVI_BNN:
         else:
             ValueError("This plot is only available for regression problems.")
 
-    def view_misclassified(self, z_test, y_test, key= jax.random.PRNGKey(1)):
+    def view_misclassified(self, z_test, y_test, key= jax.random.PRNGKey(1), num_plots=3):
         """  This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
-        5 random misclassified and 5 random right classified data examples.
+        num_plots random misclassified and num_plots random right classified data examples.
         
         Args:
             z_test (jax.numpy.ndarray): Input features to the model.
             y_test (jax.numpy.ndarray): True output labels for the given input.
             key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
+            num_plots (int): Number of plots to be shown
         """
         if self.use_for_regression:
             ValueError("This plot is only available for classification problems.")
         else:
             view_misclassified(self.state,self.nnet, z_test, y_test,
-                               self.parameter.image_data,key)
+                               self.parameter.image_data,key,num_plots)
