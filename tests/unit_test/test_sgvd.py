@@ -73,12 +73,16 @@ def test_particle_minibatching(stein_vi_regression_example):
 
 def test_get_batched_optimizer_state(stein_vi_regression_example):
     # given
+    set_up_svgd(stein_vi_regression_example)
     optimizer_state = stein_vi_regression_example.state.opt_state
-    indices = jnp.array([9, 4])
+    indices = jnp.array([1])
     # when
-    get_batched_optimizer_state(optimizer_state, indices)
+    batched_optimizer_state = get_batched_optimizer_state(optimizer_state, indices)
     # then
-    # TODO: ask chat gpt
+    assert optimizer_state[0].mu.shape == (10, 252)
+    assert optimizer_state[0].nu.shape == (10, 252)
+    assert batched_optimizer_state[0].mu.shape == (1,252)
+    assert batched_optimizer_state[0].nu.shape == (1, 252)
 
 
 def test_update_optimizer_state(stein_vi_regression_example):
@@ -86,14 +90,14 @@ def test_update_optimizer_state(stein_vi_regression_example):
     regression_toy_example = get_regression_toy_example(num_points=100)
     z_train, y_train, _, _, _, _ = regression_toy_example
 
-    indices = jnp.array([9, 4])
+    indices = jnp.array([4, 9])
     state, svgd = initialize_svgd_state(stein_vi_regression_example)
     batch_particles = jnp.take(state.particles, indices, axis=0)
     batch_optimizer_state = get_batched_optimizer_state(state.opt_state, indices)
     batch_state = state._replace(particles=batch_particles, opt_state=batch_optimizer_state)
-    optimizer_state = stein_vi_regression_example.state.opt_state
+    optimizer_state = state.opt_state
     updated_batch_state = svgd.step(batch_state, dz=z_train, dy=y_train)
     # when
-    update_optimizer_state(optimizer_state, updated_batch_state, indices)
+    updated_optimizer = update_optimizer_state(optimizer_state, updated_batch_state, indices)
     # then
-    # TODO: ask chat gpt
+    assert jnp.all(updated_optimizer[0].mu[indices] == updated_batch_state.opt_state[0].mu)
