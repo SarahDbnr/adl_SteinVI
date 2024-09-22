@@ -54,6 +54,7 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
+                steinvi.parameter.stopped_at_iteration = iteration
                 break
 
 
@@ -86,6 +87,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
+                steinvi.parameter.stopped_at_iteration = iteration
                 break
 
 
@@ -121,6 +123,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
             if patience_counter >= steinvi.parameter.patience_early_stopping:
+                steinvi.parameter.stopped_at_iteration = iteration
                 break
 
 
@@ -157,6 +160,7 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
                 steinvi, z_val, y_val, iteration, best_eval_metric, patience_counter)
 
         if patience_counter >= steinvi.parameter.patience_early_stopping:
+            steinvi.parameter.stopped_at_iteration = iteration
             break
 
 

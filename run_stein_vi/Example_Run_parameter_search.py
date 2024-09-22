@@ -17,7 +17,7 @@ def parameter_loop_regression(dataset, model, name):
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
 
-    early_stopping = False
+    early_stopping = True
     batch_size = 0
     particle_batch_size = 0
     num_iterations = 10000
@@ -26,9 +26,9 @@ def parameter_loop_regression(dataset, model, name):
 
     array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
     array_batch_size = [0, 5, 10, 20, 50]
-    array_early_stopping = [False, True]
-    array_init_value = [0.1, 0.2, 0.3, 0.4, 0.5]
-    array_decay_rate = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5]
+    array_early_stopping = [True, False]
+    array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
+    array_decay_rate = [0.999, 0.99, 0.95, 0.9, 0.8, 0.7]
 
     lowest_mse = jnp.inf
 
@@ -109,7 +109,7 @@ def parameter_loop_multiclass(dataset, model, name):
     decay_rate = 0.95
 
     array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
-    array_batch_size = [0, 5, 10, 20, 50]
+    array_batch_size = [0, 50,300, 1000,10000]
     array_early_stopping = [True, False]
     array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
     array_decay_rate = [0.999, 0.99, 0.95, 0.9, 0.8, 0.7]
@@ -195,11 +195,15 @@ def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_
     steinvi_svdg = SteinVI_BNN(key, z_train, model, use_for_regression=use_for_regression, optimizer=optimizer,
                                num_particles=num_particles, batch_size=batch_size,
                                particle_batch_size=particle_batch_size, num_iterations=num_iterations,
-                               early_stopping=early_stopping, early_stopping=True)
-    
-    steinvi_svdg.parameter.warm_up_iterations_early_stopping = 10
-    steinvi_svdg.parameter.patience_early_stopping = 15
-    steinvi_svdg.parameter.min_delta_early_stopping = 0.0025
+                               early_stopping=early_stopping)
+    if use_for_regression:
+        steinvi_svdg.parameter.warm_up_iterations_early_stopping = 1000
+        steinvi_svdg.parameter.patience_early_stopping = 300
+        steinvi_svdg.parameter.min_delta_early_stopping = 0.00025
+    else:
+        steinvi_svdg.parameter.warm_up_iterations_early_stopping = 10
+        steinvi_svdg.parameter.patience_early_stopping = 15
+        steinvi_svdg.parameter.min_delta_early_stopping = 0.0025
 
     return steinvi_svdg
 
