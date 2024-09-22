@@ -1,14 +1,11 @@
 import jax
 import jax.numpy as jnp
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 
-
-
-
-def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, val_split = 0.1, key = jax.random.PRNGKey(1)):
+def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, val_split=0.1, key=jax.random.PRNGKey(1)):
     """
-    Processes a dataset obtained from Keras, normalizing and optionally flattening it, and splitting it into training, validation, and test sets. Used for image data with values between 0 and 255.
+    Processes a dataset obtained from Keras, normalizing and optionally flattening it, and splitting it into training,
+    validation, and test sets. Used for image data with values between 0 and 255.
 
     Args:
         new_dataset (tuple): A tuple containing training and test datasets as (x_train, y_train), (x_test, y_test).
@@ -17,7 +14,8 @@ def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, va
         val_split (float): Fraction of the data used for validation during training.
         key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
     Returns:
-        tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).
+        tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val,
+        x_test, y_test).
     """
 
     (x_train, y_train), (x_test, y_test) = new_dataset
@@ -34,25 +32,28 @@ def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, va
     print_data_information(x_train, y_train, x_val, y_val, x_test, y_test)
 
     if fraction < 1:
-        x_train, y_train, x_test, y_test = reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test,key)
+        x_train, y_train, x_test, y_test = reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test, key)
 
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
-def apply_data_settings_sklearn(new_dataset, fraction=1, val_split=0.1, key = jax.random.PRNGKey(1), train_test_split = 0.8):
+def apply_data_settings_sklearn(new_dataset, fraction=1, val_split=0.1, key=jax.random.PRNGKey(1),
+                                train_test_split=0.8):
     """
-    Processes a dataset obtained from scikit-learn, shuffling and splitting it into training, validation, and test sets, and optionally reducing its size.
+    Processes a dataset obtained from scikit-learn, shuffling and splitting it into training, validation, and test sets,
+    and optionally reducing its size.
 
     Args:
-        new_dataset (object): An object containing 'data' and 'target' attributes, typical of scikit-learn datasets.
+        new_dataset (Bunch): An object containing 'data' and 'target' attributes, typical of scikit-learn datasets.
         fraction (float): Fraction of the data to use for reducing dataset size.
         val_split (float): Fraction of the data used for validation during training.
         key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
         train_test_split (float): Fraction of the data used for training
     Returns:
-        tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).
+        tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val,
+        x_test, y_test).
     """
-    
+
     x = new_dataset.data
     y = new_dataset.target
 
@@ -76,7 +77,7 @@ def apply_data_settings_sklearn(new_dataset, fraction=1, val_split=0.1, key = ja
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
-def reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test,key):
+def reduce_size_of_dataframe(fraction, x_train, x_test, y_train, y_test, key):
     """
     Reduces the size of training and test datasets to a specified fraction by random sampling.
 
