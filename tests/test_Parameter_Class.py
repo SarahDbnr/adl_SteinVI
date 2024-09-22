@@ -16,7 +16,6 @@ def test_parameter_init():
         particle_batch_size=10,
         num_particles=20,
         num_iterations=100,
-        learning_rate=0.001,
         kernel_length=0.05
     )
 
@@ -28,7 +27,6 @@ def test_parameter_init():
     assert param.num_iterations == 100, "Number of iterations should be set correctly"
     assert param.stopped_at_iteration == 100, "Stopped iteration should be initialized to num_iterations"
     assert param.early_stopping is True, "Early stopping flag should be set correctly"
-    assert param.learning_rate == 0.001, "Learning rate should be set correctly"
     assert param.image_data is True, "Image data flag should be set correctly"
 
     assert param.kernel_length == 0.05, "Default kernel length should be 0.05"
@@ -51,7 +49,6 @@ def test_parameter_set_early_stopping():
         particle_batch_size=5,
         num_particles=10,
         num_iterations=50,
-        learning_rate=0.01,
         kernel_length=0.1
     )
 

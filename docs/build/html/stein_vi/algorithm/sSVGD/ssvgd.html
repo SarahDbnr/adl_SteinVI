@@ -22,7 +22,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="local_blackjax_file_with_adjustments_for_sSVGD" href="local_blackjax_file_with_adjustments_for_sSVGD.html" />
+    <link rel="next" title="matrices_for_noise_matrix" href="matrices_for_noise_matrix.html" />
     <link rel="prev" title="sSVGD" href="index.html" /> 
 </head>
 
@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">sSVGD</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -205,20 +204,40 @@
   <section id="module-stein_vi.algorithm.sSVGD.ssvgd">
 <span id="ssvgd"></span><h1>ssvgd<a class="headerlink" href="#module-stein_vi.algorithm.sSVGD.ssvgd" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.ssvgd.initialize_svgd_state">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">initialize_svgd_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.initialize_svgd_state" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.ssvgd.get_batched_optimizer_state">
+<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">get_batched_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.get_batched_optimizer_state" title="Link to this definition"></a></dt>
+<dd><p>Extracts a minibatch of the optimizer state for the selected particles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer_state</strong> (<em>object</em>) – The full optimizer state across all particles.</p></li>
+<li><p><strong>indices</strong> (<em>jax.numpy.ndarray</em>) – Indices of the particles to extract optimizer states for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimizer state for the selected particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.ssvgd.initialize_ssvgd_state">
+<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">initialize_ssvgd_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steinvi_ssvdg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.initialize_ssvgd_state" title="Link to this definition"></a></dt>
 <dd><p>Initializes the state for sSVGD including the log posterior function, particles, and kernel function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logp_model</strong> (<em>callable</em>) – A function representing the log posterior of the model given the data.</p></li>
-<li><p><strong>initial_particles_vector</strong> (<em>jax.numpy.ndarray</em>) – Initial particle vectors for SVGD.</p></li>
-<li><p><strong>kernel_fn</strong> (<em>callable</em>) – The kernel function used in SVGD to measure distances between particles.</p></li>
-<li><p><strong>parameter</strong> (<em>Parameter</em>) – A Parameter object containing the SVGD hyperparameters like kernel length and scale.</p></li>
+<li><p><strong>initial_particles_vector</strong> (<em>jax.numpy.ndarray</em>) – Initial particle vectors for sSVGD.</p></li>
+<li><p><strong>kernel_fn</strong> (<em>callable</em>) – The kernel function used in sSVGD to measure distances between particles.</p></li>
+<li><p><strong>parameter</strong> (<em>Parameter</em>) – A Parameter object containing the sSVGD hyperparameters like kernel length and scale.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The initialized SVGD state and the JIT-compiled update function for SVGD.</p>
+<dd class="field-even"><p>The initialized sSVGD state and the JIT-compiled update function for sSVGD.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
@@ -251,7 +270,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.ssvgd.set_up_ssvgd">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">set_up_ssvgd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steinvi_svdg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.set_up_ssvgd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">set_up_ssvgd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steinvi_ssvdg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.set_up_ssvgd" title="Link to this definition"></a></dt>
 <dd><p>Sets up the stochastic Stein Variational Gradient Descent (sSVGD) process for training a Bayesian Neural Network (BNN).</p>
 <p>This function initializes the state for SVGD, including defining the update function for sSVGD and the evaluation function
 for assessing the model’s performance.
@@ -260,7 +279,7 @@ and the the variance of the noise is based of the Kernel which only can take on 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi_svdg</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network,</p></li>
+<li><p><strong>steinvi_ssvdg</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network,</p></li>
 <li><p><strong>parameters</strong> (<em>training</em>)</p></li>
 <li><p><strong>particles</strong></p></li>
 <li><p><strong>function.</strong> (<em>and the log posterior</em>)</p></li>
@@ -275,6 +294,27 @@ and the the variance of the noise is based of the Kernel which only can take on 
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.ssvgd.update_optimizer_state">
+<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.ssvgd.</span></span><span class="sig-name descname"><span class="pre">update_optimizer_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batched_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.ssvgd.update_optimizer_state" title="Link to this definition"></a></dt>
+<dd><p>Updates the global optimizer state with the minibatched state after an update step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer_state</strong> (<em>object</em>) – The full optimizer state across all particles.</p></li>
+<li><p><strong>batched_state</strong> (<em>object</em>) – The optimizer state after a minibatch update.</p></li>
+<li><p><strong>indices</strong> (<em>jax.numpy.ndarray</em>) – Indices of the particles that were updated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated optimizer state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -282,7 +322,7 @@ and the the variance of the noise is based of the Kernel which only can take on 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="sSVGD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="local_blackjax_file_with_adjustments_for_sSVGD.html" class="btn btn-neutral float-right" title="local_blackjax_file_with_adjustments_for_sSVGD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="matrices_for_noise_matrix.html" class="btn btn-neutral float-right" title="matrices_for_noise_matrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

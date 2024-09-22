@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../algorithm/sSVGD/index.html">sSVGD</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -205,7 +204,7 @@
 <h1>Parameter_Class<a class="headerlink" href="#parameter-class" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">stein_vi.Classes.Parameter_Class.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stopping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_length</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">stein_vi.Classes.Parameter_Class.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stopping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_iterations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_length</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>A class to define and manage the parameters for training a model using Stein Variational Inference methods for example SVGD.</p>
 <p>This class stores and handles various parameters required for training, such as the optimizer, learning rate, batch sizes,
 number of particles, and early stopping configurations. It provides functionality to set early stopping criteria,
@@ -371,11 +370,6 @@ which can help terminate the training process early if performance stabilizes.</
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">kernel_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">learning_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

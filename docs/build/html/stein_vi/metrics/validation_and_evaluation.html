@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../algorithm/sSVGD/index.html">sSVGD</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -287,10 +286,15 @@ Based on the equations (1), (2) and (3).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>flax.linen.Module</strong><strong>)</strong> (<em>nnet_model</em>) – Underlying neural network of the training process.</p></li>
-<li><p><strong>tree_def</strong> (<em>jax.tree_util.PyTreeDef</em>) – Tree structure used for parameter transformation in JAX.</p></li>
-<li><p><strong>out</strong> (<em>blackjax.vi.svgd.SVGD_State</em>) – Output from the training process, containing the state of the particles.</p></li>
+<li><p><strong>out</strong> (<em>blackjax.vi.svgd.SVGDState</em>) – Output from the training process, containing the state of the particles.</p></li>
 <li><p><strong>dz</strong> (<em>jax.numpy.ndarray</em>) – dataset of input features.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean_star, variance_star as the predicted mean and variance over all particles</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -356,7 +360,20 @@ Based on the equations (1), (2) and (3).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_multiclass">
 <span class="sig-prename descclassname"><span class="pre">stein_vi.metrics.validation_and_evaluation.</span></span><span class="sig-name descname"><span class="pre">print_summary_over_particles_multiclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_multiclass" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Computes and prints the average number of different classifications made
+by particles in a Bayesian Neural Network (BNN).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predictions</strong> (<em>jax.numpy.ndarray</em>) – Predictions from an ensemble of particles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function prints the average number of samples classified differently by the particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.metrics.validation_and_evaluation.print_summary_over_particles_regression">
