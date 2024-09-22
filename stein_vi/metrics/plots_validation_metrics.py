@@ -5,7 +5,8 @@ from stein_vi.metrics.validation_and_evaluation import compute_confidence_interv
 
 def plot_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=None):
     """
-    Plots a graph of the evaluation metrics over iterations for a neural network model. For regression the precision and the mse are plotted and for classification the accuracy is plotted.
+    Plots a graph of the evaluation metrics over iterations for a neural network model. For regression the precision
+    and the mse are plotted and for classification the accuracy is plotted.
 
     Args:
         evaluation_metric_val (list or array): Values of the evaluation metric over iterations.
@@ -40,8 +41,8 @@ def plot_residuals(y_pred, y_true, num_particles=None, network_structure=None,
     Calculates and plots the residuals of predictions against true values for a regression model.
 
     Args:
-        y_pred (array): Predicted output values for the test set.
-        y_true (array): True output values for the test set.
+        y_pred (jax.numpy.ndarray): Predicted output values for the test set.
+        y_true (jax.numpy.ndarray): True output values for the test set.
         num_particles (int, optional): Number of particles used in SVGD. Defaults to None.
         network_structure (str, optional): Description of the network's architecture. Defaults to None.
         kernel_length (float, optional): Length parameter for the kernel used in SVGD. Defaults to None.
@@ -51,7 +52,6 @@ def plot_residuals(y_pred, y_true, num_particles=None, network_structure=None,
     """
 
     residuals = y_pred.mean(0).squeeze() - y_true
-
 
     plt.figure(figsize=(10, 6))
     plt.scatter(y_true, residuals, alpha=0.5)
@@ -88,7 +88,7 @@ def plot_location_in_relation_to_scale(nnet_model, out, z_test, num_particles=No
     Args:
         nnet_model (flax.linen.Module): The neural network model used for predictions.
         out (blackjax.vi.svgd.SVGD_State): Output from the model prediction, containing particles.
-        z_test (array): Test input features.
+        z_test (jax.numpy.ndarray): Test input features.
         num_particles (int, optional): Number of particles used in SVGD. Defaults to None.
         network_structure (str, optional): Description of the network's architecture. Defaults to None.
         kernel_length (float, optional): Length parameter for the kernel used in SVGD. Defaults to None.
@@ -99,7 +99,6 @@ def plot_location_in_relation_to_scale(nnet_model, out, z_test, num_particles=No
     """
 
     prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, out, z_test)
-
 
     plt.figure(figsize=(10, 6))
     plt.scatter(prediction_location, predicted_scale, alpha=0.5)
@@ -132,10 +131,12 @@ def view_probabilities_classification(precisions_sample, predicted_class, true_c
 
 
     Args:
-        precisions_sample (jax.numpy.ndarray): Array of shape (num_particles, num_classes) containing the predicted probabilities
+        precisions_sample (jax.numpy.ndarray): Array of shape (num_particles, num_classes) containing
+        the predicted probabilities
         predicted_class (jax.numpy.ndarray): Array with one element containing the predicted class
         true_class (int): True class of the sample.
-        ax (matplotlib.axes._subplots.AxesSubplot, optional): Is the subplot where the probabilities are plotted. Defaults to None.
+        ax (matplotlib.axes._subplots.AxesSubplot, optional): Is the subplot where the probabilities are plotted.
+        Defaults to None.
     """
 
     means = precisions_sample.mean(axis=0)
