@@ -13,19 +13,25 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
 
     Algorithms:
         - **svgd (Stein Variational Gradient Descent)**: Uses the blackjax implementation of SVGD.
-        - **ssvgd (Stochastic Stein Variational Gradient Descent)**: A variant of svgd where noise is added to the particle updates. 
+        - **ssvgd (Stochastic Stein Variational Gradient Descent)**: A variant of svgd where noise is added to the
+        particle updates.
 
     Args:
-        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, containing the Bayesian neural network, particles, and other relevant parameters.
-        dataset (tuple): A tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).
-        key (jax.random.PRNGKey): A key used to control the generation of random objects. Here it is used, for example, for the selection of batch subsets.
-        algorithm (str, optional): Specifies the algorithm used to train the BNN. Defaults to "svgd". Available options: "svgd","ssvgd".
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, containing the Bayesian neural network,
+        particles, and other relevant parameters.
+        dataset (tuple): A tuple containing processed training, validation, and test data as (x_train, y_train, x_val,
+        y_val, x_test, y_test).
+        key (jax.random.PRNGKey): A key used to control the generation of random objects. Here it is used, for example,
+        for the selection of batch subsets.
+        algorithm (str, optional): Specifies the algorithm used to train the BNN. Defaults to "svgd".
+        Available options: "svgd","ssvgd".
 
     Raises:
         ValueError: If the specified algorithm is not supported or if particle batching is attempted with `quasi_svn`.
 
     Returns:
-        SteinVI_BNN: Returns an updated instance of the `SteinVI_BNN` class, including the trained particles and evaluation metrics.
+        SteinVI_BNN: Returns an updated instance of the `SteinVI_BNN` class, including the trained particles
+        and evaluation metrics.
 
     Prints: 
         Tests scores for a given data test dataset.
@@ -57,6 +63,6 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
         print("\nRandom Forest comparison")
         print("Test MSE:       ", random_forest(dataset, 'regression')['Test MSE'])
         print("Test Precision: ", random_forest(dataset, 'regression')['Test Precision'])
-    elif steinvi.handler.rf_comparison and steinvi.use_for_regression == False:
+    elif steinvi.handler.rf_comparison and not steinvi.use_for_regression:
         print("\nRandom Forest comparison")
         print("Test Accuracy:   ", random_forest(dataset)['Test Accuracy'])
