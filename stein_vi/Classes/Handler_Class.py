@@ -2,7 +2,9 @@ class Handler:
     """
     A class to manage the parameters for printing and evaluation modes during training and evaluation.
 
-    This class controls how much information is printed during training and how thoroughly the model is evaluated during training and testing. It allows setting different modes (full, reduced, or none) for both training prints and evaluation.
+    This class controls how much information is printed during training and how thoroughly the model is evaluated
+    during training and testing. It allows setting different modes (full, reduced, or none) for both training
+    prints and evaluation.
 
     Attributes:
         rf_comparison (bool): A flag indicating whether random feature comparison is enabled during training.
@@ -20,12 +22,13 @@ class Handler:
     _full_evaluation: bool
     _minimal_evaluation: bool
 
-    def __init__(self, rf_comparison= False):
+    def __init__(self, rf_comparison=False):
         """Initializes the Handler class with the option to enable random forest comparisson.
         Args:
             rf_comparison (bool, optional): _description_. Defaults to False.
         """
         self.rf_comparison = rf_comparison
+
     def set_training_print_mode(self, mode):
         """
         Sets the print mode for the training process. Only one mode can be active at any time.
