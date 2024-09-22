@@ -5,7 +5,8 @@ from tqdm import tqdm
 
 def train_general_algorithm(steinvi, dataset, key):
     """
-    General training function for neural networks that supports different mini-batching modes for both data and particles.
+    General training function for neural networks that supports different mini-batching modes
+    for both data and particles.
 
     Args:
         steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
@@ -89,7 +90,6 @@ def data_minibatch_training_loop(steinvi, dataset, key):
             if patience_counter >= steinvi.parameter.patience_early_stopping:
                 steinvi.parameter.stopped_at_iteration = iteration
                 break
-
 
 
 def particle_minibatch_training_loop(steinvi, dataset, key):
@@ -229,7 +229,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     Handles the printing and evaluation during training based on the training print mode.
 
     Args:
-        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
+        stein_vi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         z_val (ndarray): Validation data inputs.
         y_val (ndarray): Validation data targets.
         iteration (int): Current training iteration.
