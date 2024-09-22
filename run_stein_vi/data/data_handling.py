@@ -17,6 +17,7 @@ def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, va
         with_flattening (bool): If True, flattens the output arrays.
         fraction (float): Fraction of the data to use for reducing dataset size.
         val_split (float): Fraction of the data used for validation during training.
+        key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
     Returns:
         tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).
     """
@@ -129,9 +130,8 @@ def newsgroup_datahandling():
     """
     newsgroups = fetch_20newsgroups(subset='all')
 
-    # Convert the text data to a TF-IDF feature matrix
-    vectorizer = TfidfVectorizer(max_features=2000)  # Limiting to 2000 features to make it manageable
-    X = vectorizer.fit_transform(newsgroups.data).toarray()  # Convert sparse matrix to dense array
+    vectorizer = TfidfVectorizer(max_features=2000)  
+    X = vectorizer.fit_transform(newsgroups.data).toarray()
     y = newsgroups.target
 
 
@@ -154,13 +154,11 @@ def adult_income_datahandling():
     
 
     X = adult_income.data
-    y = (adult_income.target == '>50K').astype(int)  # Binary classification: '>50K' is class 1, otherwise 0
+    y = (adult_income.target == '>50K').astype(int) 
     
-    # Define preprocessing for numerical and categorical data
     numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
     categorical_features = X.select_dtypes(include=['object']).columns
     
-    # Create a preprocessing pipeline
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', StandardScaler(), numeric_features),
@@ -168,17 +166,13 @@ def adult_income_datahandling():
         ]
     )
     
-    # Apply preprocessing
     X_processed = preprocessor.fit_transform(X)
 
-    # Convert the processed features to a dense array if necessary
     if issparse(X_processed):
         X_processed = X_processed.toarray()
 
-    # Convert y to a numpy array
     y = y.to_numpy()
 
-    # Create a new dataset object as expected by `apply_data_settings_sklearn`
     class CustomDataset:
         def __init__(self, data, target):
             self.data = data
@@ -201,11 +195,9 @@ def bike_sharing_datahandling():
     X = bike_sharing.data
     y = bike_sharing.target
     
-    # Define preprocessing for numerical and categorical data
     numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
     categorical_features = X.select_dtypes(include=['object']).columns
     
-    # Create a preprocessing pipeline
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', StandardScaler(), numeric_features),
@@ -213,17 +205,14 @@ def bike_sharing_datahandling():
         ]
     )
     
-    # Apply preprocessing
     X_processed = preprocessor.fit_transform(X)
 
-    # Convert the processed features to a dense array if necessary
     if issparse(X_processed):
         X_processed = X_processed.toarray()
 
-    # Convert y to a numpy array
+
     y = y.to_numpy()
 
-    # Create a new dataset object as expected by `apply_data_settings_sklearn`
     class CustomDataset:
         def __init__(self, data, target):
             self.data = data
