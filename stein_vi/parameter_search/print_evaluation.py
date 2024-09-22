@@ -20,6 +20,8 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
         true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
         test_predictions (jax.numpy.ndarray): Predicted values from the SVGD model over particles.
         test_precision (jax.numpy.ndarray): Predicted precision values from the model over particles.
+        init_value (float): The initial learning rate.
+        decay_rate (float): The decay rate choosen for the optimizer.
 
     Returns:
         None: The function saves the evaluation to a CSV file.
@@ -49,7 +51,6 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
     df = pd.DataFrame([data])
     file_path = name + "_EvaluationRegression.csv"
 
-    # Try to append data to the existing CSV file if it exists
     try:
         df_csv = pd.read_csv(file_path)
         pd.concat([df, df_csv], axis=0).to_csv(file_path, index=False)
@@ -67,7 +68,8 @@ def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predic
                             kernel length, and early stopping parameters.
         true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
         test_predictions (jax.numpy.ndarray): Predicted class probabilities from the SVGD model over particles.
-
+        init_value (float): The initial learning rate.
+        decay_rate (float): The decay rate choosen for the optimizer.
     Returns:
         None: The function saves the evaluation to a CSV file.
     """
@@ -93,7 +95,6 @@ def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predic
     }
     df = pd.DataFrame([data])
     file_path = name + "_EvaluationMulticlass.csv"
-    # Try to append data to the existing CSV file if it exists
     try:
         df_csv = pd.read_csv(file_path)
         pd.concat([df, df_csv], axis=0).to_csv(file_path, index=False)
