@@ -18,14 +18,14 @@ def parameter_loop_regression(dataset, model, name):
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
 
-    early_stopping = True
+    early_stopping = False
     batch_size = 0
     particle_batch_size = 0
-    num_iterations = 10000
+    num_iterations = 5000
     init_value = 0.1
     decay_rate = 0.95
 
-    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100]
+    array_num_particles = [5, 10, 20, 30, 40]
     array_batch_size = [0, 5, 10, 20, 50]
     array_early_stopping = [True, False]
     array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
@@ -197,7 +197,7 @@ def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_
                                early_stopping=early_stopping)
     if use_for_regression:
         steinvi_svdg.parameter.warm_up_iterations_early_stopping = 1000
-        steinvi_svdg.parameter.patience_early_stopping = 300
+        steinvi_svdg.parameter.patience_early_stopping = 500
         steinvi_svdg.parameter.min_delta_early_stopping = 0.00025
     else:
         steinvi_svdg.parameter.warm_up_iterations_early_stopping = 10
