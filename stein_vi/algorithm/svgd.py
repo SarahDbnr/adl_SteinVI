@@ -71,7 +71,6 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
         object: The updated SVGD state after the current step.
     """
 
-    # Minibatch update for particles
     batch_particles = jnp.take(state.particles, particle_indices, axis=0)
     batch_optimizer_state = get_batched_optimizer_state(state.opt_state, particle_indices)
 
