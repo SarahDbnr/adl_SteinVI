@@ -1,44 +1,29 @@
 import jax
 import jax.numpy as jnp
-from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction, compute_stochastic_correction_old
+from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction
 from stein_vi.algorithm.sSVGD.local_blackjax_file_with_adjustments_for_sSVGD import rbf_kernel
 
 
-def test_compute_stochastic_correction():
-    n_particles = 5
-    d = 5
-    particles = jax.random.normal(jax.random.PRNGKey(42), (n_particles, d))
+def compute_permutation_matrix(N, d):
+    """
+    Efficiently computes the permutation matrix to reshape elements between particle dimensions.
 
-    kernel_params = {'length_scale': 1.0}
+    Args:
+        N (int): The number of particles.
+        d (int): The dimension of each particle.
 
-    # Generate random normal samples
-    Nd = n_particles * d
-    rng_key = jax.random.PRNGKey(0)
-    random_normal_samples = jax.random.normal(rng_key, (Nd,))
+    Returns:
+        ndarray: The permutation matrix of shape (Nd, Nd), where Nd = N * d.
+    """
 
-    # Compute the stochastic correction using the old function
-    v_stc_old = compute_stochastic_correction_old(particles, rbf_kernel, kernel_params, random_normal_samples)
-
-    # Compute the stochastic correction using the new function
-    v_stc_new = compute_stochastic_correction(particles, rbf_kernel, kernel_params, random_normal_samples)
-
-    # Compare the outputs
-    print("v_stc_old:\n", v_stc_old)
-    print("v_stc_new:\n", v_stc_new)
-
-    # Compute the difference
-    diff = jnp.linalg.norm(v_stc_old - v_stc_new)
-    print("Difference between old and new v_stc:", diff)
-
-    # Check if they are close
-    assert jnp.allclose(v_stc_old, v_stc_new, atol=1e-6), "The outputs are not the same!"
-    print("ha")
-
-test_compute_stochastic_correction()
-
-
+    Nd = N * d
+    identity = jnp.eye(Nd)
+    P = identity.reshape(N, d, N, d).transpose(1, 0, 2, 3).reshape(Nd, Nd)
+    
+    return P
 def compute_stochastic_correction_old(particles, kernel_fn, kernel_params, random_normal_samples):
     """Computes the stochastic correction term used in sSVGD. Based on the paper "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.
+    Without clever tricks, more like in the paper.
 
     Args:
         particles (ndarray): The particle set, shape (n_particles, d), representing the current state.
@@ -64,40 +49,24 @@ def compute_stochastic_correction_old(particles, kernel_fn, kernel_params, rando
 
     return v_stc.reshape(n_particles, d)
 
-
-def compute_permutation_matrix_test(N, d):
+def test_compute_stochastic_correction():
+    """This test compares the old and new implementations of the stochastic correction term used in sSVGD, since compute_stochastic_correction_old is more like the implementation in the paper.
     """
-    Computes the permutation matrix to reshape elements between particle dimensions for testing purposes.
+    n_particles = 5
+    d = 5
+    particles = jax.random.normal(jax.random.PRNGKey(42), (n_particles, d))
 
-    Args:
-        N (int): The number of particles.
-        d (int): The dimension of each particle.
+    kernel_params = {'length_scale': 1.0}
 
-    Returns:
-        ndarray: The permutation matrix of shape (Nd, Nd), where Nd = N * d.
-    """
+    Nd = n_particles * d
+    rng_key = jax.random.PRNGKey(0)
+    random_normal_samples = jax.random.normal(rng_key, (Nd,))
 
-    Nd = N * d
-    P = jnp.zeros((Nd, Nd))
-    for i in range(d):
-        for j in range(N):
-            P = P.at[i * N + j, j * d + i].set(1)
-    return P
+    v_stc_old = compute_stochastic_correction_old(particles, rbf_kernel, kernel_params, random_normal_samples)
 
-def compute_permutation_matrix(N, d):
-    """
-    Efficiently computes the permutation matrix to reshape elements between particle dimensions.
+    v_stc_new = compute_stochastic_correction(particles, rbf_kernel, kernel_params, random_normal_samples)
 
-    Args:
-        N (int): The number of particles.
-        d (int): The dimension of each particle.
 
-    Returns:
-        ndarray: The permutation matrix of shape (Nd, Nd), where Nd = N * d.
-    """
+    diff = jnp.linalg.norm(v_stc_old - v_stc_new)
 
-    Nd = N * d
-    identity = jnp.eye(Nd)
-    P = identity.reshape(N, d, N, d).transpose(1, 0, 2, 3).reshape(Nd, Nd)
-    
-    return P
+    assert jnp.allclose(v_stc_old, v_stc_new, atol=1e-6), "The outputs are not the same!"

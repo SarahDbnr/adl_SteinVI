@@ -1,9 +1,8 @@
 import jax
 import jax.numpy as jnp
 
-from sklearn.datasets import fetch_20newsgroups, fetch_openml
 from sklearn.feature_extraction.text import TfidfVectorizer
-from scipy.sparse import issparse
+
 
 
 
@@ -119,27 +118,3 @@ def print_data_information(x_train, y_train, x_val, y_val, x_test, y_test):
     print(f"Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}")
     print(f"Validation data shape: {x_val.shape}, Validation labels shape: {y_val.shape}")
     print(f"Test data shape: {x_test.shape}, Test labels shape: {y_test.shape}")
-
-
-def newsgroup_datahandling():
-    """
-    Loads and processes the 20 Newsgroups dataset for text classification, converting the text data to a TF-IDF feature matrix.
-
-    Returns:
-        CustomDataset: A dataset object containing the processed features and targets.
-    """
-    newsgroups = fetch_20newsgroups(subset='all')
-
-    vectorizer = TfidfVectorizer(max_features=2000)  
-    X = vectorizer.fit_transform(newsgroups.data).toarray()
-    y = newsgroups.target
-
-
-    class CustomDataset:
-        def __init__(self, data, target):
-            self.data = data
-            self.target = target
-
-    dataset = CustomDataset(X, y)
-    return dataset
-

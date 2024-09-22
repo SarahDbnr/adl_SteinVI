@@ -63,61 +63,6 @@ def print_fashion_mnist_dataset_info():
     print("\t\t• 9: Ankle boot")
 
 
-def print_cifar10_dataset_info():
-    """
-    Prints a detailed description of the CIFAR10 dataset.
-    """
-    print("Dataset Description")
-    print("\t• Number of Instances: 60,000 (50,000 training, 10,000 test)")
-    print("\t• Number of Features: 3,072 (32x32 pixels, 3 color channels)")
-    print("\t• Number of Classes: 10")
-    print("\t• Features:")
-    print("\t\t• Each instance is a 32x32 color image.")
-    print("\t• Target Classes:")
-    print("\t\t• 0: Airplane")
-    print("\t\t• 1: Automobile")
-    print("\t\t• 2: Bird")
-    print("\t\t• 3: Cat")
-    print("\t\t• 4: Deer")
-    print("\t\t• 5: Dog")
-    print("\t\t• 6: Frog")
-    print("\t\t• 7: Horse")
-    print("\t\t• 8: Ship")
-    print("\t\t• 9: Truck")
-
-
-def print_20_newsgroups_dataset_info():
-    """
-    Prints a detailed description of the Newsgroup_20 dataset.
-    """
-    print("Dataset Description")
-    print("\t• Number of Instances: 18,846 (11,314 training, 7,532 test)")
-    print("\t• Number of Features: Variable (depending on text vectorization, standardly here 2000)")
-    print("\t• Number of Classes: 20")
-    print("\t• Features:")
-    print("\t\t• Each instance is a text document belonging to one of 20 different newsgroups.")
-    print("\t• Target Classes (Newsgroups):")
-    print("\t\t• alt.atheism")
-    print("\t\t• comp.graphics")
-    print("\t\t• comp.os.ms-windows.misc")
-    print("\t\t• comp.sys.ibm.pc.hardware")
-    print("\t\t• comp.sys.mac.hardware")
-    print("\t\t• comp.windows.x")
-    print("\t\t• misc.forsale")
-    print("\t\t• rec.autos")
-    print("\t\t• rec.motorcycles")
-    print("\t\t• rec.sport.baseball")
-    print("\t\t• rec.sport.hockey")
-    print("\t\t• sci.crypt")
-    print("\t\t• sci.electronics")
-    print("\t\t• sci.med")
-    print("\t\t• sci.space")
-    print("\t\t• soc.religion.christian")
-    print("\t\t• talk.politics.guns")
-    print("\t\t• talk.politics.mideast")
-    print("\t\t• talk.politics.misc")
-    print("\t\t• talk.religion.misc")
-
 
 def print_diabetes_dataset_info():
     """

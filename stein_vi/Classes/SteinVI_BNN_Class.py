@@ -31,8 +31,8 @@ class SteinVI_BNN:
         nnet (flax.linen.Module): The neural network model.
         tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
         initial_particle_vector (jax.numpy.ndarray): The initial particle vectors for the network's parameters.
-        update_fn (callable???): The function used for updating particles during training. ???
-        evaluate_fn (callable???): The function used for evaluating the model's performance.???
+        update_fn (callable): The function used for updating particles during training. 
+        evaluate_fn (callable): The function used for evaluating the model's performance.
         evaluation_metrics_1 (list): Stores evaluation metrics (like accuracy or MSE) over training iterations.
         evaluation_metrics_2 (list): Stores additional evaluation metrics (like precision or variance) over training iterations.
     """
@@ -66,8 +66,8 @@ class SteinVI_BNN:
             nnet (flax.linen.Module): The neural network model that will be optimized using Stein Variational Inference.
             use_for_regression (bool): Determines if the model is used for regression (True) or classification (False).
             optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd. It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS".optimizer (optax.optim)
-            mode_training_print (str, optional): The verbosity level for printing training logs. Options are 'none', 'minimal', or 'full'. Defaults to 'none'. ??? more exact
-            mode_evaluation (str, optional): The level of evaluation performed during training. Options are 'minimal' or 'full'. Defaults to 'full'. ??? more exact
+            mode_training_print (str, optional): The verbosity level for printing training logs. Options are 'none', 'minimal', or 'full'. Defaults to 'none'.
+            mode_evaluation (str, optional): The level of evaluation performed during training. Options are 'minimal' or 'full'. Defaults to 'full'.
             early_stopping (bool, optional): Whether to enable early stopping during training. Defaults to False.
             image_data (bool, optional): Indicates if the input data is image-based, which affects certain visualizations. Defaults to False.
             batch_size (int, optional): The size of the mini-batches for training. Defaults to 0 (i.e., no mini-batching).  Defaults to 0 (i.e., no batching).
