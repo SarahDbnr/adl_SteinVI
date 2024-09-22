@@ -32,7 +32,7 @@ def run_MNIST_GD(info=False):
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=2,
+                               use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=30,
                                num_particles=5, optimizer=optimizer, kernel_length=5)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
@@ -103,7 +103,7 @@ def run_MNIST_ssvgd_GD(info=False):
     ))
 
     steinvi_ssvdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
-                                use_for_regression=False, batch_size=300, particle_batch_size=2, num_iterations=30,
+                                use_for_regression=False, batch_size=0, particle_batch_size=5, num_iterations=30,
                                 num_particles=5, optimizer=optimizer)
 
     train_with_stein_vi(steinvi_ssvdg, mnist_dataset, key, algorithm="ssvgd")
