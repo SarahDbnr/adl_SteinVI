@@ -41,7 +41,7 @@ def run_MNIST_GD(info=False):
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-def run_MNIST_ssvgd(info=False):
+def run_MNIST_ssvgd_ADAM(info=False):
     """
     Run sSVGD on the MNIST dataset for classification. 
 
@@ -59,15 +59,6 @@ def run_MNIST_ssvgd(info=False):
     z_train, _, _, _, z_test, y_test = mnist_dataset
 
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
-
-    optimizer = adam(
-        exponential_decay(
-            init_value=0.01,
-            transition_steps=50,
-            decay_rate=0.95,
-            staircase=True
-        )
-    )
     
     optimizer = optax.inject_hyperparams(optax.adam)(exponential_decay(
                                                                 init_value=0.01,
@@ -84,6 +75,42 @@ def run_MNIST_ssvgd(info=False):
 
     steinvi_ssvdg.plot_val_metric_over_iter()
     steinvi_ssvdg.view_misclassified(z_test, y_test, key=key)
+
+def run_MNIST_ssvgd_GD(info=False):
+    """
+    Run sSVGD on the MNIST dataset for classification. 
+
+    Args:
+        info (bool, optional): If True, prints dataset information. Defaults to False.
+    """
+
+    key = jax.random.PRNGKey(1)
+
+    if info:
+        datasets_info.print_mnist_dataset_info()
+
+    mnist = tf.keras.datasets.mnist
+    mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
+    z_train, _, _, _, z_test, y_test = mnist_dataset
+
+    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
+    
+    optimizer = optax.inject_hyperparams(optax.sgd)(exponential_decay(
+                                                                init_value=0.01,
+                                                                transition_steps=50,
+                                                                decay_rate=0.95,
+                                                                staircase=True
+                                                            ))
+    
+    steinvi_ssvdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
+                               use_for_regression=False, batch_size=300, particle_batch_size=0, num_iterations=30,
+                               num_particles=5, optimizer=optimizer)
+
+    train_with_stein_vi(steinvi_ssvdg, mnist_dataset, key, algorithm="ssvgd")
+
+    steinvi_ssvdg.plot_val_metric_over_iter()
+    steinvi_ssvdg.view_misclassified(z_test, y_test, key=key)
+
 
 if __name__ == "__main__":
     run_MNIST_ssvgd()
