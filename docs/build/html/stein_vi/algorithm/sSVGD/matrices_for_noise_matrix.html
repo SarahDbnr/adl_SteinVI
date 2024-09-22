@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="random_forest" href="../random_forest.html" />
-    <link rel="prev" title="local_blackjax_file_with_adjustments_for_sSVGD" href="local_blackjax_file_with_adjustments_for_sSVGD.html" /> 
+    <link rel="prev" title="ssvgd" href="ssvgd.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">sSVGD</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="ssvgd.html">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -205,71 +204,9 @@
   <section id="module-stein_vi.algorithm.sSVGD.matrices_for_noise_matrix">
 <span id="matrices-for-noise-matrix"></span><h1>matrices_for_noise_matrix<a class="headerlink" href="#module-stein_vi.algorithm.sSVGD.matrices_for_noise_matrix" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_permutation_matrix">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.</span></span><span class="sig-name descname"><span class="pre">compute_permutation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_permutation_matrix" title="Link to this definition"></a></dt>
-<dd><p>Efficiently computes the permutation matrix to reshape elements between particle dimensions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – The number of particles.</p></li>
-<li><p><strong>d</strong> (<em>int</em>) – The dimension of each particle.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The permutation matrix of shape (Nd, Nd), where Nd = N * d.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_permutation_matrix_test">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.</span></span><span class="sig-name descname"><span class="pre">compute_permutation_matrix_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_permutation_matrix_test" title="Link to this definition"></a></dt>
-<dd><p>Computes the permutation matrix to reshape elements between particle dimensions for testing purposes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – The number of particles.</p></li>
-<li><p><strong>d</strong> (<em>int</em>) – The dimension of each particle.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The permutation matrix of shape (Nd, Nd), where Nd = N * d.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_stochastic_correction">
 <span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.</span></span><span class="sig-name descname"><span class="pre">compute_stochastic_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_normal_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_stochastic_correction" title="Link to this definition"></a></dt>
 <dd><p>Efficiently computes the stochastic correction term used in sSVGD.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>particles</strong> (<em>ndarray</em>) – The particle set, shape (n_particles, d), representing the current state.</p></li>
-<li><p><strong>kernel_fn</strong> (<em>Callable</em>) – The kernel function to compute pairwise distances between particles.</p></li>
-<li><p><strong>kernel_params</strong> (<em>dict</em>) – Parameters for the kernel function (e.g., length scale).</p></li>
-<li><p><strong>random_normal_samples</strong> (<em>ndarray</em>) – Random normal samples used to introduce stochasticity, shape (Nd,).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The stochastic correction term <cite>v_stc</cite> used to adjust particle updates, shape (n_particles, d).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_stochastic_correction_old">
-<span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.</span></span><span class="sig-name descname"><span class="pre">compute_stochastic_correction_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_normal_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.sSVGD.matrices_for_noise_matrix.compute_stochastic_correction_old" title="Link to this definition"></a></dt>
-<dd><p>Computes the stochastic correction term used in sSVGD. Based on the paper “A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD” by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -294,7 +231,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="local_blackjax_file_with_adjustments_for_sSVGD.html" class="btn btn-neutral float-left" title="local_blackjax_file_with_adjustments_for_sSVGD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ssvgd.html" class="btn btn-neutral float-left" title="ssvgd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../random_forest.html" class="btn btn-neutral float-right" title="random_forest" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

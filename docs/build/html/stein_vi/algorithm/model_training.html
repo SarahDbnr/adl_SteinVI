@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sSVGD/index.html">sSVGD</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/ssvgd.html">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -277,7 +276,6 @@
 <li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
-<li><p><strong>early_stopping_fn</strong> (<em>callable</em>) – Function to apply early stopping criteria.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -345,7 +343,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
-<li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
+<li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

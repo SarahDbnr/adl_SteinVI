@@ -1,6 +1,8 @@
 from optax import sgd, lbfgs
 import jax
 import tensorflow as tf
+from optax import adam, sgd, exponential_decay
+import optax
 from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
 from stein_vi.stein_vi import train_with_stein_vi
@@ -31,7 +33,7 @@ def run_MNIST_GD(info=False):
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
                                use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=2,
-                               num_particles=5, learning_rate=10, optimizer=optimizer, kernel_length=5)
+                               num_particles=5, optimizer=optimizer, kernel_length=5)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -46,6 +48,7 @@ def run_MNIST_ssvgd(info=False):
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
     """
+
     key = jax.random.PRNGKey(1)
 
     if info:
@@ -57,15 +60,30 @@ def run_MNIST_ssvgd(info=False):
 
     nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
+    optimizer = adam(
+        exponential_decay(
+            init_value=0.01,
+            transition_steps=50,
+            decay_rate=0.95,
+            staircase=True
+        )
+    )
+    
+    optimizer = optax.inject_hyperparams(optax.adam)(exponential_decay(
+                                                                init_value=0.01,
+                                                                transition_steps=50,
+                                                                decay_rate=0.95,
+                                                                staircase=True
+                                                            ))
+    
+    steinvi_ssvdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
                                use_for_regression=False, batch_size=300, particle_batch_size=0, num_iterations=30,
-                               num_particles=5, learning_rate=0.0001)
+                               num_particles=5, optimizer=optimizer)
 
-    train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="ssvgd")
+    train_with_stein_vi(steinvi_ssvdg, mnist_dataset, key, algorithm="ssvgd")
 
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
-
+    steinvi_ssvdg.plot_val_metric_over_iter()
+    steinvi_ssvdg.view_misclassified(z_test, y_test, key=key)
 
 if __name__ == "__main__":
-    run_MNIST_GD()
+    run_MNIST_ssvgd()

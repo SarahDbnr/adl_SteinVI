@@ -23,7 +23,6 @@ class Parameter:
     """
     
     optimizer: None
-    learning_rate: float
     num_particles: int
     batch_size: int
     particle_batch_size: int
@@ -37,7 +36,7 @@ class Parameter:
     min_delta_early_stopping: float = 0.005
 
     def __init__(self, optimizer, early_stopping, image_data, batch_size, particle_batch_size, num_particles,
-                 num_iterations, learning_rate:float, kernel_length):
+                 num_iterations, kernel_length):
         """Initializes the Parameter class with the specified training settings.
 
         Args:
@@ -57,7 +56,6 @@ class Parameter:
         self.num_iterations = num_iterations
         self.stopped_at_iteration = num_iterations
         self.early_stopping = early_stopping
-        self.learning_rate = learning_rate
         self.image_data = image_data
         self.kernel_length = kernel_length
 

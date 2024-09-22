@@ -4,29 +4,34 @@ from typing import Any, Callable, NamedTuple
 import jax
 import jax.numpy as jnp
 from jax.flatten_util import ravel_pytree
+import optax
 
 from blackjax.base import SamplingAlgorithm
 from blackjax.types import ArrayLikeTree, ArrayTree
 from stein_vi.algorithm.sSVGD.matrices_for_noise_matrix import compute_stochastic_correction
+
+LEARNING_RATE = 0.01
 
 __all__ = [
     "as_top_level_api",
     "init",
     "build_kernel",
     "rbf_kernel",
-    "update_median_heuristic",
+    "update_median_heuristic"
 ]
 
 
-class SVGDState(NamedTuple):
+class sSVGDState(NamedTuple):
     particles: ArrayTree
-    kernel_parameters: dict[str, ArrayTree]
+    kernel_parameters: dict[str, Any]
+    opt_state: Any
 
 
 def init(
     initial_particles: ArrayLikeTree,
     kernel_parameters: dict[str, Any],
-) -> SVGDState:
+    optimizer: optax.GradientTransformation,
+) -> sSVGDState:
     """
     Initializes the stochastic Stein Variational Gradient Descent Algorithm.
 
@@ -37,17 +42,17 @@ def init(
     kernel_paremeters
         Arguments to the kernel function
     """
-    return SVGDState(initial_particles, kernel_parameters)
+    opt_state = optimizer.init(initial_particles)
+    return sSVGDState(initial_particles, kernel_parameters, opt_state)
 
 
-def build_kernel():
+def build_kernel(optimizer: optax.GradientTransformation):
     def kernel(
-        state: SVGDState,
+        state: sSVGDState,
         grad_logdensity_fn: Callable,
         kernel: Callable,
-        learning_rate:float,
         **grad_params,
-    ) -> SVGDState:
+    ) -> sSVGDState:
         """
         Performs one step of stochastic Stein Variational Gradient Descent.
 
@@ -57,7 +62,7 @@ def build_kernel():
         Parameters
         ----------
         state
-            SVGDState object containing information about previous iteration
+            sSVGDState object containing information about previous iteration
         grad_logdensity_fn
             gradient, or an estimate, of the target log density function to samples approximately from
         kernel
@@ -68,9 +73,9 @@ def build_kernel():
 
         Returns
         -------
-        SVGDState containing new particles and kernel parameters.
+        sSVGDState containing new particles and kernel parameters.
         """
-        particles, kernel_params = state
+        particles, kernel_params, opt_state = state
         kernel = functools.partial(kernel, **kernel_params)
 
         def phi_star_summand(particle, particle_):
@@ -84,26 +89,22 @@ def build_kernel():
                 jax.vmap(lambda p: phi_star_summand(p, p_))(particles),
             )
         )(particles)
-        # Manual gradient descent update step
+
         particle_array = jax.vmap(lambda p: ravel_pytree(p)[0])(particles)
         rng_key = jax.random.PRNGKey(1)
         rng_key, rng_subkey = jax.random.split(rng_key)
         Nd = particles.shape[0] * particle_array.shape[1]
         random_normal_samples = jax.random.normal(rng_subkey, (Nd,))
         noise = compute_stochastic_correction(particle_array, kernel, kernel_params, random_normal_samples)
-        #noise = stochastic_component.compute_stochastic_correction(particle_array, kernel, kernel_params, rng_subkey)
-        #noise = stochastic_component.compute_stochastic_correction(particle_array,kernel,kernel_params)  # Ensure noise shape matches particle_array
-        # jax.debug.print("v_stc_new:\n {}", noise)
-        # max_value = jnp.max(particles)
-        # min_value = jnp.min(particles)
-        # jax.debug.print("Max value of particles: {}", max_value)
-        # jax.debug.print("Min value of particles: {}", min_value)
-        #Values of the particels are so huge, that noise doesnt change anything, because it is to small
-        #Think if we use a learning rate and a scale factor should be non-problematic scale noise by 10000, the elements in the kernel which is used to create the random samples only has values between 0 and 1 so
-        #they are very small dont make a difference
-        particles = jax.tree_util.tree_map(lambda p, u, n: p + (learning_rate) * u + jnp.sqrt(learning_rate) * n, particles, functional_gradient, noise)
 
-        return SVGDState(particles, kernel_params)
+        updates, opt_state = optimizer.update(functional_gradient, opt_state, particles)
+        updates = updates + jnp.sqrt(opt_state.hyperparams['learning_rate']) * noise
+        particles = optax.apply_updates(particles, updates)
+            
+        # Normal sSVGD without any optax optimizer.
+        # particles = jax.tree_util.tree_map(lambda p, u, n: p + (LEARNING_RATE) * u + jnp.sqrt(LEARNING_RATE) * n, particles, functional_gradient, noise)
+
+        return sSVGDState(particles, kernel_params, opt_state)
 
     return kernel
 
@@ -120,16 +121,16 @@ def median_heuristic(kernel_parameters, particles):
         return jnp.linalg.norm(jnp.atleast_1d(x - y))
 
     vmapped_distance = jax.vmap(jax.vmap(distance, (None, 0)), (0, None))
-    A = vmapped_distance(particle_array, particle_array)  # Calculate distance matrix
+    A = vmapped_distance(particle_array, particle_array)
     pairwise_distances = A[
         jnp.tril_indices(A.shape[0], k=-1)
-    ]  # Take values below the main diagonal into a vector
+    ]
     median = jnp.median(pairwise_distances)
     kernel_parameters["length_scale"] = (median**2) / jnp.log(particle_array.shape[0])
     return kernel_parameters
 
 
-def update_median_heuristic(state: SVGDState) -> SVGDState:
+def update_median_heuristic(state: sSVGDState) -> sSVGDState:
     """Median heuristic for setting the bandwidth of RBF kernels.
 
     A reasonable middle-ground for choosing the `length_scale` of the RBF kernel
@@ -137,13 +138,13 @@ def update_median_heuristic(state: SVGDState) -> SVGDState:
     This strategy is called the median heuristic.
     """
 
-    position, kernel_parameters = state
-    return SVGDState(position, median_heuristic(kernel_parameters, position))
+    position, kernel_parameters,opt_state = state
+    return sSVGDState(position, median_heuristic(kernel_parameters, position), opt_state)
 
 
 def as_top_level_api(
     grad_logdensity_fn: Callable,
-    learning_rate: float,
+    optimizer,
     kernel: Callable = rbf_kernel,
     update_kernel_parameters: Callable = update_median_heuristic,
 ):
@@ -163,16 +164,16 @@ def as_top_level_api(
     A ``SamplingAlgorithm``.
     """
 
-    kernel_ = build_kernel()
+    kernel_ = build_kernel(optimizer)
 
     def init_fn(
         initial_position: ArrayLikeTree,
         kernel_parameters: dict[str, Any] = {"length_scale": 1.0},
     ):
-        return init(initial_position, kernel_parameters)
+        return init(initial_position, kernel_parameters, optimizer)
 
     def step_fn(state, **grad_params):
-        state = kernel_(state, grad_logdensity_fn, kernel,learning_rate, **grad_params)
+        state = kernel_(state, grad_logdensity_fn, kernel, **grad_params)
         return update_kernel_parameters(state)
 
-    return SamplingAlgorithm(init_fn, step_fn)  # type: ignore[arg-type]
+    return SamplingAlgorithm(init_fn, step_fn)
