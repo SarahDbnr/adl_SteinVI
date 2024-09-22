@@ -76,6 +76,7 @@ def run_MNIST_ssvgd_ADAM(info=False):
     steinvi_ssvdg.plot_val_metric_over_iter()
     steinvi_ssvdg.view_misclassified(z_test, y_test, key=key)
 
+
 def run_MNIST_ssvgd_GD(info=False):
     """
     Run sSVGD on the MNIST dataset for classification. 
