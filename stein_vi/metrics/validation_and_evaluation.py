@@ -104,8 +104,8 @@ def calculate_mean_span_over_particles(predictions):
 
 def print_summary_over_particles_multiclass(predictions):
     """
-    Computes and prints the average number of different classifications made 
-    by particles in a Bayesian Neural Network (BNN).
+    Computes and prints the average number of particles that predicted a different class that the argmax for all
+    particles. It represents how aligned the predictions of the particles are.
 
     Args:
         predictions (jax.numpy.ndarray): Predictions from an ensemble of particles.
