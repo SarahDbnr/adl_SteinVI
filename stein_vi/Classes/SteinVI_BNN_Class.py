@@ -11,11 +11,10 @@ from stein_vi.Classes.Handler_Class import Handler
 from stein_vi.algorithm.get_posteriori import get_posteriori
 
 
-
 class SteinVI_BNN:
-
     """SteinVI_BNN is a class using Stein VI methods to optimize a BNN.
-    This class manages the initialization, training, and evaluation of a BNN with support for both classification and regression tasks.
+    This class manages the initialization, training, and evaluation of a BNN with support for both classification
+    and regression tasks.
     It integrates various Stein Variational inference algorithms to update particles representing the network's parameters.
     Key functionalities:
     - Initialize particles for variational inference.
@@ -23,7 +22,7 @@ class SteinVI_BNN:
     - Plot various metrics and visualizations for both regression and classification tasks.
 
     Attributes:
-        state (SVGD_State): A class containing informations about the (optimizer), Kernel and the particles.
+        state (SVGD_State): A class containing information about the (optimizer), Kernel and the particles.
         parameter (Parameter): Configuration of training parameters like batch size, and number of particles.
         handler (Handler): Manages modes for training and evaluation (e.g., minimal or full evaluation).
         use_for_regression (bool): A variable to determine if the network is being used for regression or classification tasks.
@@ -65,16 +64,24 @@ class SteinVI_BNN:
             x_train (jax.numpy.ndarray): The input training data used to initialize the neural network's parameters.
             nnet (flax.linen.Module): The neural network model that will be optimized using Stein Variational Inference.
             use_for_regression (bool): Determines if the model is used for regression (True) or classification (False).
-            optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd. It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS".optimizer (optax.optim)
-            mode_training_print (str, optional): The verbosity level for printing training logs. Options are 'none', 'minimal', or 'full'. Defaults to 'none'.
-            mode_evaluation (str, optional): The level of evaluation performed during training. Options are 'minimal' or 'full'. Defaults to 'full'.
+            optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd.
+            It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd
+            and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS"
+            mode_training_print (str, optional): The verbosity level for printing training logs. Options are 'none',
+            'minimal', or 'full'. Defaults to 'none'.
+            mode_evaluation (str, optional): The level of evaluation performed during training. Options are 'minimal' or
+            'full'. Defaults to 'full'.
             early_stopping (bool, optional): Whether to enable early stopping during training. Defaults to False.
-            image_data (bool, optional): Indicates if the input data is image-based, which affects certain visualizations. Defaults to False.
-            batch_size (int, optional): The size of the mini-batches for training. Defaults to 0 (i.e., no mini-batching).  Defaults to 0 (i.e., no batching).
-            particle_batch_size (int): The number of particles in a mini-batch of particles used for training.  Defaults to 0 (i.e., no batching).
-            num_particles (int): The number of particles used in the process to approximate the posterior. Defaults to 10.
+            image_data (bool, optional): Indicates if the input data is image-based, which affects certain visualizations.
+            Defaults to False.
+            batch_size (int, optional): The size of the mini-batches for training. Defaults to 0 (i.e., no mini-batching).
+             Defaults to 0 (i.e., no batching).
+            particle_batch_size (int): The number of particles in a mini-batch of particles used for training.
+            Defaults to 0 (i.e., no batching).
+            num_particles (int): The number of particles used in the process to approximate the posterior.
+            Defaults to 10.
             num_iterations (int): The total number of training iterations. Defaults to 100.
-            rf_comparison (bool, optional): If random forest comparisson should be done. Defaults to False.
+            rf_comparison (bool, optional): If random forest comparison should be done. Defaults to False.
         """
 
         self.handler = Handler(rf_comparison)
@@ -96,7 +103,7 @@ class SteinVI_BNN:
         self.log_posteriori = get_posteriori(self.nnet, self.use_for_regression)
 
     def initial_particles_and_kernel(self, key, x_train, num_particles):
-        """"Initializes the particle vectors and kernel structure for the Bayesian Neural Network.
+        """Initializes the particle vectors and kernel structure for the Bayesian Neural Network.
 
         Args:
             key (jax.random.PRNGKey): A key used for random number generation to initialize particle vectors.
@@ -113,14 +120,16 @@ class SteinVI_BNN:
         """Generates predictions using the neural network with the provided weights and input data
 
         Args:
-            weights (dict):  A dictionary containing the weights (parameters) of the neural network, where the keys correspond to different parts of the model (e.g., layers).
+            weights (dict):  A dictionary containing the weights (parameters) of the neural network,
+            where the keys correspond to different parts of the model (e.g., layers).
             x_input (jax.numpy.ndarray): The input data for which predictions are to be made.
             use_softmax (bool): True is log_softmax should be used for multiclass. Defaults to False.
 
         Returns:
             tuple: A tuple containing:
                 - prediction (jax.numpy.ndarray): The predicted class labels or regression outputs.
-                - precision (jax.numpy.ndarray): The precision values for classification (as probabilities) or predictive variance for regression.
+                - precision (jax.numpy.ndarray): The precision values for classification (as probabilities) or
+                predictive variance for regression.
         """
 
         if self.use_for_regression:
@@ -139,15 +148,17 @@ class SteinVI_BNN:
     def predict_over_particles(self, input_data):
         predictions, precisions = jax.vmap(lambda p: self.predict(p, input_data))(self.state.particles)
         return predictions.squeeze(), precisions.squeeze()
-    
+
     def plot_val_metric_over_iter(self):
         """Plots the evaluation metrics over the course of training iterations.
-        This function plots validation metrics (such as Mean Squared Error for regression tasks or Accuracy for classification tasks) for each iteration of training, based on the evaluation mode.
+        This function plots validation metrics (such as Mean Squared Error for regression tasks or
+        Accuracy for classification tasks) for each iteration of training, based on the evaluation mode.
         - For regression tasks, the function plots the MSE and averaged precision over iterations.
         - For classification tasks, the function plots the accuracy over iterations.
 
         Raises: 
-            ValueError: If `minimal_evaluation` mode is enabled, which skips metric tracking for efficiency and does not gather information during training.
+            ValueError: If `minimal_evaluation` mode is enabled, which skips metric tracking for efficiency
+            and does not gather information during training.
         """
         if self.handler.minimal_evaluation:
             ValueError(
@@ -155,15 +166,15 @@ class SteinVI_BNN:
         else:
             if self.use_for_regression:
                 plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
-                                                      num_particles=self.parameter.num_particles,
-                                                      eval_metric="MSE")
+                                             num_particles=self.parameter.num_particles,
+                                             eval_metric="MSE")
                 plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_2,
-                                                      num_particles=self.parameter.num_particles,
-                                                      eval_metric="averaged_precision")
+                                             num_particles=self.parameter.num_particles,
+                                             eval_metric="averaged_precision")
             else:
                 plots.plot_evaluation_metric(evaluation_metric_val=self.evaluation_metrics_1,
-                                                            num_particles=self.parameter.num_particles,
-                                                            eval_metric="Accuracy")
+                                             num_particles=self.parameter.num_particles,
+                                             eval_metric="Accuracy")
 
     def plot_residuals(self, z_test, y_test):
         """Plots the residduals between the predictions and the true values for regression tasks.
@@ -184,7 +195,7 @@ class SteinVI_BNN:
         """Plots the relationship between the location of predictions and the scale (uncertainty) for regression task.
 
         Args:
-            z_test jax.numpy.ndarray): The input features to generate predictions and analyze their relationship to uncertainty.
+            z_test (jax.numpy.ndarray): The input features to generate predictions and analyze their relationship to uncertainty.
         
         Raises: 
             ValueError: If this method is called for a classification task instead of regression.
@@ -196,7 +207,7 @@ class SteinVI_BNN:
         else:
             ValueError("This plot is only available for regression problems.")
 
-    def view_misclassified(self, z_test, y_test, key= jax.random.PRNGKey(1), num_plots=3):
+    def view_misclassified(self, z_test, y_test, key=jax.random.PRNGKey(1), num_plots=3):
         """  This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
         num_plots random misclassified and num_plots random right classified data examples.
         
@@ -210,5 +221,5 @@ class SteinVI_BNN:
         if self.use_for_regression:
             ValueError("This plot is only available for classification problems.")
         else:
-            view_misclassified(self.state,self.nnet, z_test, y_test,
-                               self.parameter.image_data,key,num_plots)
+            view_misclassified(self.state, self.nnet, z_test, y_test,
+                               self.parameter.image_data, key, num_plots)
