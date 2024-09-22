@@ -35,11 +35,12 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
     Args:
         steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
-        key (jax.random.PRNGKey): JAX random key for randomness.
+        key (jax.random.PRNGKey): JAX random key for randomness. Defaults to None.
 
     Returns:
         tuple: Updated model state and two lists of evaluation metrics (e.g., accuracy or MSE).
     """
+
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
@@ -64,11 +65,11 @@ def data_minibatch_training_loop(steinvi, dataset, key):
         steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
-        early_stopping_fn (callable): Function to apply early stopping criteria.
 
     Returns:
         tuple: Updated model state and two lists of evaluation metrics.
     """
+
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
@@ -101,6 +102,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
     Returns:
         tuple: Updated model state and two lists of evaluation metrics.
     """
+
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
@@ -134,6 +136,7 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
     Returns:
         tuple: Updated model state and two lists of evaluation metrics.
     """
+
     z_train, y_train, z_val, y_val, _, _ = dataset
     best_eval_metric = float('-inf')
     patience_counter = 0
@@ -170,6 +173,7 @@ def create_minibatches(batch_size, input_data, output_data, key):
     Returns:
         tuple: Minibatched input and output data.
     """
+
     if len(input_data) < batch_size:
         raise ValueError("Error: batch_size bigger then input data length")
     num_batches = len(input_data) // batch_size
@@ -191,6 +195,7 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     Returns:
         list: A list of minibatched particle indices.
     """
+
     indices = jax.random.permutation(key, num_particles)
     num_batches = max(1, num_particles // batch_size)
     return jnp.array_split(indices, num_batches)
@@ -209,6 +214,7 @@ def shuffle_data(key, input_data, output_data):
     Returns:
         tuple: Shuffled input and output data.
     """
+
     permutation = jax.random.permutation(key, input_data.shape[0])
     return jnp.take(input_data, permutation, axis=0), jnp.take(output_data, permutation, axis=0)
 
@@ -229,6 +235,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     Returns:
         tuple: Updated evaluation metrics, best_eval_metric, and patience_counter.
     """
+
     if stein_vi.handler._full_training_print:
         current_eval_1, current_eval_2, _ = stein_vi.evaluate_fn(stein_vi.state, z_val, y_val, print_out=True)
     elif stein_vi.handler._reduced_training_print and iteration % (stein_vi.parameter.num_iterations/10) == 0:
@@ -247,7 +254,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
 
 
 def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter, regression):
-    # TODO: add back to svgd and Stein_vi class since depends on evaluation type
+
     """
     Implements early stopping by comparing validation metrics over training iterations.
 
@@ -261,6 +268,7 @@ def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter
     Returns:
         tuple: Updated patience counter and best metric value.
     """
+    
     if regression:
         if current_metrics > best_metrics - parameter.min_delta_early_stopping:
             patience_counter = patience_counter + 1

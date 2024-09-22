@@ -1,5 +1,6 @@
 import jax
 import math
+
 from run_stein_vi.data.data_handling import print_data_information
 
 

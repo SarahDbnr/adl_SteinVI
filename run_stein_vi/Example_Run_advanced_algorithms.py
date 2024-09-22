@@ -15,6 +15,7 @@ def run_MNIST_GD(info=False):
     Args:
         info (bool, optional): If True, prints dataset information. Defaults to False.
     """
+
     key = jax.random.PRNGKey(1)
 
     if info:
@@ -30,7 +31,7 @@ def run_MNIST_GD(info=False):
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, image_data=True, mode_training_print="full",
                                use_for_regression=False, batch_size=0, particle_batch_size=0, num_iterations=100,
-                               num_particles=5, learning_rate=0.0001)
+                               num_particles=5, learning_rate=10, optimizer=optimizer, kernel_length=5)
 
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
@@ -38,7 +39,6 @@ def run_MNIST_GD(info=False):
     steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 
-# TODO:Problem everything in the noise matrix gets 0
 def run_MNIST_ssvgd(info=False):
     """
     Run sSVGD on the MNIST dataset for classification. 
@@ -68,4 +68,4 @@ def run_MNIST_ssvgd(info=False):
 
 
 if __name__ == "__main__":
-    run_MNIST_ssvgd()
+    run_MNIST_GD()

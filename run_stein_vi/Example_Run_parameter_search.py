@@ -1,26 +1,22 @@
 import jax
 import jax.numpy as jnp
 import tensorflow as tf
+
 from optax import adam, exponential_decay
 
 from stein_vi.stein_vi import train_with_stein_vi
 from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
-
 from stein_vi.metrics.validation_and_evaluation import (calculate_mse, calculate_accuracy)
-
 from run_stein_vi.data.regression_toy_example import get_regression_toy_example
 from run_stein_vi.data.data_handling import apply_data_settings_keras
-
 from stein_vi.parameter_search.print_evaluation import (print_evaluation_regression_to_csv,
                                                         print_evaluation_multiclass_to_csv)
-
 
 def parameter_loop_regression(dataset, model, name):
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
 
-    # default set up
     early_stopping = False
     batch_size = 0
     particle_batch_size = 0
@@ -101,22 +97,22 @@ def parameter_loop_regression(dataset, model, name):
 
 
 def parameter_loop_multiclass(dataset, model, name):
+    
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
 
-    # default set up
-    early_stopping = False
+    early_stopping = True
     batch_size = 0
     particle_batch_size = 0
     num_iterations = 100
-    init_value = 0.1
+    init_value = 0.05
     decay_rate = 0.95
 
     array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
     array_batch_size = [0, 5, 10, 20, 50]
-    array_early_stopping = [False, True]
-    array_init_value = [0.1, 0.2, 0.3, 0.4, 0.5]
-    array_decay_rate = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5]
+    array_early_stopping = [True, False]
+    array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
+    array_decay_rate = [0.999, 0.99, 0.95, 0.9, 0.8, 0.7]
 
     highest_accuracy = -jnp.inf
 
@@ -186,6 +182,7 @@ def parameter_loop_multiclass(dataset, model, name):
 
 def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_batch_size,
                        num_iterations, early_stopping, init_value, decay_rate, use_for_regression):
+    
     optimizer = adam(
         exponential_decay(
             init_value=init_value,
@@ -194,16 +191,22 @@ def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_
             staircase=True
         )
     )
+
     steinvi_svdg = SteinVI_BNN(key, z_train, model, use_for_regression=use_for_regression, optimizer=optimizer,
                                num_particles=num_particles, batch_size=batch_size,
                                particle_batch_size=particle_batch_size, num_iterations=num_iterations,
-                               early_stopping=early_stopping)
+                               early_stopping=early_stopping, early_stopping=True)
+    
+    steinvi_svdg.parameter.warm_up_iterations_early_stopping = 10
+    steinvi_svdg.parameter.patience_early_stopping = 15
+    steinvi_svdg.parameter.min_delta_early_stopping = 0.0025
 
     return steinvi_svdg
 
 
 def run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value, decay_rate):
-    steinvi_svdg = train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
+    
+    train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
 
     test_predictions, test_precisions = steinvi_svdg.predict_over_particles(z_test)
 
@@ -212,15 +215,16 @@ def run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_te
                                            init_value, decay_rate)
         return calculate_mse(test_predictions, y_test)
     else:
-        print_evaluation_multiclass_to_csv(name, steinvi_svdg.parameter, y_test, test_predictions, init_value,
+        print_evaluation_multiclass_to_csv(name, steinvi_svdg.parameter, y_test, test_precisions, init_value,
                                            decay_rate)
-        return calculate_accuracy(test_predictions, y_test)
+        return calculate_accuracy(test_precisions, y_test)
 
 
 def run_MNIST():
     """
     Run SVGD on the MNIST dataset for classification.
     """
+
     mnist = tf.keras.datasets.mnist
     mnist_dataset = apply_data_settings_keras(mnist.load_data(), with_flattening=False)
 
@@ -233,6 +237,7 @@ def run_regression_toy_example():
     """
     Run SVGD on the MNIST dataset for classification.
     """
+
     regression_toy_example = get_regression_toy_example(num_points=10000)
 
     nnet_model = build_model(output_size=2, hidden_layers=(200, 70, 40))

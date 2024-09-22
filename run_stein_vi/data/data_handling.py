@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+
 from sklearn.datasets import fetch_20newsgroups, fetch_openml
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -21,6 +22,7 @@ def apply_data_settings_keras(new_dataset, with_flattening=False, fraction=1, va
     Returns:
         tuple: Tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).
     """
+
     (x_train, y_train), (x_test, y_test) = new_dataset
     x_train = x_train.astype('float32') / 255.0
     x_test = x_test.astype('float32') / 255.0
@@ -143,80 +145,3 @@ def newsgroup_datahandling():
     dataset = CustomDataset(X, y)
     return dataset
 
-def adult_income_datahandling():
-    """
-    Fetches and preprocesses the Adult Income dataset for binary classification. Features are scaled and encoded appropriately.
-
-    Returns:
-        CustomDataset: A dataset object containing the processed features and targets.
-    """
-    adult_income = fetch_openml(data_id=1590, as_frame=True)
-    
-
-    X = adult_income.data
-    y = (adult_income.target == '>50K').astype(int) 
-    
-    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
-    categorical_features = X.select_dtypes(include=['object']).columns
-    
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', StandardScaler(), numeric_features),
-            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-        ]
-    )
-    
-    X_processed = preprocessor.fit_transform(X)
-
-    if issparse(X_processed):
-        X_processed = X_processed.toarray()
-
-    y = y.to_numpy()
-
-    class CustomDataset:
-        def __init__(self, data, target):
-            self.data = data
-            self.target = target
-
-    dataset = CustomDataset(X_processed, y)
-    return dataset
-
-
-
-def bike_sharing_datahandling():
-    """
-    Fetches and preprocesses the Bike Sharing dataset for regression. Features are scaled and encoded appropriately.
-
-    Returns:
-        CustomDataset: A dataset object containing the processed features and targets.
-    """
-    bike_sharing = fetch_openml(data_id=42731, as_frame=True)
-    
-    X = bike_sharing.data
-    y = bike_sharing.target
-    
-    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
-    categorical_features = X.select_dtypes(include=['object']).columns
-    
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', StandardScaler(), numeric_features),
-            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-        ]
-    )
-    
-    X_processed = preprocessor.fit_transform(X)
-
-    if issparse(X_processed):
-        X_processed = X_processed.toarray()
-
-
-    y = y.to_numpy()
-
-    class CustomDataset:
-        def __init__(self, data, target):
-            self.data = data
-            self.target = target
-
-    dataset = CustomDataset(X_processed, y)
-    return dataset
