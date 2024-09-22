@@ -125,7 +125,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/sSVGD/index.html">sSVGD</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
@@ -281,8 +280,7 @@ stein_vi/
 │   ├── sSVGD/
 │   │   ├── local_blackjax_file_with_adjustments_for_sSVGD.py
 │   │   ├── matrices_for_noise_matrix.py
-│   │   ├── ssvgd.py
-│   │   └── test_matrix_equivalent_to_tests_later.py
+│   │   └── ssvgd.py
 │   ├── get_posteriori.py
 │   ├── model_training.py
 │   ├── random_forest.py
@@ -494,19 +492,19 @@ You initiate the training process by calling <code class="docutils literal notra
 <li><p><strong>Algorithm Configuration:</strong>
 Within <code class="docutils literal notranslate"><span class="pre">train_with_stein_vi</span></code>, the appropriate setup function is called to configure the algorithm. For SVGD, <code class="docutils literal notranslate"><span class="pre">set_up_svgd</span></code> from <code class="docutils literal notranslate"><span class="pre">svgd.py</span></code> is used.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">stein_vi.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_with_stein_vi</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;svgd&quot;</span><span class="p">):</span> 
-   <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;svgd&quot;</span><span class="p">:</span> <span class="n">set_up_svgd</span><span class="p">(</span><span class="n">steinvi</span><span class="p">)</span> 
-   <span class="c1"># Additional algorithm setups... </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_with_stein_vi</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;svgd&quot;</span><span class="p">):</span>
+   <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;svgd&quot;</span><span class="p">:</span> <span class="n">set_up_svgd</span><span class="p">(</span><span class="n">steinvi</span><span class="p">)</span>
+   <span class="c1"># Additional algorithm setups...</span>
 
-   <span class="c1"># Proceed to the training loop </span>
-   <span class="n">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> 
+   <span class="c1"># Proceed to the training loop</span>
+   <span class="n">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In <code class="docutils literal notranslate"><span class="pre">svgd.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_up_svgd</span><span class="p">(</span><span class="n">steinvi_svdg</span><span class="p">):</span> 
-   <span class="c1"># Initialize SVGD state </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_up_svgd</span><span class="p">(</span><span class="n">steinvi_svdg</span><span class="p">):</span>
+   <span class="c1"># Initialize SVGD state</span>
    <span class="n">steinvi_svdg</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">svgd</span> <span class="o">=</span> <span class="n">initialize_svgd_state</span><span class="p">(</span><span class="n">steinvi_svdg</span><span class="p">)</span>
-   
+
    <span class="c1"># Define the update function for SVGD</span>
    <span class="k">def</span> <span class="nf">svgd_update_fn</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">z_batch</span><span class="p">,</span> <span class="n">y_batch</span><span class="p">,</span> <span class="n">particle_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
       <span class="c1"># Update particles using SVGD step</span>
@@ -528,16 +526,16 @@ Within <code class="docutils literal notranslate"><span class="pre">train_with_s
 <li><p><strong>Training Loop Execution:</strong>
 <code class="docutils literal notranslate"><span class="pre">train_general_algorithm</span></code> from <code class="docutils literal notranslate"><span class="pre">model_training.py</span></code> is invoked to start the training loop based on the (particle-) minibatching configuration.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">stein_vi.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="o">=</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="o">=</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In <code class="docutils literal notranslate"><span class="pre">model_training.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> 
-   <span class="c1"># Determine the appropriate training loop based on batch sizes </span>
-   <span class="k">if</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">particle_batch_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> 
-      <span class="n">training_loop_fn</span> <span class="o">=</span> <span class="n">data_and_particle_minibatch_training_loop</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_general_algorithm</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+   <span class="c1"># Determine the appropriate training loop based on batch sizes</span>
+   <span class="k">if</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">particle_batch_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">training_loop_fn</span> <span class="o">=</span> <span class="n">data_and_particle_minibatch_training_loop</span>
    <span class="c1"># Other conditions for different batch modes...</span>
-   
+
    <span class="c1"># Start the selected training loop</span>
    <span class="n">training_loop_fn</span><span class="p">(</span><span class="n">steinvi</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </pre></div>
@@ -546,9 +544,9 @@ Within <code class="docutils literal notranslate"><span class="pre">train_with_s
 <li><p><strong>Model Updates:</strong>
 During each iteration, the <code class="docutils literal notranslate"><span class="pre">update_fn</span></code> defined in <code class="docutils literal notranslate"><span class="pre">svgd.py</span></code> updates the models particles.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">model_training.py</span></code> (within the selected training loop):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">):</span> 
-   <span class="c1"># Create mini-batches of data and particles </span>
-   <span class="n">z_train_batched</span><span class="p">,</span> <span class="n">y_train_batched</span> <span class="o">=</span> <span class="n">create_minibatches</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="n">particle_indices_batches</span> <span class="o">=</span> <span class="n">create_particle_minibatch_indices</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">):</span>
+   <span class="c1"># Create mini-batches of data and particles</span>
+   <span class="n">z_train_batched</span><span class="p">,</span> <span class="n">y_train_batched</span> <span class="o">=</span> <span class="n">create_minibatches</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="n">particle_indices_batches</span> <span class="o">=</span> <span class="n">create_particle_minibatch_indices</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
    <span class="k">for</span> <span class="n">z_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">z_train_batched</span><span class="p">,</span> <span class="n">y_train_batched</span><span class="p">):</span>
       <span class="k">for</span> <span class="n">particle_indices</span> <span class="ow">in</span> <span class="n">particle_indices_batches</span><span class="p">:</span>
          <span class="c1"># Update the models state (particles)</span>
@@ -573,10 +571,10 @@ After training, you can evaluate the model on test data and visualize results.</
 <span class="c1">#Evaluate on test data</span>
 <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">predictions_test</span> <span class="o">=</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">evaluate_fn</span><span class="p">(</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">z_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">print_out</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
 <span class="c1">#Print performance metrics</span>
-<span class="k">if</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">use_for_regression</span><span class="p">:</span> 
-   <span class="n">print_summary_over_particles_regression</span><span class="p">(</span><span class="n">predictions_test</span><span class="p">)</span> 
-<span class="k">else</span><span class="p">:</span> 
-   <span class="n">print_summary_over_particles_multiclass</span><span class="p">(</span><span class="n">predictions_test</span><span class="p">)</span> 
+<span class="k">if</span> <span class="n">steinvi</span><span class="o">.</span><span class="n">use_for_regression</span><span class="p">:</span>
+   <span class="n">print_summary_over_particles_regression</span><span class="p">(</span><span class="n">predictions_test</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+   <span class="n">print_summary_over_particles_multiclass</span><span class="p">(</span><span class="n">predictions_test</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Optional Visualization:</p>
@@ -704,7 +702,7 @@ After training, you can evaluate the model on test data and visualize results.</
 <p>You can further customize your training runs by adjusting parameters in the Parameter and Handler classes.</p>
 <p><strong>- Setting Early Stopping Criteria</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Set early stopping parameters</span>
-<span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">set_early_stopping</span><span class="p">(</span> <span class="n">warm_up_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.001</span> <span class="p">)</span> 
+<span class="n">steinvi</span><span class="o">.</span><span class="n">parameter</span><span class="o">.</span><span class="n">set_early_stopping</span><span class="p">(</span> <span class="n">warm_up_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.001</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>- Adjusting Training Print Modes</strong></p>
@@ -733,22 +731,22 @@ If you wish to compare your BNN with random feature models like Random Forests:<
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>Algorithm Performance</strong></p></td>
-<td><p>- <strong>SVGD</strong>: Consistently performed well across different tasks.<br>- <strong>sSVGD</strong>: Introduced beneficial stochasticity but required careful tuning.</p></td>
+<td><p>- <strong>SVGD</strong>: Consistently performed well across different tasks, when using for example the adam optimizer, but it also gets stuck quite easily when using the optax optimizer SGD(). Performs better than random forest most of the time for especially for classification problem, but for example also for the diabetes dataset. <br>- <strong>sSVGD</strong>: Introduced beneficial Noise, but also gets stuck pretty easily, when using the SGD optimizer. <br> Also the Problem arises, that the noise is very small compared to the particle coordinates so the noise does not really effect the training and one just gets the same result as when using svgd with the SGD optimizer. One can get different/better results for sSVGD when we multiply the noise with a constant factor e.g. 1000 when adding the noise in Algorithm 2 “A stochastic Stein Variational Netwon method” by Alex Leviyev et. all. Here on need to do that manually in the local blackjax file, when using SGD. <br> Also when using for example the adam optimizer as a optimizer for sSVGD one get small differences in the performance compared to using SVGD, but sometimes noise introduces to much uncertainty so that the algorithms does find the optimum.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Number of Particles</strong></p></td>
-<td><p>- Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load linearly.</p></td>
+<td><p>- Increasing the number of particles improved posterior approximation but with diminishing returns beyond a certain point (e.g., 50 particles).<br>- More particles increased computational load immensely.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Batch Size</strong></p></td>
-<td><p>- Smaller data batch sizes introduced more noise but helped in escaping local minima.<br>- Particle mini-batching helped manage memory usage when using a large number of particles.</p></td>
+<td><p>- Smaller data batch sizes introduced more noise but helped in escaping local minima, but also to much noise i.e. when the batch size is to small, can have negative effects and result in slow or no convergence. <br>- Particle mini-batching helped manage memory usage when using a large number of particles, also increases computation time. Only a small effect on the MSE and accuracy score was visible sometimes, so no clear statement can be made.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Learning Rate and Optimizers</strong></p></td>
-<td><p>- Adaptive optimizers like Adam performed better than plain SGD.<br>- Learning rate schedules (e.g., exponential decay) improved training stability over long runs.</p></td>
+<td><p>- Adaptive optimizers like Adam performed much better than plain SGD. SGD often gets stuck for example for the MNIST dataset roughly at a accuracy of 10% so the results are really bad. Adam on the other hand can reach a accuracy of up to 98% for the MNIST dataset.<br>- Learning rate schedules (e.g., exponential decay) improved training stability over long runs, here a problem arises when using batching of the data since the decay rate is not applied on the basis of the epochs, so the decay is much stronger, one can adjust for that by just increasing the transitioning steps or decreasing the decay rate.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Kernel Parameters in SVGD</strong></p></td>
-<td><p>- The kernel length scale significantly impacted particle updates.<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.</p></td>
+<td><p>- The kernel length scale significantly impacted particle updates. The best kernel length strongly depends on the used dataset .<br>- Using median heuristics to initialize the kernel length scale yielded good results.<br>- Alternative kernels could be explored for better performance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Training Dynamics</strong></p></td>
-<td><p>- Early iterations showed rapid decreases in loss, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity.</p></td>
+<td><p>- Early iterations showed rapid decreases in loss/accuracy, with slower improvements over time.<br>- sSVGD displayed more fluctuations due to stochasticity, especially when using SGD() and a constant factor multiplied to the noise. The fluctuation depends of course strongly on the learning, the decay rate and the transitioning steps</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Uncertainty Estimation</strong></p></td>
 <td><p>- BNNs trained with Stein VI methods provided meaningful uncertainty estimates.<br>- Particles captured different modes of the posterior, enhancing uncertainty quantification.</p></td>

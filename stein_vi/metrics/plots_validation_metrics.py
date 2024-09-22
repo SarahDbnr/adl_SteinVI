@@ -1,4 +1,3 @@
-import os
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from stein_vi.metrics.validation_and_evaluation import compute_confidence_intervals_with_2_neurons
