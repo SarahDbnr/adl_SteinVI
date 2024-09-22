@@ -209,4 +209,4 @@ def run_diabetes(info=False):
 
 
 if __name__ == "__main__":
-    run_diabetes(info=False)
+    run_regression_toy_example()

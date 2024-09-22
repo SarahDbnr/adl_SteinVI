@@ -30,5 +30,3 @@ def compute_stochastic_correction(particles, kernel_fn, kernel_params, random_no
     v_stc = jnp.sqrt(2) * V  
 
     return v_stc
-
-

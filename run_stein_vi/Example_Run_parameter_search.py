@@ -13,6 +13,7 @@ from run_stein_vi.data.data_handling import apply_data_settings_keras
 from stein_vi.parameter_search.print_evaluation import (print_evaluation_regression_to_csv,
                                                         print_evaluation_multiclass_to_csv)
 
+
 def parameter_loop_regression(dataset, model, name):
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
@@ -97,7 +98,6 @@ def parameter_loop_regression(dataset, model, name):
 
 
 def parameter_loop_multiclass(dataset, model, name):
-    
     key = jax.random.PRNGKey(1)
     z_train, _, _, _, z_test, y_test = dataset
 
@@ -109,7 +109,7 @@ def parameter_loop_multiclass(dataset, model, name):
     decay_rate = 0.95
 
     array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100]
-    array_batch_size = [0, 50,300, 1000,10000]
+    array_batch_size = [0, 50, 300, 1000, 10000]
     array_early_stopping = [True, False]
     array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
     array_decay_rate = [0.999, 0.99, 0.95, 0.9, 0.8, 0.7]
@@ -182,7 +182,6 @@ def parameter_loop_multiclass(dataset, model, name):
 
 def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_batch_size,
                        num_iterations, early_stopping, init_value, decay_rate, use_for_regression):
-    
     optimizer = adam(
         exponential_decay(
             init_value=init_value,
@@ -209,7 +208,6 @@ def initialize_steinvi(key, z_train, model, num_particles, batch_size, particle_
 
 
 def run_training_and_attach_information(steinvi_svdg, dataset, key, z_test, y_test, name, init_value, decay_rate):
-    
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
 
     test_predictions, test_precisions = steinvi_svdg.predict_over_particles(z_test)
