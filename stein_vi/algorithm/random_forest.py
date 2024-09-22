@@ -9,17 +9,19 @@ def random_forest(dataset, task_type='classification'):
     
     Args:
         dataset (tuple): A tuple containing the training, validation, and test datasets. Expected format:
-                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data and y represents the labels.
-        task_type (str, optional): The type of task to perform, either 'classification' or 'regression'. Defaults to 'classification'.
+                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents
+                         the input data and y represents the labels.
+        task_type (str, optional): The type of task to perform, either 'classification' or 'regression'.
+        Defaults to 'classification'.
         
     Returns:
-        dict: A dictionary containing the computed performance metrics based on the task type. For classification, this includes:
+        dict: A dictionary containing the computed performance metrics based on the task type.
+        For classification, this includes:
               'Test Accuracy': Accuracy score on the test set.
               For regression, this includes:
               'Test MSE': Mean Squared Error on the test set.
               'Test Precision': Standard deviation of the predicted values.
     """
-
 
     x_train_combined, y_train_combined, x_test, y_test = prepare_dataset(dataset)
 
@@ -64,7 +66,8 @@ def prepare_dataset(dataset):
     
     Args:
         dataset (tuple): A tuple containing the training, validation, and test datasets. Expected format:
-                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data and y represents the labels.
+                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data
+                         and y represents the labels.
         
     Returns:
         tuple: A tuple containing x_train, y_train, x_test,y_test

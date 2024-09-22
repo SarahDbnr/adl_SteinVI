@@ -9,7 +9,8 @@ from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_ov
 def set_up_svgd(steinvi_svdg):
     """Sets up the Stein Variational Gradient Descent (SVGD) process for training a Bayesian Neural Network (BNN).
 
-    This function initializes the state for SVGD, including defining the update function for SVGD and the evaluation function
+    This function initializes the state for SVGD, including defining the update function for SVGD
+    and the evaluation function
     for assessing the model's performance.
 
     Args:
@@ -17,7 +18,8 @@ def set_up_svgd(steinvi_svdg):
         training parameters, particles, and the log posterior function.
 
     Returns:
-        SteinVI_BNN: The updated `SteinVI_BNN` instance with initialized SVGD state, update function, and evaluation function.
+        SteinVI_BNN: The updated `SteinVI_BNN` instance with initialized SVGD state, update function,
+        and evaluation function.
     """
     steinvi_svdg.state, svgd = initialize_svgd_state(steinvi_svdg)
 
@@ -58,7 +60,7 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     Updates the SVGD particles and optimizer state, with support for minibatching.
 
     Args:
-        state (blackjax.vi.svgd.SVGDState): The current SVGD state containing particles and optimizer state.
+        state (SVGDState): The current SVGD state containing particles and optimizer state.
         z_batch (jax.numpy.ndarray): The current batch of input data for training.
         y_batch (jax.numpy.ndarray): The corresponding true output labels for the current batch.
         step_fn (callable): The update function that performs the SVGD step.
@@ -105,8 +107,8 @@ def update_optimizer_state(optimizer_state, batched_state, indices):
     Updates the global optimizer state with the minibatched state after an update step.
 
     Args:
-        optimizer_state (object): The full optimizer state across all particles.
-        batched_state (object): The optimizer state after a minibatch update.
+        optimizer_state (InjectStatefulHyperparamsState): The full optimizer state across all particles.
+        batched_state (SVGDState): The optimizer state after a minibatch update.
         indices (jax.numpy.ndarray): Indices of the particles that were updated.
 
     Returns:
