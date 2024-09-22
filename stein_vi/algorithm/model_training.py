@@ -1,8 +1,6 @@
 import jax
 import jax.numpy as jnp
 from tqdm import tqdm
-# TODO: vielleicht raus
-DEFAULT_NUM_BATCHES = 10
 
 
 def train_general_algorithm(steinvi, dataset, key):

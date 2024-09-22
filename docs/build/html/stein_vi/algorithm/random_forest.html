@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Metrics" href="../metrics/index.html" />
-    <link rel="prev" title="local_blackjax_file_adjusted_for_lbfgs" href="quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html" /> 
+    <link rel="prev" title="matrices_for_noise_matrix" href="sSVGD/matrices_for_noise_matrix.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-tests">Running the Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
@@ -126,11 +127,6 @@
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/ssvgd.html">ssvgd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">random_forest</a><ul>
@@ -210,7 +206,20 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.algorithm.random_forest.prepare_dataset">
 <span class="sig-prename descclassname"><span class="pre">stein_vi.algorithm.random_forest.</span></span><span class="sig-name descname"><span class="pre">prepare_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.algorithm.random_forest.prepare_dataset" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>prepares the data for random forest:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>tuple</em>) – A tuple containing the training, validation, and test datasets. Expected format:
+(X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data and y represents the labels.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing x_train, y_train, x_test,y_test</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.algorithm.random_forest.random_forest">
@@ -246,7 +255,7 @@ For regression, this includes:
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html" class="btn btn-neutral float-left" title="local_blackjax_file_adjusted_for_lbfgs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sSVGD/matrices_for_noise_matrix.html" class="btn btn-neutral float-left" title="matrices_for_noise_matrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../metrics/index.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

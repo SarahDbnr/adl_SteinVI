@@ -1,8 +1,8 @@
 import jax
 import jax.numpy as jnp
 import blackjax
-from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 
+from blackjax.vi.svgd import rbf_kernel, update_median_heuristic
 from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
 
 
@@ -23,7 +23,6 @@ def set_up_svgd(steinvi_svdg):
 
     def svgd_update_fn(state, z_batch, y_batch, step_fn=jax.jit(svgd.step), particle_indices=None):
         if particle_indices is not None:
-            # TODO: why is this necessary: and particle_indices != 0
             return particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices)
         else:
             return step_fn(state, dz=z_batch, dy=y_batch)
@@ -37,23 +36,21 @@ def set_up_svgd(steinvi_svdg):
     steinvi_svdg.evaluate_fn = evaluate_model_fn
 
 
-def initialize_svgd_state(svi):
+def initialize_svgd_state(steinvi_svdg):
     """
     Initializes the state for SVGD including the log posterior function, particles, and kernel function.
 
     Args:
-        logp_model (callable): A function representing the log posterior of the model given the data.
-        initial_particles_vector (jax.numpy.ndarray): Initial particle vectors for SVGD.
-        kernel_fn (callable): The kernel function used in SVGD to measure distances between particles.
-        parameter (Parameter): A Parameter object containing the SVGD hyperparameters like kernel length scale and optimizer.
+        steinvi_svdg (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network, 
+        training parameters, particles, and the log posterior function.
 
     Returns:
-        tuple: The initialized SVGD state and the JIT-compiled update function for SVGD.
+        SteinVI_BNN: The initialized SVGD state and the JIT-compiled update function for SVGD.
     """
-    grad_log_posterior = jax.grad(svi.log_posteriori)
-    svgd = blackjax.svgd(grad_log_posterior, svi.parameter.optimizer, rbf_kernel, update_median_heuristic)
-    initial_kernel_params = {"length_scale": svi.parameter.kernel_length}
-    return svgd.init(svi.initial_particle_vector, initial_kernel_params), svgd
+    grad_log_posterior = jax.grad(steinvi_svdg.log_posteriori)
+    svgd = blackjax.svgd(grad_log_posterior, steinvi_svdg.parameter.optimizer, rbf_kernel, update_median_heuristic)
+    initial_kernel_params = {"length_scale": steinvi_svdg.parameter.kernel_length}
+    return svgd.init(steinvi_svdg.initial_particle_vector, initial_kernel_params), svgd
 
 
 def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
@@ -61,14 +58,14 @@ def particle_minibatching(state, z_batch, y_batch, step_fn, particle_indices):
     Updates the SVGD particles and optimizer state, with support for minibatching.
 
     Args:
-        state (object): The current SVGD state containing particles and optimizer state.
+        state (blackjax.vi.svgd.SVGDState): The current SVGD state containing particles and optimizer state.
         z_batch (jax.numpy.ndarray): The current batch of input data for training.
         y_batch (jax.numpy.ndarray): The corresponding true output labels for the current batch.
         step_fn (callable): The update function that performs the SVGD step.
         particle_indices (jax.numpy.ndarray or None): Indices of the particles to be updated (if minibatching particles).
 
     Returns:
-        object: The updated SVGD state after the current step.
+        blackjax.vi.svgd.SVGDState: The updated SVGD state after the current step.
     """
 
     batch_particles = jnp.take(state.particles, particle_indices, axis=0)

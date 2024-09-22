@@ -11,7 +11,7 @@ def plot_evaluation_metric(evaluation_metric_val, eval_metric, num_particles=Non
     Args:
         evaluation_metric_val (list or array): Values of the evaluation metric over iterations.
         eval_metric (str): Name of the evaluation metric, e.g., 'accuracy', 'loss'.
-        num_particles (int, optional): Number of particles used in SVGD.
+        num_particles (int, optional): Number of particles used in SVGD. Defaults to None.
 
     """
 
@@ -41,14 +41,16 @@ def plot_residuals(y_pred, y_true, num_particles=None, network_structure=None,
     Calculates and plots the residuals of predictions against true values for a regression model.
 
     Args:
+        y_pred (array): Predicted output values for the test set.
         y_true (array): True output values for the test set.
-        num_particles (int, optional): Number of particles used in SVGD.
-        network_structure (str, optional): Description of the network's architecture.
-        kernel_length (float, optional): Length parameter for the kernel used in SVGD.
-        adam_learning_rate (float, optional): Learning rate for the Adam optimizer.
-        actual_iterations (int, optional): Number of iterations actually performed.
-        warm_up_iterations (int, optional): Number of warm-up iterations before actual training starts.
+        num_particles (int, optional): Number of particles used in SVGD. Defaults to None.
+        network_structure (str, optional): Description of the network's architecture. Defaults to None.
+        kernel_length (float, optional): Length parameter for the kernel used in SVGD. Defaults to None.
+        adam_learning_rate (float, optional): Learning rate for the Adam optimizer. Defaults to None.
+        actual_iterations (int, optional): Number of iterations actually performed. Defaults to None.
+        warm_up_iterations (int, optional): Number of warm-up iterations before actual training starts. Defaults to None.
     """
+
     residuals = y_pred.mean(0).squeeze() - y_true
 
 
@@ -86,17 +88,17 @@ def plot_location_in_relation_to_scale(nnet_model, out, z_test, num_particles=No
 
     Args:
         nnet_model (flax.linen.Module): The neural network model used for predictions.
-        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
         out (blackjax.vi.svgd.SVGD_State): Output from the model prediction, containing particles.
         z_test (array): Test input features.
-        num_particles (int, optional): Number of particles used in SVGD.
-        network_structure (str, optional): Description of the network's architecture.
-        kernel_length (float, optional): Length parameter for the kernel used in SVGD.
-        adam_learning_rate (float, optional): Learning rate for the Adam optimizer.
-        actual_iterations (int, optional): Number of iterations actually performed.
-        warm_up_iterations (int, optional): Number of warm-up iterations before actual training starts.
+        num_particles (int, optional): Number of particles used in SVGD. Defaults to None.
+        network_structure (str, optional): Description of the network's architecture. Defaults to None.
+        kernel_length (float, optional): Length parameter for the kernel used in SVGD. Defaults to None.
+        adam_learning_rate (float, optional): Learning rate for the Adam optimizer. Defaults to None.
+        actual_iterations (int, optional): Number of iterations actually performed. Defaults to None.
+        warm_up_iterations (int, optional): Number of warm-up iterations before actual training starts. Defaults to None.
 
     """
+
     prediction_location, predicted_scale = compute_confidence_intervals_with_2_neurons(nnet_model, out, z_test)
 
 

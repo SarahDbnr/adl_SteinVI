@@ -54,20 +54,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-examples">Running the Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-examples">Running the Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-py">Example_Run.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#available-runs">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-tests">Running the Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Source</a><ul class="current">
@@ -117,12 +129,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../algorithm/quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../algorithm/random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../algorithm/random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -280,8 +288,8 @@ Based on the equations (1), (2) and (3).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>flax.linen.Module</strong><strong>)</strong> (<em>nnet_model</em>) – Underlying neural network of the training process.</p></li>
 <li><p><strong>tree_def</strong> (<em>jax.tree_util.PyTreeDef</em>) – Tree structure used for parameter transformation in JAX.</p></li>
-<li><p><strong>out</strong> (<em>SVGDState???</em>) – Output from the training process, containing the state of the particles.</p></li>
-<li><p><strong>dz</strong> (<em>jax.numpy.ndarray???</em>) – dataset of input features.</p></li>
+<li><p><strong>out</strong> (<em>blackjax.vi.svgd.SVGD_State</em>) – Output from the training process, containing the state of the particles.</p></li>
+<li><p><strong>dz</strong> (<em>jax.numpy.ndarray</em>) – dataset of input features.</p></li>
 </ul>
 </dd>
 </dl>
@@ -294,16 +302,16 @@ Based on the equations (1), (2) and (3).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>out</strong> (<em>SVGD_State???</em>) – Output object containing particles representing different model parameters.</p></li>
+<li><p><strong>out</strong> (<em>blackjax.vi.svgd.SVGDState</em>) – Output object containing particles representing different model parameters.</p></li>
 <li><p><strong>nnet_model</strong> (<em>flax.linen.Module</em>) – The neural network model used for making predictions.</p></li>
-<li><p><strong>tree_def</strong> (<em>jax.tree_util.PyTreeDef</em>) – Tree structure used for parameter transformation in JAX.</p></li>
 <li><p><strong>x_input</strong> (<em>jax.numpy.ndarray</em>) – Input features to the model.</p></li>
 <li><p><strong>true_output</strong> (<em>jax.numpy.ndarray</em>) – True output labels or values for the given input.</p></li>
 <li><p><strong>model_regression</strong> (<em>bool</em>) – A flag indicating whether the model is used for regression or classification.</p></li>
+<li><p><strong>print_eva</strong> (<em>str</em>) – A flag indictating whether the model should print the metrics or not.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).</p>
+<dd class="field-even"><p>For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, None, predictions).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>

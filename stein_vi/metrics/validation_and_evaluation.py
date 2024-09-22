@@ -11,17 +11,17 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_outpu
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
     Args:
-        out (blackjax.vi.svgd.SVGD_State): Output object containing particles representing different model parameters.
+        out (blackjax.vi.svgd.SVGDState): Output object containing particles representing different model parameters.
         nnet_model (flax.linen.Module): The neural network model used for making predictions.
-        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
         x_input (jax.numpy.ndarray): Input features to the model.
         true_output (jax.numpy.ndarray): True output labels or values for the given input.
         model_regression (bool): A flag indicating whether the model is used for regression or classification.
         print_eva (str): A flag indictating whether the model should print the metrics or not.
 
     Returns:
-        tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).
+        tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, None, predictions).
     """
+
     predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, x_input))(out.particles)
     if model_regression:
         mse = calculate_mse(predictions.squeeze(), true_output)
@@ -48,6 +48,7 @@ def calculate_mse(predictions, true_output):
     Returns:
         float: Computed mean squared error.
     """
+
     mse = jnp.mean((predictions.mean(0) - true_output) ** 2)
     return mse
 
@@ -63,6 +64,7 @@ def calculate_accuracy(precisions, true_output):
     Returns:
         float: The classification accuracy as the percentage of correct predictions.
     """
+
     averaged_precision = precisions.mean(0)
     predicted_classes = jnp.argmax(averaged_precision, axis=-1)
     return jnp.mean(predicted_classes == true_output)
@@ -75,6 +77,7 @@ def print_summary_over_particles_regression(predictions):
     Args:
         predictions (jax.numpy.ndarray): Predictions from an ensemble of particles.
     """
+
     predictions = predictions.squeeze()
     prediction_span = calculate_mean_span_over_particles(predictions)
     print("\nAverage prediction span including " + str(1 - ALPHA) + "% of particles :" + str(prediction_span.mean()) +
@@ -91,15 +94,28 @@ def calculate_mean_span_over_particles(predictions):
     Returns:
         float: The difference between the upper and lower quantiles of the predictions.
     """
+
     upper_quantile_prediction_over_particles = jnp.quantile(predictions, 1 - ALPHA / 2)
     lower_quantile_prediction_over_particles = jnp.quantile(predictions, ALPHA / 2)
     return upper_quantile_prediction_over_particles - lower_quantile_prediction_over_particles
 
 
 def print_summary_over_particles_multiclass(predictions):
+    """
+    Computes and prints the average number of different classifications made 
+    by particles in a Bayesian Neural Network (BNN).
+
+    Args:
+        predictions (jax.numpy.ndarray): Predictions from an ensemble of particles.
+
+    Returns:
+        None: The function prints the average number of samples classified differently by the particles.
+    """
+
     predictions = predictions.squeeze()
     number_of_different_classified_by_particles = jnp.array(
         calculate_number_of_different_classified_by_particles(predictions))
+    
     print("\nAverage number of different classifications over all particles "
           + str(number_of_different_classified_by_particles.mean()))
 
@@ -114,10 +130,11 @@ def calculate_number_of_different_classified_by_particles(predictions):
     Returns:
         list: A list where each element is the number of different predictions made by particles for an input.
     """
+
     num_input_values = predictions.shape[1]
     difference_classified_by_particles = []
     for i in range(num_input_values):
-        unique_vals, col_counts = jnp.unique(predictions[:, i], return_counts=True)
+        _, col_counts = jnp.unique(predictions[:, i], return_counts=True)
         difference_classified_by_particles.append(col_counts.sum() - col_counts.max())
     return difference_classified_by_particles
 
@@ -132,6 +149,7 @@ def get_most_common_class_over_particles(predictions):
     Returns:
         list: A list of the most commonly predicted class for each input instance.
     """
+
     num_input_values = predictions.shape[1]
     most_common_prediction_over_particles = []
     for i in range(num_input_values):
@@ -150,22 +168,26 @@ def get_most_common_class(column):
     Returns:
         scalar: The most frequently occurring class in the column.
     """
+
     unique_vals, col_counts = jnp.unique(column, return_counts=True)
     max_index = jnp.argmax(col_counts)
     return unique_vals[max_index]
 
 
 def compute_confidence_intervals_with_2_neurons(nnet_model, out, dz):
-    """This function computes the normal distribution p(y|x) for the test data based on the paper:
+    """
+    This function computes the normal distribution p(y|x) for the test data based on the paper:
     A Deeper Look into Aleatoric and Epistemic Uncertainty Disentanglement by Matias Valdenegro-Toro and Daniel Saromo Mori.
     Based on the equations (1), (2) and (3).
 
     Args:
         nnet_model flax.linen.Module): Underlying neural network of the training process. 
-        tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
-        out (blackjax.vi.svgd.SVGD_State): Output from the training process, containing the state of the particles.
+        out (blackjax.vi.svgd.SVGDState): Output from the training process, containing the state of the particles.
         dz (jax.numpy.ndarray): dataset of input features.
+    Returns:
+        tuple: mean_star, variance_star as the predicted mean and variance over all particles
     """
+
     predictions, precision = jax.vmap(lambda p: nnet_model.predict(p, dz))(out.particles)
     predictions = predictions.squeeze()
     precision = precision.squeeze()

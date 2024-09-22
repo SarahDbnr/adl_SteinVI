@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../get_started.html#running-the-tests">Running the Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
@@ -126,11 +127,6 @@
 <li class="toctree-l4"><a class="reference internal" href="algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="algorithm/quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="algorithm/random_forest.html">random_forest</a><ul>
@@ -209,12 +205,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="stein_vi.stein_vi.train_with_stein_vi">
 <span class="sig-prename descclassname"><span class="pre">stein_vi.stein_vi.</span></span><span class="sig-name descname"><span class="pre">train_with_stein_vi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steinvi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'svgd'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stein_vi.stein_vi.train_with_stein_vi" title="Link to this definition"></a></dt>
-<dd><p>Performs the training using one of the specified algorithms (svgd, plain_svgd, ssvgd, quasi_svn) for a Bayesian Neural Network (BNN).
+<dd><p>Performs the training using one of the specified algorithms (svgd, ssvgd) for a Bayesian Neural Network (BNN).
 Also prints out a score for the performance of the network on the test dataset.</p>
 <dl class="simple">
 <dt>Algorithms:</dt><dd><ul class="simple">
 <li><p><strong>svgd (Stein Variational Gradient Descent)</strong>: Uses the blackjax implementation of SVGD.</p></li>
-<li><p><strong>ssvgd (Stochastic Stein Variational Gradient Descent)</strong>: A variant of plain_svgd where noise is added to the particle updates. (Attention: Often in our BNN the gradient and the weights have quite high values e.g. (-40000;40000) and noise calculated based on the paper “A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD”  is very small since the kernel is used to scale the variance and when using the RBF_Kernel the values are between 0 and 1.</p></li>
+<li><p><strong>ssvgd (Stochastic Stein Variational Gradient Descent)</strong>: A variant of svgd where noise is added to the particle updates.</p></li>
 </ul>
 </dd>
 </dl>
@@ -224,7 +220,7 @@ Also prints out a score for the performance of the network on the test dataset.<
 <li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, containing the Bayesian neural network, particles, and other relevant parameters.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – A tuple containing processed training, validation, and test data as (x_train, y_train, x_val, y_val, x_test, y_test).</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – A key used to control the generation of random objects. Here it is used, for example, for the selection of batch subsets.</p></li>
-<li><p><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies the algorithm used to train the BNN. Defaults to “svgd”. Available options: “svgd”, “plain_svgd”, “ssvgd”, “quasi_svn”.</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies the algorithm used to train the BNN. Defaults to “svgd”. Available options: “svgd”,”ssvgd”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

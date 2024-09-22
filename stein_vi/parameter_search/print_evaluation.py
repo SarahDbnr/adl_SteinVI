@@ -26,8 +26,8 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
     Returns:
         None: The function saves the evaluation to a CSV file.
     """
+
     data = {
-        # network
         "name": name,
         "init_value": init_value,
         "decay_rate": decay_rate,

@@ -12,12 +12,14 @@ class Handler:
         _full_evaluation (bool): Indicates if the full evaluation mode is active.
         _minimal_evaluation (bool): Indicates if the minimal evaluation mode is active.
     """
+
     rf_comparison: bool
     _full_training_print: bool
     _reduced_training_print: bool
     _no_training_print: bool
     _full_evaluation: bool
     _minimal_evaluation: bool
+
     def __init__(self, rf_comparison= False):
         """Initializes the Handler class with the option to enable random forest comparisson.
         Args:
@@ -72,7 +74,6 @@ class Handler:
         else:
             raise ValueError("Invalid mode. Choose from 'full', or 'minimal'.")
 
-# TODO: write this for all or for none
     @property
     def minimal_evaluation(self):
         """Returns the status of the minimal evaluation mode.

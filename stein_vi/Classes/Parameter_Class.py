@@ -21,6 +21,7 @@ class Parameter:
         patience_early_stopping (int): The number of iterations to wait for an improvement before stopping early.
         min_delta_early_stopping (float): The minimum change in the monitored metric to qualify as an improvement.
     """
+    
     optimizer: None
     learning_rate: float
     num_particles: int
@@ -34,6 +35,7 @@ class Parameter:
     warm_up_iterations_early_stopping: int = 30
     patience_early_stopping: int = 15
     min_delta_early_stopping: float = 0.005
+
     def __init__(self, optimizer, early_stopping, image_data, batch_size, particle_batch_size, num_particles,
                  num_iterations, learning_rate:float, kernel_length):
         """Initializes the Parameter class with the specified training settings.

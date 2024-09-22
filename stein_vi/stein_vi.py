@@ -30,6 +30,7 @@ def train_with_stein_vi(steinvi, dataset, key, algorithm="svgd"):
     Prints: 
         Tests scores for a given data test dataset.
     """
+    
     if algorithm == "svgd":
         set_up_svgd(steinvi)
     elif algorithm == "ssvgd":

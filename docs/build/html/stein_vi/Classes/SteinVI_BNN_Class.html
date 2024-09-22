@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-tests">Running the Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
@@ -126,11 +127,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../algorithm/quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../algorithm/random_forest.html">random_forest</a><ul>
@@ -458,7 +454,7 @@ This function plots validation metrics (such as Mean Squared Error for regressio
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>weights</strong> (<em>dict</em>) – A dictionary containing the weights (parameters) of the neural network, where the keys correspond to different parts of the model (e.g., layers).</p></li>
 <li><p><strong>x_input</strong> (<em>jax.numpy.ndarray</em>) – The input data for which predictions are to be made.</p></li>
-<li><p><strong>use_softmax</strong> (<em>bool</em>) – True is log_softmax should be used for multiclass</p></li>
+<li><p><strong>use_softmax</strong> (<em>bool</em>) – True is log_softmax should be used for multiclass. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -513,7 +509,7 @@ num_plots random misclassified and num_plots random right classified data exampl
 <li><p><strong>z_test</strong> (<em>jax.numpy.ndarray</em>) – Input features to the model.</p></li>
 <li><p><strong>y_test</strong> (<em>jax.numpy.ndarray</em>) – True output labels for the given input.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – A JAX PRNG key used for deterministic selection of samples.</p></li>
-<li><p><strong>num_plots</strong> (<em>int</em>) – Number of plots to be shown</p></li>
+<li><p><strong>num_plots</strong> (<em>int</em>) – Number of plots to be shown. Defaults to 3.</p></li>
 </ul>
 </dd>
 </dl>

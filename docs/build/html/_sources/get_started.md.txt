@@ -8,9 +8,10 @@
 5. [Project Structure](project-structure)
 6. [Brief Overview of Algorithms](brief-overview-of-algorithms)
 7. [Running the Examples](running-the-examples)
-8. [Code Structure: Training and Evaluation](code-structure-training-and-evaluation)
-9. [Understanding the Main Classes](understanding-the-main-classes)
-10. [Collected Findings](collected-findings)
+8. [Running the Tests](running-tests)
+9. [Code Structure: Training and Evaluation](code-structure-training-and-evaluation)
+10. [Understanding the Main Classes](understanding-the-main-classes)
+11. [Collected Findings](collected-findings)
 
 (introduction)=
 ## Introduction
@@ -179,7 +180,7 @@ SVGD is used on FashionMNIST for image classification tasks:
       run_FashionMNIST()
   ```
 
-**Command to Exceute:**
+**Command to Execute:**
    ```
    python run_stein_vi/Example_Run.py
    ```
@@ -187,7 +188,7 @@ SVGD is used on FashionMNIST for image classification tasks:
 (example-run-advanced-algorithms-py)=
 ### Example_Run_advanced_algorithms.py
 
-This file showcases more advanced algorithms, such as **sSVGD** as well as **SVGD**, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.
+This file showcases more advanced algorithms, such as **sSVGD** as well as **SVGD**, using different optimization techniques such as Gradient Descent (GD) and ADAM.
 
 
 #### Available Runs:
@@ -206,7 +207,7 @@ Runs MNIST classification with stochastic Stein Variational Gradient Descent (sS
       run_MNIST_ssvgd()
    ```
 
-**Command to Exceute:**
+**Command to Execute:**
    ```
    python run_stein_vi/Example_Run_advanced_algorithms.py
    ```
@@ -216,6 +217,21 @@ Runs MNIST classification with stochastic Stein Variational Gradient Descent (sS
 
 This example demonstrates parameter search for both regression and classification tasks. The script iterates over various parameters (e.g., number of particles, batch size, learning rate) and logs the results.
 Running this file works similarly to the examples shown above. You simply choose the dataset and function you want to run and place it under the main execution block.
+
+(running-tests)=
+## Running the Tests
+
+To run the test suite, use pytest. This will execute all available unit tests and ensure the integrity of the code.
+
+Run all tests with:
+```bash
+pytest tests
+```
+
+You can also run specific test files, for example:
+```bash
+pytest tests/test_SteinVI.py
+```
 
 (code-structure-training-and-evaluation)=
 ## Code Structure: Training and Evaluation
@@ -482,7 +498,7 @@ A detailed example of all classes can also be found in the generated documentati
 
 (collected-findings)=
 ## Collected Findings
-CURRENTLY JUST FILLET
+CURRENTLY JUST Filler
 
 Below is a summary of the general findings from our experiments using different Stein Variational Inference algorithms on Bayesian Neural Networks.
 

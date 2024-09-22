@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#brief-overview-of-algorithms">Brief Overview of Algorithms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#stochastic-stein-variational-gradient-descent-ssvgd">Stochastic Stein Variational Gradient Descent (sSVGD)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#stein-variational-newton-method-svn">Stein Variational Newton Method (SVN)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#summary-of-usage">Summary of Usage</a></li>
 </ul>
 </li>
@@ -66,22 +65,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../get_started.html#available-runs">Available Runs:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-advanced-algorithms-py">Example_Run_advanced_algorithms.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#id10">Available Runs:</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../get_started.html#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#running-the-tests">Running the Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#understanding-the-main-classes">Understanding the Main Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#advanced-usage">Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#mini-batching">Mini-batching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#early-stopping">Early Stopping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../get_started.html#comparison-with-random-forest">Comparison with Random Forest</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../get_started.html#configuring-training-runs">Configuring Training Runs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../get_started.html#collected-findings">Collected Findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../get_started.html#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Source</a><ul class="current">
@@ -131,12 +129,8 @@
 <li class="toctree-l4"><a class="reference internal" href="sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="random_forest.html">random_forest</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="random_forest.html#stein_vi.algorithm.random_forest.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="random_forest.html#stein_vi.algorithm.random_forest.random_forest"><code class="docutils literal notranslate"><span class="pre">random_forest()</span></code></a></li>
 </ul>
 </li>
@@ -259,8 +253,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong> – <p>…</p>
-</p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
 </ul>
@@ -281,7 +274,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong></p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
 <li><p><strong>early_stopping_fn</strong> (<em>callable</em>) – Function to apply early stopping criteria.</p></li>
@@ -307,6 +300,7 @@
 <li><p><strong>best_metrics</strong> (<em>float</em>) – The best evaluation metric seen so far.</p></li>
 <li><p><strong>patience_counter</strong> (<em>int</em>) – A counter tracking how many iterations the model has been non-improving.</p></li>
 <li><p><strong>parameter</strong> (<em>Parameter</em>) – A Parameter object defining early stopping criteria like minimum delta.</p></li>
+<li><p><strong>regression</strong> (<em>bool</em>) – If the earlystopping should be applied for regression or classification.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -325,8 +319,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong> – <p>…</p>
-</p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>z_val</strong> (<em>ndarray</em>) – Validation data inputs.</p></li>
 <li><p><strong>y_val</strong> (<em>ndarray</em>) – Validation data targets.</p></li>
 <li><p><strong>iteration</strong> (<em>int</em>) – Current training iteration.</p></li>
@@ -350,7 +343,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong></p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
 </ul>
@@ -371,7 +364,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong></p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – The dataset containing training and validation data.</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for randomness.</p></li>
 </ul>
@@ -413,7 +406,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>steinvi</strong> (<em>class</em>)</p></li>
+<li><p><strong>steinvi</strong> (<em>SteinVI_BNN</em>) – An instance of the <cite>SteinVI_BNN</cite> class, which contains the Bayesian Neural Network.</p></li>
 <li><p><strong>dataset</strong> (<em>tuple</em>) – A tuple containing training and validation datasets (z_train, y_train, z_val, y_val, etc.).</p></li>
 <li><p><strong>key</strong> (<em>jax.random.PRNGKey</em>) – JAX random key for managing randomness.</p></li>
 </ul>

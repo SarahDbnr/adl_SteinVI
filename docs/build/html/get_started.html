@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-run-parameter-search-py">Example_Run_parameter_search.py</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-tests">Running the Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-structure-training-and-evaluation">Code Structure: Training and Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#understanding-the-main-classes">Understanding the Main Classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#steinvi-bnn-class"><code class="docutils literal notranslate"><span class="pre">SteinVI_BNN</span></code> Class</a></li>
@@ -126,11 +127,6 @@
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/ssvgd.html">ssvgd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/local_blackjax_file_with_adjustments_for_sSVGD.html">local_blackjax_file_with_adjustments_for_sSVGD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/sSVGD/matrices_for_noise_matrix.html">matrices_for_noise_matrix</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/index.html">quasiSVN</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/quasiSVN.html">quasiSVN</a></li>
-<li class="toctree-l4"><a class="reference internal" href="stein_vi/algorithm/quasiSVN/local_blackjax_file_adjusted_for_lbfgs.html">local_blackjax_file_adjusted_for_lbfgs</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="stein_vi/algorithm/random_forest.html">random_forest</a><ul>
@@ -215,6 +211,7 @@
 <li><p><a class="reference internal" href="#project-structure"><span class="std std-ref">Project Structure</span></a></p></li>
 <li><p><a class="reference internal" href="#brief-overview-of-algorithms"><span class="std std-ref">Brief Overview of Algorithms</span></a></p></li>
 <li><p><a class="reference internal" href="#running-the-examples"><span class="std std-ref">Running the Examples</span></a></p></li>
+<li><p><a class="reference internal" href="#running-tests"><span class="std std-ref">Running the Tests</span></a></p></li>
 <li><p><a class="reference internal" href="#code-structure-training-and-evaluation"><span class="std std-ref">Code Structure: Training and Evaluation</span></a></p></li>
 <li><p><a class="reference internal" href="#understanding-the-main-classes"><span class="std std-ref">Understanding the Main Classes</span></a></p></li>
 <li><p><a class="reference internal" href="#collected-findings"><span class="std std-ref">Collected Findings</span></a></p></li>
@@ -383,7 +380,7 @@ SVGD is used on FashionMNIST for image classification tasks:</p>
 </div>
 </li>
 </ul>
-<p><strong>Command to Exceute:</strong></p>
+<p><strong>Command to Execute:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run_stein_vi</span><span class="o">/</span><span class="n">Example_Run</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
@@ -391,7 +388,7 @@ SVGD is used on FashionMNIST for image classification tasks:</p>
 </section>
 <section id="example-run-advanced-algorithms-py">
 <span id="id9"></span><h3>Example_Run_advanced_algorithms.py<a class="headerlink" href="#example-run-advanced-algorithms-py" title="Link to this heading"></a></h3>
-<p>This file showcases more advanced algorithms, such as <strong>sSVGD</strong> as well as <strong>SVGD</strong>, using different optimization techniques such as Gradient Descent (GD) and Limited Broyden–Fletcher–Goldfarb–Shanno (LBFGS) and ADAM.</p>
+<p>This file showcases more advanced algorithms, such as <strong>sSVGD</strong> as well as <strong>SVGD</strong>, using different optimization techniques such as Gradient Descent (GD) and ADAM.</p>
 <section id="id10">
 <h4>Available Runs:<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
 <ul>
@@ -410,7 +407,7 @@ Runs MNIST classification with stochastic Stein Variational Gradient Descent (sS
 </div>
 </li>
 </ul>
-<p><strong>Command to Exceute:</strong></p>
+<p><strong>Command to Execute:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run_stein_vi</span><span class="o">/</span><span class="n">Example_Run_advanced_algorithms</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
@@ -421,6 +418,18 @@ Runs MNIST classification with stochastic Stein Variational Gradient Descent (sS
 <p>This example demonstrates parameter search for both regression and classification tasks. The script iterates over various parameters (e.g., number of particles, batch size, learning rate) and logs the results.
 Running this file works similarly to the examples shown above. You simply choose the dataset and function you want to run and place it under the main execution block.</p>
 </section>
+</section>
+<section id="running-the-tests">
+<span id="running-tests"></span><h2>Running the Tests<a class="headerlink" href="#running-the-tests" title="Link to this heading"></a></h2>
+<p>To run the test suite, use pytest. This will execute all available unit tests and ensure the integrity of the code.</p>
+<p>Run all tests with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
+</pre></div>
+</div>
+<p>You can also run specific test files, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/test_SteinVI.py
+</pre></div>
+</div>
 </section>
 <section id="code-structure-training-and-evaluation">
 <span id="id12"></span><h2>Code Structure: Training and Evaluation<a class="headerlink" href="#code-structure-training-and-evaluation" title="Link to this heading"></a></h2>
@@ -714,7 +723,7 @@ If you wish to compare your BNN with random feature models like Random Forests:<
 </section>
 <section id="collected-findings">
 <span id="id14"></span><h2>Collected Findings<a class="headerlink" href="#collected-findings" title="Link to this heading"></a></h2>
-<p>CURRENTLY JUST FILLET</p>
+<p>CURRENTLY JUST Filler</p>
 <p>Below is a summary of the general findings from our experiments using different Stein Variational Inference algorithms on Bayesian Neural Networks.</p>
 <table class="docutils align-default">
 <thead>

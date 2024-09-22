@@ -1,6 +1,7 @@
 import jax
-import matplotlib.pyplot as plt
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
+
 from stein_vi.metrics.plots_validation_metrics import view_probabilities_classification
 
 

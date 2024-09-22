@@ -1,17 +1,19 @@
+import jax
+import jax.numpy as jnp
+from jax.flatten_util import ravel_pytree
+import flax.linen
+from optax import adam
+
 from stein_vi.Classes.Parameter_Class import Parameter
 import stein_vi.metrics.plots_validation_metrics as plots
 from stein_vi.metrics.view_misclassified import view_misclassified
 from stein_vi.Classes.Handler_Class import Handler
 from stein_vi.algorithm.get_posteriori import get_posteriori
 
-import flax.linen
-import jax.numpy as jnp
-import jax
-from optax import adam
-from jax.flatten_util import ravel_pytree
 
 
 class SteinVI_BNN:
+
     """SteinVI_BNN is a class using Stein VI methods to optimize a BNN.
     This class manages the initialization, training, and evaluation of a BNN with support for both classification and regression tasks.
     It integrates various Stein Variational inference algorithms to update particles representing the network's parameters.
@@ -34,6 +36,7 @@ class SteinVI_BNN:
         evaluation_metrics_1 (list): Stores evaluation metrics (like accuracy or MSE) over training iterations.
         evaluation_metrics_2 (list): Stores additional evaluation metrics (like precision or variance) over training iterations.
     """
+
     state: None
     parameter: Parameter
     handler: Handler
@@ -74,6 +77,7 @@ class SteinVI_BNN:
             rf_comparison (bool, optional): If random forest comparisson should be done. Defaults to False.
             learning_rate (float, optional): Learning rate used for ssvgd for the svgd algorithm the learning rate is included in the optimizer. Defaults to 0.0001.
         """
+
         self.handler = Handler(rf_comparison)
         self.handler.set_training_print_mode(mode_training_print)
         self.handler.set_evaluation_mode(mode_evaluation)
@@ -100,6 +104,7 @@ class SteinVI_BNN:
             x_train (jax.numpy.ndarray): The input training data, used to initialize the parameters of the neural network.
             num_particles (int): The number of particles to initialize for the variational inference process.
         """
+
         init_param = self.nnet.init(key, x_train)
         param_vec, self.tree_def = ravel_pytree(init_param)
 
@@ -111,13 +116,14 @@ class SteinVI_BNN:
         Args:
             weights (dict):  A dictionary containing the weights (parameters) of the neural network, where the keys correspond to different parts of the model (e.g., layers).
             x_input (jax.numpy.ndarray): The input data for which predictions are to be made.
-            use_softmax (bool): True is log_softmax should be used for multiclass
+            use_softmax (bool): True is log_softmax should be used for multiclass. Defaults to False.
 
         Returns:
             tuple: A tuple containing:
                 - prediction (jax.numpy.ndarray): The predicted class labels or regression outputs.
                 - precision (jax.numpy.ndarray): The precision values for classification (as probabilities) or predictive variance for regression.
         """
+
         if self.use_for_regression:
             output = self.nnet.apply(self.tree_def(weights), x_input)
             prediction, precision = jnp.split(output, 2, axis=-1)
@@ -170,6 +176,7 @@ class SteinVI_BNN:
         Raises: 
             ValueError: If this method is called for a classification task instead of regression.
         """
+
         if not self.use_for_regression:
             ValueError("This plot is only available for regression problems.")
         plots.plot_residuals(self.predict_over_particles(z_test)[0], y_test, num_particles=self.parameter.num_particles)
@@ -183,6 +190,7 @@ class SteinVI_BNN:
         Raises: 
             ValueError: If this method is called for a classification task instead of regression.
         """
+
         if self.use_for_regression:
             plots.plot_location_in_relation_to_scale(self.nnet, self.state, z_test,
                                                      num_particles=self.parameter.num_particles)
@@ -197,8 +205,9 @@ class SteinVI_BNN:
             z_test (jax.numpy.ndarray): Input features to the model.
             y_test (jax.numpy.ndarray): True output labels for the given input.
             key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
-            num_plots (int): Number of plots to be shown
+            num_plots (int): Number of plots to be shown. Defaults to 3.
         """
+
         if self.use_for_regression:
             ValueError("This plot is only available for classification problems.")
         else:
