@@ -4,7 +4,7 @@ from jax.scipy.stats import norm
 from fixtures import stein_vi_regression_example, stein_vi_multiclass_example, get_regression_toy_example, get_MNIST
 
 from stein_vi.algorithm.get_posteriori import (logp_unnormalized_posterior_regression, link_function, get_scale,
-                                               logp_unnormalized_posterior_mulitnomial)
+                                               logp_unnormalized_posterior_multinomial)
 
 
 def test_logp_unnormalized_posterior_regression(stein_vi_regression_example, get_regression_toy_example):
@@ -27,7 +27,7 @@ def test_logp_unnormalized_posterior_multiclass(stein_vi_multiclass_example, get
     params = stein_vi_multiclass_example.initial_particle_vector[0]
     nnet_model = stein_vi_multiclass_example.nnet
     # when
-    likelihood = logp_unnormalized_posterior_mulitnomial(params, z_train, y_train, nnet_model)
+    likelihood = logp_unnormalized_posterior_multinomial(params, z_train, y_train, nnet_model)
     # then
     assert likelihood.dtype in (jnp.float32, jnp.float64)
     assert likelihood.shape == ()
