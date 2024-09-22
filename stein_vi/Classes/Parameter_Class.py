@@ -1,14 +1,20 @@
+import optax
+
+
 class Parameter:
     """
-    A class to define and manage the parameters for training a model using Stein Variational Inference methods for example SVGD.
+    A class to define and manage the parameters for training a model using Stein Variational
+    Inference methods for example SVGD.
 
-    This class stores and handles various parameters required for training, such as the optimizer, learning rate, batch sizes, 
-    number of particles, and early stopping configurations. It provides functionality to set early stopping criteria, 
-    which can help terminate the training process early if performance stabilizes.
+    This class stores and handles various parameters required for training, such as the optimizer, learning rate,
+    batch sizes, number of particles, and early stopping configurations. It provides functionality to set early
+    stopping criteria, which can help terminate the training process early if performance stabilizes.
 
     Attributes: 
-        optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd. It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS".optimizer (optax.optim)
-        learning_rate (float): learning rate used for plain_svgd and ssvgd for the other algorithms the learning rate is included in the optimizer.
+        optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd.
+        It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp.
+        For plain_svgd and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax
+        optimizer "LBFGS".optimizer (optax.optim)
         num_particles (int): The number of particles used in the process to approximate the posterior.
         batch_size (int): The size of the mini-batches for data used during training.
         particle_batch_size (int): The number of particles in a mini-batch of particles used for training.
@@ -21,8 +27,8 @@ class Parameter:
         patience_early_stopping (int): The number of iterations to wait for an improvement before stopping early.
         min_delta_early_stopping (float): The minimum change in the monitored metric to qualify as an improvement.
     """
-    
-    optimizer: None
+
+    optimizer: optax.GradientTransformation
     num_particles: int
     batch_size: int
     particle_batch_size: int
@@ -40,7 +46,9 @@ class Parameter:
         """Initializes the Parameter class with the specified training settings.
 
         Args:
-            optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd. It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd and ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS".optimizer (optax.optim)
+            optimizer (optax.GradientTransformation): The optimizer used to update the model parameters for svgd.
+            It must conform to the `optax.GradientTransformation` protocol, such as Adam or RMSProp. For plain_svgd and
+            ssvgd no optimizer is used. For quasi_SVN the optimizer must be the optax optimizer "LBFGS"
             early_stopping (bool): A flag indicating whether early stopping is enabled.
             image_data (bool): A variable indicating whether the data is image data or not.
             batch_size (int): The size of the mini-batches for data used during training.
