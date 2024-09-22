@@ -8,7 +8,8 @@ ALPHA = 0.05
 
 def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_output, model_regression, print_eva):
     """
-    Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
+    Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression
+    or accuracy for classification.
 
     Args:
         out (blackjax.vi.svgd.SVGDState): Output object containing particles representing different model parameters.
@@ -16,10 +17,11 @@ def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_outpu
         x_input (jax.numpy.ndarray): Input features to the model.
         true_output (jax.numpy.ndarray): True output labels or values for the given input.
         model_regression (bool): A flag indicating whether the model is used for regression or classification.
-        print_eva (str): A flag indictating whether the model should print the metrics or not.
+        print_eva (str): A flag indicating whether the model should print the metrics or not.
 
     Returns:
-        tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, None, predictions).
+        tuple: For regression, returns (MSE, averaged variance, predictions); for classification,
+        returns (accuracy, None, predictions).
     """
 
     predictions, precisions = jax.vmap(lambda p: nnet_model.predict(p, x_input))(out.particles)
@@ -92,7 +94,7 @@ def calculate_mean_span_over_particles(predictions):
         predictions (jax.numpy.ndarray): Predictions from an ensemble of particles.
 
     Returns:
-        float: The difference between the upper and lower quantiles of the predictions.
+        jax.numpy.ndarray: The difference between the upper and lower quantiles of the predictions.
     """
 
     upper_quantile_prediction_over_particles = jnp.quantile(predictions, 1 - ALPHA / 2)
@@ -181,7 +183,7 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, out, dz):
     Based on the equations (1), (2) and (3).
 
     Args:
-        nnet_model flax.linen.Module): Underlying neural network of the training process. 
+        nnet_model (flax.linen.Module): Underlying neural network of the training process.
         out (blackjax.vi.svgd.SVGDState): Output from the training process, containing the state of the particles.
         dz (jax.numpy.ndarray): dataset of input features.
     Returns:
