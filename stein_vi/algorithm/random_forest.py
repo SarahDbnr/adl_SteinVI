@@ -20,7 +20,7 @@ def random_forest(dataset, task_type='classification'):
               'Test Precision': Standard deviation of the predicted values.
     """
 
-    # Unpack the dataset directly into 6 variables
+
     x_train_combined, y_train_combined, x_test, y_test = prepare_dataset(dataset)
 
     if task_type == 'classification':
@@ -59,6 +59,16 @@ def random_forest(dataset, task_type='classification'):
 
 
 def prepare_dataset(dataset):
+    """
+    prepares the data for random forest:
+    
+    Args:
+        dataset (tuple): A tuple containing the training, validation, and test datasets. Expected format:
+                         (X_train, y_train), (X_val, y_val), (X_test, y_test), where X represents the input data and y represents the labels.
+        
+    Returns:
+        tuple: A tuple containing x_train, y_train, x_test,y_test
+    """
     x_train, y_train, x_val, y_val, x_test, y_test = dataset
 
     x_train_combined = jnp.concatenate((x_train, x_val), axis=0)
