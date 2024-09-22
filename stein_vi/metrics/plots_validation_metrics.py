@@ -134,7 +134,7 @@ def view_probabilities_classification(precisions_sample, predicted_class, true_c
         precisions_sample (jax.numpy.ndarray): Array of shape (num_particles, num_classes) containing
         the predicted probabilities
         predicted_class (jax.numpy.ndarray): Array with one element containing the predicted class
-        true_class (int): True class of the sample.
+        true_class (jax.numpy.ndarray): True class of the sample.
         ax (matplotlib.axes._subplots.AxesSubplot, optional): Is the subplot where the probabilities are plotted.
         Defaults to None.
     """

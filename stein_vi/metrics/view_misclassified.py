@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from stein_vi.metrics.plots_validation_metrics import view_probabilities_classification
 
 
-
-
 def view_misclassified(out, nnet_model, z_test, y_test, image_data, key, num_plots):
     """
     This function will display the image if it is image_data and will show the probabilities for the classes are distributed.
@@ -17,11 +15,12 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key, num_plo
         nnet_model (flax.linen.Module): Underlying neural network of the training process. 
         z_test (jax.numpy.ndarray): Input features to the model.
         y_test (jax.numpy.ndarray): True output labels for the given input.
-        image_data (bool): Describes if it is image data or not.If it is image data the image will be shown next to the probabilites.
+        image_data (bool): Describes if it is image data or not.If it is image data the image will be shown next
+        to the probabilities.
         key (jax.random.PRNGKey): A JAX PRNG key used for deterministic selection of samples.
         num_plots (int): Number of plots to be shown
     """
-    
+
     _, precisions = jax.vmap(lambda p: nnet_model.predict(p, z_test))(out.particles)
 
     averaged_precision = precisions.mean(0)
@@ -35,7 +34,7 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key, num_plo
 
     if misclassified_indices.size == 0:
         print("No misclassified samples.")
-        misclassified_random_indices = jnp.array([])  
+        misclassified_random_indices = jnp.array([])
     else:
         num_misclassified_samples = min(num_plots, misclassified_indices.size)
         misclassified_random_indices = jax.random.choice(subkey1, misclassified_indices,
@@ -43,7 +42,7 @@ def view_misclassified(out, nnet_model, z_test, y_test, image_data, key, num_plo
 
     if correctly_classified_indices.size == 0:
         print("No correctly classified samples.")
-        correctly_classified_random_indices = jnp.array([])  
+        correctly_classified_random_indices = jnp.array([])
     else:
         num_correctly_classified_samples = min(num_plots, correctly_classified_indices.size)
         correctly_classified_random_indices = jax.random.choice(subkey2, correctly_classified_indices,
