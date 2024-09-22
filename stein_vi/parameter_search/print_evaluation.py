@@ -15,13 +15,13 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
 
     Args:
         name (str): The name of the model or experiment for identifying the file.
-        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+        parameter (Parameter): Object containing SVGD training parameters like batch size, num_particles,
                             kernel length, and early stopping parameters.
         true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
         test_predictions (jax.numpy.ndarray): Predicted values from the SVGD model over particles.
         test_precision (jax.numpy.ndarray): Predicted precision values from the model over particles.
         init_value (float): The initial learning rate.
-        decay_rate (float): The decay rate choosen for the optimizer.
+        decay_rate (float): The decay rate chosen for the optimizer.
 
     Returns:
         None: The function saves the evaluation to a CSV file.
@@ -60,16 +60,17 @@ def print_evaluation_regression_to_csv(name, parameter, true_output, test_predic
 
 def print_evaluation_multiclass_to_csv(name, parameter, true_output, test_predictions, init_value, decay_rate):
     """
-    Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists, it appends the data.
+    Saves evaluation metrics for a multiclass classification model into a CSV file. If the file already exists,
+     it appends the data.
 
     Args:
         name (str): The name of the model or experiment for identifying the file.
-        parameter (object): Object containing SVGD training parameters like batch size, num_particles, 
+        parameter (Parameter): Object containing SVGD training parameters like batch size, num_particles,
                             kernel length, and early stopping parameters.
         true_output (jax.numpy.ndarray): The true output values (ground truth) for the test set.
         test_predictions (jax.numpy.ndarray): Predicted class probabilities from the SVGD model over particles.
         init_value (float): The initial learning rate.
-        decay_rate (float): The decay rate choosen for the optimizer.
+        decay_rate (float): The decay rate chosen for the optimizer.
     Returns:
         None: The function saves the evaluation to a CSV file.
     """
