@@ -22,7 +22,7 @@ def test_apply_data_settings_keras_normalization():
     dataset = ((x_train, y_train), (x_test, y_test))
 
     # when
-    x_train_proc, y_train_proc, x_val_proc, y_val_proc, x_test_proc, y_test_proc = apply_data_settings_keras(dataset, val_split=0.5)
+    x_train_proc, _, _, _, x_test_proc, _ = apply_data_settings_keras(dataset, val_split=0.5)
 
     # then
     assert x_train_proc.size > 0, "Training data should not be empty"
@@ -43,7 +43,7 @@ def test_apply_data_settings_keras_validation_split():
     dataset = ((x_train, y_train), (x_test, y_test))
     val_split = 0.2
     # when
-    x_train_proc, y_train_proc, x_val_proc, y_val_proc, x_test_proc, y_test_proc = apply_data_settings_keras(dataset, val_split=val_split)
+    x_train_proc, _, x_val_proc, _, _, _ = apply_data_settings_keras(dataset, val_split=val_split)
 
     # then 
     assert len(x_val_proc) == int(10 * val_split), "Validation set should have 20% of the training data"
@@ -61,7 +61,7 @@ def test_apply_data_settings_keras_flattening():
     dataset = ((x_train, y_train), (x_test, y_test))
 
     # when
-    x_train_proc, y_train_proc, x_val_proc, y_val_proc, x_test_proc, y_test_proc = apply_data_settings_keras(dataset, with_flattening=True)
+    _, y_train_proc, _, _, _, y_test_proc = apply_data_settings_keras(dataset, with_flattening=True)
 
     # then
     assert len(y_train_proc.shape) == 1, "Training labels should be flattened"
@@ -80,7 +80,7 @@ def test_apply_data_settings_keras_fraction():
     fraction = 0.5
 
     # when
-    x_train_proc, y_train_proc, x_val_proc, y_val_proc, x_test_proc, y_test_proc = apply_data_settings_keras(dataset,val_split=0.1, fraction=fraction)
+    x_train_proc, _, _, _, x_test_proc, _ = apply_data_settings_keras(dataset,val_split=0.1, fraction=fraction)
 
     # then
     assert len(x_train_proc) == int((100 * fraction)*0.9), "Training set should be reduced by the fraction"
@@ -113,18 +113,19 @@ def test_apply_data_settings_keras_output_structure():
     assert x_test_proc.shape[0] == x_test.shape[0], "Test set should retain its original size"
 
 
-
 def mock_sklearn_dataset():
     """Creates a mock sklearn-style dataset."""
     key = jax.random.PRNGKey(0)
 
-    x = jax.random.normal(key, (100, 10))  # Generates 100 samples with 10 features
-    y = jax.random.randint(key, shape=(100,), minval=0, maxval=2)  # Binary labels (0 or 1)
+    x = jax.random.normal(key, (100, 10))
+    y = jax.random.randint(key, shape=(100,), minval=0, maxval=2)
 
     x = jnp.array(x)
     y = jnp.array(y)
 
     return Bunch(data=x, target=y)
+
+
 def test_apply_data_settings_sklearn_output_format():
     """Test that the output format is correct."""
     # given
@@ -145,18 +146,18 @@ def test_apply_data_settings_sklearn_output_format():
     assert len(x_test) == 20, "Test data should contain 20 samples"
 
 
-
 def test_apply_data_settings_sklearn_fraction():
     """Test that the dataset size is reduced correctly when using the fraction parameter."""
     # given
     dataset = mock_sklearn_dataset()
     fraction = 0.5
     # when
-    x_train, y_train, x_val, y_val, x_test, y_test = apply_data_settings_sklearn(dataset, fraction=fraction)
+    x_train, _, _, _, x_test, _ = apply_data_settings_sklearn(dataset, fraction=fraction)
 
     # then
     assert len(x_train) == int(72 * fraction), "Training set should be reduced by the fraction"
     assert len(x_test) == int(20 * fraction), "Test set should be reduced by the fraction"
+
 
 def test_apply_data_settings_sklearn_validation_split():
     """Test that the validation split is correctly applied."""
@@ -171,9 +172,6 @@ def test_apply_data_settings_sklearn_validation_split():
     # then
     assert len(x_train) == expected_train_size, f"Training set should have {expected_train_size} samples"
     assert len(x_val) == expected_val_size, f"Validation set should have {expected_val_size} samples"
-
-
-
 
 
 def test_apply_data_settings_sklearn_shuffling():
@@ -201,7 +199,6 @@ def test_apply_data_settings_sklearn_shuffling():
     assert not jnp.array_equal(y_train1, y_train3), "Shuffling with different keys should produce different training labels"
     assert not jnp.array_equal(x_test1, x_test3), "Shuffling with different keys should produce different test data"
     assert not jnp.array_equal(y_test1, y_test3), "Shuffling with different keys should produce different test labels"
-
 
 
 def test_print_data_information_basic(capfd):

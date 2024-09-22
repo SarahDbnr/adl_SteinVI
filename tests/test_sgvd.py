@@ -3,7 +3,6 @@ import jax.numpy as jnp
 
 from fixtures import stein_vi_regression_example, get_regression_toy_example
 from stein_vi.metrics.validation_and_evaluation import get_evaluation_metrics_over_predictions
-
 from stein_vi.algorithm.svgd import (set_up_svgd, particle_minibatching, initialize_svgd_state,
                                      get_batched_optimizer_state, update_optimizer_state)
 

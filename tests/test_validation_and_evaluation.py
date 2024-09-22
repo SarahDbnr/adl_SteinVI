@@ -70,7 +70,6 @@ def test_calculate_accuracy():
     accuracy = calculate_accuracy(precisions, true_output)
     averaged_precision = precisions.mean(0)
     predicted_classes = jnp.argmax(averaged_precision, axis=-1)
-    # one class is wrongly predicted
     # then
     print(predicted_classes)
     assert precisions.shape == (number_particles, x_dim, num_classes)

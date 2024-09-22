@@ -9,9 +9,7 @@ from stein_vi.Classes.Handler_Class import Handler
 from stein_vi.algorithm.get_posteriori import logp_unnormalized_posterior_regression
 from stein_vi.Classes.SteinVI_BNN_Class import SteinVI_BNN
 from run_stein_vi.model.BNN_Model import build_model
-
 from fixtures import stein_vi_multiclass_example, stein_vi_regression_example, get_regression_toy_example, get_MNIST
-
 from stein_vi.algorithm.svgd import set_up_svgd
 
 
@@ -72,7 +70,7 @@ def test_steinvi_bnn_init_success():
 def test_steinvi_bnn_init_fail_batch_size():
     # given
     key = jax.random.PRNGKey(0)
-    x_train = jax.random.normal(key, (10, 10))  # Small dataset
+    x_train = jax.random.normal(key, (10, 10))
 
     nnet = build_model(output_size=2, hidden_layers=(2, 4))
 
@@ -84,7 +82,7 @@ def test_steinvi_bnn_init_fail_batch_size():
             nnet=nnet,
             use_for_regression=True,
             optimizer=adam(0.001),
-            batch_size=20,  # This is larger than the dataset length
+            batch_size=20,
             particle_batch_size=5,
             num_particles=10,
             num_iterations=100
@@ -107,7 +105,7 @@ def test_steinvi_bnn_init_fail_particle_batch_size():
             use_for_regression=True,
             optimizer=adam(0.001),
             batch_size=50,
-            particle_batch_size=15,  # This is larger than the number of particles
+            particle_batch_size=15,
             num_particles=10,
             num_iterations=100
         )
@@ -116,7 +114,7 @@ def test_steinvi_bnn_init_fail_particle_batch_size():
 def test_initial_particles_and_kernel():
     # given
     key = jax.random.PRNGKey(0)
-    x_train = jax.random.normal(key, (100, 10))  # Example input data
+    x_train = jax.random.normal(key, (100, 10)) 
 
     nnet = build_model(output_size=2, hidden_layers=(2, 4))
 

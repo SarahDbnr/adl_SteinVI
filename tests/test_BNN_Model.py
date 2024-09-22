@@ -3,27 +3,27 @@ import jax.numpy as jnp
 from flax import linen as nn
 from jax import random
 import jax
-from run_stein_vi.model.BNN_Model import FlexibleSimpleNN, build_model  # Update to your correct module path
+from run_stein_vi.model.BNN_Model import FlexibleSimpleNN, build_model
 
 def test_flexible_simple_nn_classification():
     # given
     model = FlexibleSimpleNN(
-        hidden_layers=[10, 10],  # Example hidden layer sizes
-        output_size=3,  # Example for a classification task with 3 classes
+        hidden_layers=[10, 10], 
+        output_size=3,
         activation=nn.relu,
         kernel_init=nn.initializers.glorot_uniform(),
         bias_init=nn.initializers.zeros
     )
     key = random.PRNGKey(0)
     x_input = random.normal(key, (1, 28, 28)) 
-    input_size = 28 * 28  # MNIST input flattened size
-    hidden_layers = [10, 10]  # Hidden layers sizes
-    output_size = 3  # Output size for classification
+    input_size = 28 * 28 
+    hidden_layers = [10, 10]
+    output_size = 3 
     expected_num_params = 0
     # then
     params = model.init(key, x_input)
     predictions = model.apply(params, x_input)
-    expected_num_params += input_size * hidden_layers[0] + hidden_layers[0]  # weights + biases
+    expected_num_params += input_size * hidden_layers[0] + hidden_layers[0]
     
     for i in range(len(hidden_layers) - 1):
         expected_num_params += hidden_layers[i] * hidden_layers[i + 1] + hidden_layers[i + 1]
@@ -43,15 +43,15 @@ def test_flexible_simple_nn_classification():
 def test_flexible_simple_nn_regression():
     # given
     model = FlexibleSimpleNN(
-        hidden_layers=[10, 10],  # Example hidden layer sizes
-        output_size=2,  # Example for a regression task with mean and variance outputs
+        hidden_layers=[10, 10],
+        output_size=2,
         activation=nn.relu,
         kernel_init=nn.initializers.glorot_uniform(),
         bias_init=nn.initializers.zeros
     )
     
     key = random.PRNGKey(0)
-    x_input = random.normal(key, (1, 28 * 28))  # Example input size
+    x_input = random.normal(key, (1, 28 * 28))
     
     params = model.init(key, x_input)
     
@@ -67,10 +67,7 @@ def test_build_model():
     # given 
     key = random.PRNGKey(0)
     
-    # Create sample input data
     x_train = jnp.ones((1, 28, 28))  
-    
-
     hidden_layers = (10, 10)  
     output_size = 10  
     activation = nn.relu
@@ -119,7 +116,7 @@ def test_flexible_simple_nn_all_ones():
     params = model.init(key, x_input)
     expected_output = input_size * 2 * 2  
     
-    expected_final_output = jnp.array([expected_output] * model.output_size, dtype=jnp.float32)  # Ensure float type
+    expected_final_output = jnp.array([expected_output] * model.output_size, dtype=jnp.float32)
     # when 
     predictions = model.apply(params, x_input)
     # then

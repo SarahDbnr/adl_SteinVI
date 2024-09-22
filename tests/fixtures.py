@@ -80,18 +80,15 @@ def get_regression_toy_example():
     key = jax.random.PRNGKey(1)
     input_dimension = 2
 
-    # Split the number of points into training and testing
     num_train = math.floor(0.8 * num_points)
     num_test = num_points - num_train
 
-    # Generate random input data within the specified range
     key, subkey = jax.random.split(key)
     x_train = jax.random.uniform(subkey, shape=(num_train, input_dimension), minval=0, maxval=1)
 
     key, subkey = jax.random.split(key)
     x_test = jax.random.uniform(subkey, shape=(num_test, input_dimension), minval=0, maxval=1)
 
-    # Generate output data using the true function
     y_train = generate_data(x_train, key)
     y_test = generate_data(x_test, key)
 

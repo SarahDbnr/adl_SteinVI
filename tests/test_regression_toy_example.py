@@ -16,6 +16,7 @@ def test_generate_data_output_shape():
     # then
     assert y.shape == (100,), "The output shape should be (100,) for 100 input samples."
 
+
 def test_generate_data_noise_effect():
     """Test that generate_data adds noise to the outputs."""
     # given
@@ -30,6 +31,7 @@ def test_generate_data_noise_effect():
     
     # then
     assert not jnp.array_equal(y1, y2), "Outputs with different random keys should be different due to noise."
+
 
 def test_generate_data_consistency():
     """Test that generate_data is consistent when using the same random key."""

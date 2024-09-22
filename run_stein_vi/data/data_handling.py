@@ -3,8 +3,6 @@ import jax.numpy as jnp
 
 from sklearn.datasets import fetch_20newsgroups, fetch_openml
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
 from scipy.sparse import issparse
 
 
