@@ -39,8 +39,10 @@ def init(
     ----------
     initial_particles
         Initial set of particles to start the optimization
-    kernel_paremeters
+    kernel_parameters
         Arguments to the kernel function
+    optimizer
+        choice of optimizer
     """
     opt_state = optimizer.init(initial_particles)
     return sSVGDState(initial_particles, kernel_parameters, opt_state)
@@ -56,7 +58,8 @@ def build_kernel(optimizer: optax.GradientTransformation):
         """
         Performs one step of stochastic Stein Variational Gradient Descent.
 
-        See Algorithm 2 of "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman
+        See Algorithm 2 of "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang,
+        Omar Ghattas, and Aaron Zimmerman
 
 
         Parameters
@@ -138,7 +141,7 @@ def update_median_heuristic(state: sSVGDState) -> sSVGDState:
     This strategy is called the median heuristic.
     """
 
-    position, kernel_parameters,opt_state = state
+    position, kernel_parameters, opt_state = state
     return sSVGDState(position, median_heuristic(kernel_parameters, position), opt_state)
 
 
@@ -148,7 +151,8 @@ def as_top_level_api(
     kernel: Callable = rbf_kernel,
     update_kernel_parameters: Callable = update_median_heuristic,
 ):
-    """Implements the (basic) user interface for the ssvgd algorithm "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD" by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.
+    """Implements the (basic) user interface for the ssvgd algorithm "A STOCHASTIC STEIN VARIATIONAL NEWTON METHOD"
+    by Alex Leviyev, Joshua Chen, Yifei Wang, Omar Ghattas, and Aaron Zimmerman.
 
     Parameters
     ----------
@@ -158,6 +162,8 @@ def as_top_level_api(
         positive semi definite kernel
     update_kernel_parameters
         function that updates the kernel parameters given the current state of the particles
+    optimizer
+        choice of optimizer
 
     Returns
     -------
@@ -168,8 +174,10 @@ def as_top_level_api(
 
     def init_fn(
         initial_position: ArrayLikeTree,
-        kernel_parameters: dict[str, Any] = {"length_scale": 1.0},
+            kernel_parameters=None,
     ):
+        if kernel_parameters is None:
+            kernel_parameters = {"length_scale": 1.0}
         return init(initial_position, kernel_parameters, optimizer)
 
     def step_fn(state, **grad_params):
