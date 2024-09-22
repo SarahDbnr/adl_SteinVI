@@ -24,7 +24,7 @@ def parameter_loop_regression(dataset, model, name):
     init_value = 0.1
     decay_rate = 0.95
 
-    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
+    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100]
     array_batch_size = [0, 5, 10, 20, 50]
     array_early_stopping = [True, False]
     array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
@@ -108,7 +108,7 @@ def parameter_loop_multiclass(dataset, model, name):
     init_value = 0.05
     decay_rate = 0.95
 
-    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100, 150, 200, 250]
+    array_num_particles = [5, 10, 20, 30, 40, 50, 80, 100]
     array_batch_size = [0, 50,300, 1000,10000]
     array_early_stopping = [True, False]
     array_init_value = [0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
