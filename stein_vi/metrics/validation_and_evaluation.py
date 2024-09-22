@@ -6,18 +6,18 @@ from stein_vi.algorithm.get_posteriori import link_function
 ALPHA = 0.05
 
 
-# Evaluate the particles by averaging the predictions and calculating the accuracy
 def get_evaluation_metrics_over_predictions(out, nnet_model, x_input, true_output, model_regression, print_eva):
     """
     Evaluates predictions from a model, calculating either mean squared error (MSE) and average variance for regression or accuracy for classification.
 
     Args:
-        out (SVGD_State???): Output object containing particles representing different model parameters.
+        out (blackjax.vi.svgd.SVGD_State): Output object containing particles representing different model parameters.
         nnet_model (flax.linen.Module): The neural network model used for making predictions.
         tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
         x_input (jax.numpy.ndarray): Input features to the model.
         true_output (jax.numpy.ndarray): True output labels or values for the given input.
         model_regression (bool): A flag indicating whether the model is used for regression or classification.
+        print_eva (str): A flag indictating whether the model should print the metrics or not.
 
     Returns:
         tuple: For regression, returns (MSE, averaged variance, predictions); for classification, returns (accuracy, predictions, None).
@@ -163,19 +163,17 @@ def compute_confidence_intervals_with_2_neurons(nnet_model, out, dz):
     Args:
         nnet_model flax.linen.Module): Underlying neural network of the training process. 
         tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
-        out (SVGDState???): Output from the training process, containing the state of the particles.
-        dz (jax.numpy.ndarray???): dataset of input features.
+        out (blackjax.vi.svgd.SVGD_State): Output from the training process, containing the state of the particles.
+        dz (jax.numpy.ndarray): dataset of input features.
     """
     predictions, precision = jax.vmap(lambda p: nnet_model.predict(p, dz))(out.particles)
     predictions = predictions.squeeze()
     precision = precision.squeeze()
-    mean_star = predictions.mean(0)  # Averaging over particles
-    # Step 1: Compute the squared means of individual predictions
+    mean_star = predictions.mean(0)  
+    
     squared_means_i = jnp.square(predictions)
 
-    # Step 2: Compute the variance of individual predictions
     variance_i = jax.vmap(lambda p: link_function(p))(precision.squeeze())
 
-    # Step 3: Compute the variance according to equation (3)
     variance_star = variance_i.mean(0) + squared_means_i.mean(0) - jnp.square(mean_star)
     return mean_star, variance_star
