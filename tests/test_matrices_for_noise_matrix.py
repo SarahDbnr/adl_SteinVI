@@ -69,6 +69,4 @@ def test_compute_stochastic_correction():
 
     v_stc_new = compute_stochastic_correction(particles, rbf_kernel, kernel_params, random_normal_samples)
 
-    diff = jnp.linalg.norm(v_stc_old - v_stc_new)
-
     assert jnp.allclose(v_stc_old, v_stc_new, atol=1e-6), "The outputs are not the same!"
