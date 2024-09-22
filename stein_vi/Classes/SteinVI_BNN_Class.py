@@ -71,8 +71,8 @@ class SteinVI_BNN:
             particle_batch_size (int): The number of particles in a mini-batch of particles used for training.  Defaults to 0 (i.e., no batching).
             num_particles (int): The number of particles used in the process to approximate the posterior. Defaults to 10.
             num_iterations (int): The total number of training iterations. Defaults to 100.
-            rf_comparison (bool, optional): ???. Defaults to False.
-            learning_rate (float, optional): Learning rate used for plain_svgd and ssvgd for the other algorithms the learning rate is included in the optimizer. Defaults to 0.0001.
+            rf_comparison (bool, optional): If random forest comparisson should be done. Defaults to False.
+            learning_rate (float, optional): Learning rate used for ssvgd for the svgd algorithm the learning rate is included in the optimizer. Defaults to 0.0001.
         """
         self.handler = Handler(rf_comparison)
         self.handler.set_training_print_mode(mode_training_print)
@@ -90,7 +90,6 @@ class SteinVI_BNN:
 
         self.initial_particles_and_kernel(key, x_train, num_particles)
 
-        # default posteriori
         self.log_posteriori = get_posteriori(self.nnet, self.use_for_regression)
 
     def initial_particles_and_kernel(self, key, x_train, num_particles):
