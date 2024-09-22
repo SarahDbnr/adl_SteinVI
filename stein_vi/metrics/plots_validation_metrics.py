@@ -87,7 +87,7 @@ def plot_location_in_relation_to_scale(nnet_model, out, z_test, num_particles=No
     Args:
         nnet_model (flax.linen.Module): The neural network model used for predictions.
         tree_def (jax.tree_util.PyTreeDef): Tree structure used for parameter transformation in JAX.
-        out (object???): Output from the model prediction, containing particles.
+        out (blackjax.vi.svgd.SVGD_State): Output from the model prediction, containing particles.
         z_test (array): Test input features.
         num_particles (int, optional): Number of particles used in SVGD.
         network_structure (str, optional): Description of the network's architecture.
