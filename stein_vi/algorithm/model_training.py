@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 from tqdm import tqdm
-
+# TODO: vielleicht raus
 DEFAULT_NUM_BATCHES = 10
 
 
@@ -10,7 +10,7 @@ def train_general_algorithm(steinvi, dataset, key):
     General training function for neural networks that supports different mini-batching modes for both data and particles.
 
     Args:
-        steinvi (class)
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): A tuple containing training and validation datasets (z_train, y_train, z_val, y_val, etc.).
         key (jax.random.PRNGKey): JAX random key for managing randomness.
 
@@ -35,7 +35,7 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
     Training loop without mini-batching, using full data and particles.
 
     Args:
-        steinvi :
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
 
@@ -48,7 +48,7 @@ def no_minibatch_training_loop(steinvi, dataset, key=None):
 
     for iteration in tqdm(range(steinvi.parameter.num_iterations), desc="Training"):
 
-        steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train)  # Full data and full particles
+        steinvi.state = steinvi.update_fn(steinvi.state, z_train, y_train)  
 
         if steinvi.handler._full_evaluation:
             best_eval_metric, patience_counter = get_evaluation_and_apply_early_stopping_logic(
@@ -63,7 +63,7 @@ def data_minibatch_training_loop(steinvi, dataset, key):
     Training loop with mini-batching on the data while using the full particle set.
 
     Args:
-        steinvi
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
         early_stopping_fn (callable): Function to apply early stopping criteria.
@@ -96,7 +96,7 @@ def particle_minibatch_training_loop(steinvi, dataset, key):
     Training loop with mini-batching on the particles while using the full dataset.
 
     Args:
-        steinvi
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
 
@@ -129,7 +129,7 @@ def data_and_particle_minibatch_training_loop(steinvi, dataset, key):
     Training loop with mini-batching on both data and particles.
 
     Args:
-        steinvi : ...
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         dataset (tuple): The dataset containing training and validation data.
         key (jax.random.PRNGKey): JAX random key for randomness.
 
@@ -181,7 +181,6 @@ def create_minibatches(batch_size, input_data, output_data, key):
     return input_data, output_data
 
 
-# Utility function to create particle minibatch indices
 def create_particle_minibatch_indices(key, num_particles, batch_size):
     """
     Creates minibatches of particle indices for particle minibatching.
@@ -199,7 +198,6 @@ def create_particle_minibatch_indices(key, num_particles, batch_size):
     return jnp.array_split(indices, num_batches)
 
 
-# Utility function to shuffle data
 @jax.jit
 def shuffle_data(key, input_data, output_data):
     """
@@ -223,7 +221,7 @@ def get_evaluation_and_apply_early_stopping_logic(stein_vi, z_val, y_val, iterat
     Handles the printing and evaluation during training based on the training print mode.
 
     Args:
-        steinvi : ...
+        steinvi (SteinVI_BNN): An instance of the `SteinVI_BNN` class, which contains the Bayesian Neural Network.
         z_val (ndarray): Validation data inputs.
         y_val (ndarray): Validation data targets.
         iteration (int): Current training iteration.
@@ -260,6 +258,7 @@ def early_stopping_fn(current_metrics, best_metrics, patience_counter, parameter
         best_metrics (float): The best evaluation metric seen so far.
         patience_counter (int): A counter tracking how many iterations the model has been non-improving.
         parameter (Parameter): A Parameter object defining early stopping criteria like minimum delta.
+        regression (bool): If the earlystopping should be applied for regression or classification.
 
     Returns:
         tuple: Updated patience counter and best metric value.
