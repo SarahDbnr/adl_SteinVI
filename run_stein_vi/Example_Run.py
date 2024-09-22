@@ -9,7 +9,7 @@ from stein_vi.stein_vi import train_with_stein_vi
 from run_stein_vi.model.BNN_Model import build_model
 from run_stein_vi.data.regression_toy_example import get_regression_toy_example
 import data.datasets_info as datasets_info
-from data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras, newsgroup_datahandling
+from data.data_handling import apply_data_settings_sklearn, apply_data_settings_keras
 
 
 def run_regression_toy_example():
@@ -33,8 +33,7 @@ def run_regression_toy_example():
 
     nnet_model = build_model(output_size=2, hidden_layers=(200, 70, 40))
 
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, optimizer=optimizer, rf_comparison=True)
-
+    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, optimizer=optimizer, num_iterations=1000,num_particles=15)
     train_with_stein_vi(steinvi_svdg, regression_toy_example, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
@@ -94,18 +93,13 @@ def run_MNIST_minibatched_particles(info=False):
     z_train, _, _, _, _, _ = mnist_dataset
 
     optimizer = adam(
-        exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
-            decay_rate=0.95,
-            staircase=True
-        )
+        0.01
     )
-    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
+    nnet_model = build_model(output_size=10, hidden_layers=(150, 50, 20))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, optimizer=optimizer, batch_size=300,
-                               particle_batch_size=3, num_particles=9)
-
+                               particle_batch_size=3, num_particles=9,mode_training_print="full", num_iterations=100,early_stopping=True)
+    steinvi_svdg.parameter.set_early_stopping(warm_up_iterations=10, patience=5, min_delta=0.01)
     train_with_stein_vi(steinvi_svdg, mnist_dataset, key, algorithm="svgd")
 
 
@@ -141,75 +135,10 @@ def run_FashionMNIST(info=False):
     train_with_stein_vi(steinvi_svdg, fashion_mnist, key, algorithm="svgd")
 
     steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
+    steinvi_svdg.view_misclassified(z_test, y_test, key=key,num_plots=5)
 
 
-def run_CIFAR10(info=False):
-    """
-    Run SVGD on the CIFAR-10 dataset for classification.
 
-    Args:
-        info (bool, optional): If True, prints dataset information. Defaults to True.
-    """
-    if info:
-        datasets_info.print_cifar10_dataset_info()
-
-    key = jax.random.PRNGKey(1)
-
-    cifar10 = tf.keras.datasets.cifar10
-    cifar10 = apply_data_settings_keras(cifar10.load_data(), with_flattening=True)
-    z_train, _, _, _, z_test, y_test = cifar10
-
-    optimizer = adam(
-        exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
-            decay_rate=0.95,
-            staircase=True
-        )
-    )
-    nnet_model = build_model(output_size=10, hidden_layers=(200, 70, 40))
-
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, image_data=True, batch_size=3000,
-                               optimizer=optimizer, num_iterations=10, num_particles=3)
-
-    train_with_stein_vi(steinvi_svdg, cifar10, key, algorithm="svgd")
-
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
-
-
-def run_20_newsgroups(info=False):
-    """
-    Run SVGD on the 20 Newsgroups text classification dataset.
-
-    Args:
-        info (bool, optional): If True, prints dataset information. Defaults to True.
-    """
-    if info:
-        datasets_info.print_20_newsgroups_dataset_info()
-    key = jax.random.PRNGKey(1)
-    newsgroup_dataset = newsgroup_datahandling()
-    newsgroup_dataset = apply_data_settings_sklearn(newsgroup_dataset)
-    z_train, _, _, _, z_test, y_test = newsgroup_dataset
-
-    optimizer = adam(
-        exponential_decay(
-            init_value=0.05,
-            transition_steps=100,
-            decay_rate=0.95,
-            staircase=True
-        )
-    )
-    nnet_model = build_model(output_size=20, hidden_layers=(200, 200, 70, 40))
-
-    steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=False, batch_size=3000, optimizer=optimizer,
-                               num_iterations=10, num_particles=3)
-
-    train_with_stein_vi(steinvi_svdg, newsgroup_dataset, key, algorithm="svgd")
-
-    steinvi_svdg.plot_val_metric_over_iter()
-    steinvi_svdg.view_misclassified(z_test, y_test, key=key)
 
 def run_iris(info=False):
     """
@@ -256,13 +185,13 @@ def run_diabetes(info=False):
         datasets_info.print_diabetes_dataset_info()
     diabetes = load_diabetes()
     dataset = apply_data_settings_sklearn(diabetes)
-    z_train, _, _, _, _, _ = dataset
+    z_train, _, _, _, z_test, y_test = dataset
 
     key = jax.random.PRNGKey(1)
 
     optimizer = adam(
         exponential_decay(
-            init_value=0.01,
+            init_value=0.005,
             transition_steps=50,
             decay_rate=0.95,
             staircase=True
@@ -271,10 +200,13 @@ def run_diabetes(info=False):
     nnet_model = build_model(output_size=2, hidden_layers=(200, 70, 40))
 
     steinvi_svdg = SteinVI_BNN(key, z_train, nnet_model, use_for_regression=True, batch_size=30, optimizer=optimizer,
-                               num_iterations=100, num_particles=10, rf_comparison=True)
+                               num_iterations=1000, num_particles=10, rf_comparison=True)
     train_with_stein_vi(steinvi_svdg, dataset, key, algorithm="svgd")
+    steinvi_svdg.plot_val_metric_over_iter()
+    steinvi_svdg.plot_residuals(z_test, y_test)
+    steinvi_svdg.plot_location_in_relation_to_scale(z_test)
 
 
 if __name__ == "__main__":
-    run_MNIST()
+    run_MNIST(True)
 
