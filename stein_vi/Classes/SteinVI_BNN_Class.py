@@ -24,7 +24,7 @@ class SteinVI_BNN:
 
     Attributes:
         state (SVGD_State): A class containing informations about the (optimizer), Kernel and the particles.
-        parameter (Parameter): Configuration of training parameters like learning rate, batch size, and number of particles.
+        parameter (Parameter): Configuration of training parameters like batch size, and number of particles.
         handler (Handler): Manages modes for training and evaluation (e.g., minimal or full evaluation).
         use_for_regression (bool): A variable to determine if the network is being used for regression or classification tasks.
         log_posteriori (callable): A function representing the log posterior of the model.
@@ -75,7 +75,6 @@ class SteinVI_BNN:
             num_particles (int): The number of particles used in the process to approximate the posterior. Defaults to 10.
             num_iterations (int): The total number of training iterations. Defaults to 100.
             rf_comparison (bool, optional): If random forest comparisson should be done. Defaults to False.
-            learning_rate (float, optional): Learning rate used for ssvgd for the svgd algorithm the learning rate is included in the optimizer. Defaults to 0.0001.
         """
 
         self.handler = Handler(rf_comparison)

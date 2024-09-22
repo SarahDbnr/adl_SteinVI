@@ -47,7 +47,6 @@ class Parameter:
             particle_batch_size (int): The number of particles in a mini-batch of particles used for training.
             num_particles (int): The number of particles used in the process to approximate the posterior.
             num_iterations (int): The total number of training iterations.
-            learning_rate (float): learning rate used for plain_svgd and ssvgd for the other algorithms the learning rate is included in the optimizer.
         """
         self.optimizer = optimizer
         self.batch_size = batch_size

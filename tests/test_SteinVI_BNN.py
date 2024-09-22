@@ -39,7 +39,6 @@ def test_steinvi_bnn_init_success():
         num_particles=num_particles,
         num_iterations=100,
         rf_comparison=False,
-        learning_rate=0.0001
     )
 
     # then
