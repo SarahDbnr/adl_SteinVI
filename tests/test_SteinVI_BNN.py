@@ -44,7 +44,7 @@ def test_steinvi_bnn_init_success():
     # then
     assert isinstance(model.handler, Handler), "Handler should be initialized correctly"
     assert model.handler._full_training_print, "Training print mode should be set correctly to full"
-    assert model.handler._full_evaluation == False, "Evaluation mode should be set correctly"
+    assert not model.handler._full_evaluation, "Evaluation mode should be set correctly"
 
     assert isinstance(model.parameter, Parameter), "Parameter should be initialized correctly"
     assert model.parameter.batch_size == 50, "Batch size should be set correctly"
@@ -57,8 +57,7 @@ def test_steinvi_bnn_init_success():
     assert isinstance(model.nnet, nn.Module), "Neural network model should be initialized correctly"
 
     assert model.nnet.predict == model.predict
-    assert model.initial_particle_vector.shape == (
-    num_particles, num_weights), "Initial particle vector should have the correct shape"
+    assert model.initial_particle_vector.shape == (num_particles, num_weights), "Initial particle vector should have the correct shape"
 
     assert jnp.all(model.log_posteriori(weights=model.initial_particle_vector[0], dz=x_train, dy=y_train)
                    == logp_unnormalized_posterior_regression(weights=model.initial_particle_vector[0], dz=x_train,

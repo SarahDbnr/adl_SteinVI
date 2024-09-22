@@ -1,5 +1,4 @@
 import pytest
-from _pytest.capture import CaptureResult
 import jax
 import jax.numpy as jnp
 
