@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 
-from sklearn.datasets import fetch_20newsgroups, fetch_openml
+from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
-from scipy.sparse import issparse
+
 
 
 

@@ -1,6 +1,5 @@
 import flax.linen as nn
 from typing import Sequence
-import jax
 
 class FlexibleSimpleNN(nn.Module):
     """
