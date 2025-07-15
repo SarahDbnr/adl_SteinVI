@@ -9,9 +9,15 @@ __pycache__/
 # Environments
 .env
 .venv
-.lock
+Pipfile.lock
 env/
 venv/
 
 # PyCharm
 .idea/
+
+# graphs
+svgd_plots/
+
+# docs
+#docs/build/
